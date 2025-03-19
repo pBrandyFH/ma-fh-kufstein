@@ -3,23 +3,23 @@ import { initReactI18next } from "react-i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
 
 import enTranslation from "./locales/en.json"
-import deTranslation from "./locales/de.json"
-import frTranslation from "./locales/fr.json"
-import itTranslation from "./locales/it.json"
+// import deTranslation from "./locales/de.json"
+// import frTranslation from "./locales/fr.json"
+// import itTranslation from "./locales/it.json"
 
 const resources = {
   en: {
     translation: enTranslation,
   },
-  de: {
-    translation: deTranslation,
-  },
-  fr: {
-    translation: frTranslation,
-  },
-  it: {
-    translation: itTranslation,
-  },
+  // de: {
+  //   translation: deTranslation,
+  // },
+  // fr: {
+  //   translation: frTranslation,
+  // },
+  // it: {
+  //   translation: itTranslation,
+  // },
 }
 
 i18n
