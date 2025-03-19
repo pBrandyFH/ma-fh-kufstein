@@ -1,0 +1,26 @@
+import type { ReactNode } from "react"
+import { Navigate } from "react-router-dom"
+import type { UserRole } from "../../types"
+import { isAuthenticated, getCurrentUser } from "../../services/authService"
+
+interface ProtectedRouteProps {
+  children: ReactNode
+  allowedRoles?: UserRole[]
+}
+
+export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const authenticated = isAuthenticated()
+  const currentUser = getCurrentUser()
+
+  if (!authenticated) {
+    return <Navigate to="/login" />
+  }
+
+  if (allowedRoles && currentUser && !allowedRoles.includes(currentUser.role)) {
+    // Redirect to appropriate dashboard based on role
+    return <Navigate to="/dashboard" />
+  }
+
+  return <>{children}</>
+}
+
