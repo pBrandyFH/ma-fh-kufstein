@@ -1,12 +1,30 @@
 import type { Request, Response } from "express"
+import mongoose from "mongoose"
 import Athlete from "../models/Athlete"
 import User from "../models/User"
 import { sendInviteEmail } from "../utils/emailService"
+import { AuthenticatedRequest } from "./authController"
+
+interface CreateAthleteRequestBody {
+  firstName: string
+  lastName: string
+  dateOfBirth: Date
+  gender: "male" | "female"
+  weightCategory: string
+  clubId: mongoose.Types.ObjectId
+  federationId: mongoose.Types.ObjectId
+  coachIds?: mongoose.Types.ObjectId[]
+  isNationalTeam?: boolean
+}
+
+interface UpdateAthleteRequestBody extends Partial<CreateAthleteRequestBody> {}
 
 // Get all athletes
-export const getAllAthletes = async (req: Request, res: Response) => {
+export const getAllAthletes = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const athletes = await Athlete.find().populate("clubId", "name").populate("federationId", "name")
+    const athletes = await Athlete.find()
+      .populate<{ clubId: { name: string } }>("clubId", "name")
+      .populate<{ federationId: { name: string } }>("federationId", "name")
 
     res.status(200).json({
       success: true,
@@ -22,12 +40,12 @@ export const getAllAthletes = async (req: Request, res: Response) => {
 }
 
 // Get athlete by ID
-export const getAthleteById = async (req: Request, res: Response) => {
+export const getAthleteById = async (req: AuthenticatedRequest<{ id: string }>, res: Response) => {
   try {
     const athlete = await Athlete.findById(req.params.id)
-      .populate("clubId", "name")
-      .populate("federationId", "name")
-      .populate("coachIds", "firstName lastName")
+      .populate<{ clubId: { name: string } }>("clubId", "name")
+      .populate<{ federationId: { name: string } }>("federationId", "name")
+      .populate<{ coachIds: { firstName: string; lastName: string }[] }>("coachIds", "firstName lastName")
 
     if (!athlete) {
       return res.status(404).json({
@@ -49,53 +67,13 @@ export const getAthleteById = async (req: Request, res: Response) => {
   }
 }
 
-// Create a new athlete
-export const createAthlete = async (req: Request, res: Response) => {
+// Create new athlete
+export const createAthlete = async (
+  req: AuthenticatedRequest<{}, {}, CreateAthleteRequestBody>,
+  res: Response
+) => {
   try {
-    const { firstName, lastName, email, dateOfBirth, gender, weightCategory, clubId, federationId, sendInvite } =
-      req.body
-
-    // Check if user with email already exists
-    const existingUser = await User.findOne({ email })
-    let userId
-
-    if (existingUser) {
-      // If user exists, check if they're already an athlete
-      const existingAthlete = await Athlete.findOne({ userId: existingUser._id })
-      if (existingAthlete) {
-        return res.status(400).json({
-          success: false,
-          error: "User is already registered as an athlete",
-        })
-      }
-      userId = existingUser._id
-    } else {
-      // Create a new user with athlete role
-      const newUser = new User({
-        email,
-        password: Math.random().toString(36).substring(2, 15), // Generate random password
-        firstName,
-        lastName,
-        role: "athlete",
-      })
-
-      await newUser.save()
-      userId = newUser._id
-
-      // Send invite email if requested
-      if (sendInvite) {
-        // Generate a unique invite code
-        const inviteCode = Math.random().toString(36).substring(2, 15)
-
-        // TODO: Store the invite code in the database
-
-        await sendInviteEmail(email, firstName, lastName, inviteCode, "athlete")
-      }
-    }
-
-    // Create the athlete
-    const athlete = new Athlete({
-      userId,
+    const {
       firstName,
       lastName,
       dateOfBirth,
@@ -103,12 +81,23 @@ export const createAthlete = async (req: Request, res: Response) => {
       weightCategory,
       clubId,
       federationId,
+      coachIds,
+      isNationalTeam,
+    } = req.body
+
+    const athlete = new Athlete({
+      firstName,
+      lastName,
+      dateOfBirth,
+      gender,
+      weightCategory,
+      clubId,
+      federationId,
+      coachIds,
+      isNationalTeam,
     })
 
     await athlete.save()
-
-    // Update user with athleteId
-    await User.findByIdAndUpdate(userId, { athleteId: athlete._id })
 
     res.status(201).json({
       success: true,
@@ -123,54 +112,11 @@ export const createAthlete = async (req: Request, res: Response) => {
   }
 }
 
-// Update an athlete
-export const updateAthlete = async (req: Request, res: Response) => {
-  try {
-    const { firstName, lastName, dateOfBirth, gender, weightCategory, clubId, federationId, isNationalTeam } = req.body
-
-    const athlete = await Athlete.findByIdAndUpdate(
-      req.params.id,
-      {
-        firstName,
-        lastName,
-        dateOfBirth,
-        gender,
-        weightCategory,
-        clubId,
-        federationId,
-        isNationalTeam,
-      },
-      { new: true },
-    )
-
-    if (!athlete) {
-      return res.status(404).json({
-        success: false,
-        error: "Athlete not found",
-      })
-    }
-
-    // Update user information as well
-    await User.findByIdAndUpdate(athlete.userId, {
-      firstName,
-      lastName,
-    })
-
-    res.status(200).json({
-      success: true,
-      data: athlete,
-    })
-  } catch (error) {
-    console.error("Update athlete error:", error)
-    res.status(500).json({
-      success: false,
-      error: "Server error while updating athlete",
-    })
-  }
-}
-
-// Delete an athlete
-export const deleteAthlete = async (req: Request, res: Response) => {
+// Update athlete
+export const updateAthlete = async (
+  req: AuthenticatedRequest<{ id: string }, {}, UpdateAthleteRequestBody>,
+  res: Response
+) => {
   try {
     const athlete = await Athlete.findById(req.params.id)
 
@@ -181,11 +127,38 @@ export const deleteAthlete = async (req: Request, res: Response) => {
       })
     }
 
-    // Remove athleteId from user
-    await User.findByIdAndUpdate(athlete.userId, { $unset: { athleteId: 1 } })
+    const updatedAthlete = await Athlete.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    )
 
-    // Delete the athlete
-    await Athlete.findByIdAndDelete(req.params.id)
+    res.status(200).json({
+      success: true,
+      data: updatedAthlete,
+    })
+  } catch (error) {
+    console.error("Update athlete error:", error)
+    res.status(500).json({
+      success: false,
+      error: "Server error while updating athlete",
+    })
+  }
+}
+
+// Delete athlete
+export const deleteAthlete = async (req: AuthenticatedRequest<{ id: string }>, res: Response) => {
+  try {
+    const athlete = await Athlete.findById(req.params.id)
+
+    if (!athlete) {
+      return res.status(404).json({
+        success: false,
+        error: "Athlete not found",
+      })
+    }
+
+    await athlete.deleteOne()
 
     res.status(200).json({
       success: true,
@@ -201,19 +174,14 @@ export const deleteAthlete = async (req: Request, res: Response) => {
 }
 
 // Get athletes by federation
-export const getAthletesByFederation = async (req: Request, res: Response) => {
+export const getAthletesByFederation = async (
+  req: AuthenticatedRequest<{ federationId: string }>,
+  res: Response
+) => {
   try {
-    const { federationId } = req.params
-    const { nationalTeam } = req.query
-
-    const query: any = { federationId }
-
-    // If nationalTeam query param is provided
-    if (nationalTeam === "true") {
-      query.isNationalTeam = true
-    }
-
-    const athletes = await Athlete.find(query).populate("clubId", "name").populate("federationId", "name")
+    const athletes = await Athlete.find({ federationId: req.params.federationId })
+      .populate<{ clubId: { name: string } }>("clubId", "name")
+      .populate<{ federationId: { name: string } }>("federationId", "name")
 
     res.status(200).json({
       success: true,
@@ -229,11 +197,14 @@ export const getAthletesByFederation = async (req: Request, res: Response) => {
 }
 
 // Get athletes by club
-export const getAthletesByClub = async (req: Request, res: Response) => {
+export const getAthletesByClub = async (
+  req: AuthenticatedRequest<{ clubId: string }>,
+  res: Response
+) => {
   try {
-    const { clubId } = req.params
-
-    const athletes = await Athlete.find({ clubId }).populate("clubId", "name").populate("federationId", "name")
+    const athletes = await Athlete.find({ clubId: req.params.clubId })
+      .populate<{ clubId: { name: string } }>("clubId", "name")
+      .populate<{ federationId: { name: string } }>("federationId", "name")
 
     res.status(200).json({
       success: true,
@@ -249,13 +220,14 @@ export const getAthletesByClub = async (req: Request, res: Response) => {
 }
 
 // Get athletes by coach
-export const getAthletesByCoach = async (req: Request, res: Response) => {
+export const getAthletesByCoach = async (
+  req: AuthenticatedRequest<{ coachId: string }>,
+  res: Response
+) => {
   try {
-    const { coachId } = req.params
-
-    const athletes = await Athlete.find({ coachIds: coachId })
-      .populate("clubId", "name")
-      .populate("federationId", "name")
+    const athletes = await Athlete.find({ coachIds: req.params.coachId })
+      .populate<{ clubId: { name: string } }>("clubId", "name")
+      .populate<{ federationId: { name: string } }>("federationId", "name")
 
     res.status(200).json({
       success: true,

@@ -1,12 +1,13 @@
 import mongoose, { type Document, Schema } from "mongoose"
-import bcrypt from "bcryptjs"
+import * as bcrypt from "bcryptjs"
+import { UserRole } from "../types"
 
 export interface IUser extends Document {
   email: string
   password: string
   firstName: string
   lastName: string
-  role: string
+  role: UserRole
   federationId?: mongoose.Types.ObjectId
   clubId?: mongoose.Types.ObjectId
   athleteId?: mongoose.Types.ObjectId
@@ -48,7 +49,7 @@ const UserSchema = new Schema<IUser>(
         "federalStateAdmin",
         "stateAdmin",
         "continentalAdmin",
-        "internationalAdmin",
+        "internationalAdmin"
       ],
       required: true,
     },
@@ -67,13 +68,13 @@ const UserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-  },
+  }
 )
 
 // Hash password before saving
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next()
-
+  
   try {
     const salt = await bcrypt.genSalt(10)
     this.password = await bcrypt.hash(this.password, salt)
@@ -83,10 +84,12 @@ UserSchema.pre("save", async function (next) {
   }
 })
 
-// Compare password method
+// Method to compare password
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password)
 }
 
-export default mongoose.model<IUser>("User", UserSchema)
+const User = mongoose.model<IUser>("User", UserSchema)
+
+export default User
 

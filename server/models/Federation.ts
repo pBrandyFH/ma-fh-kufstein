@@ -1,9 +1,10 @@
 import mongoose, { type Document, Schema } from "mongoose"
+import { FederationType } from "../types"
 
 export interface IFederation extends Document {
   name: string
   abbreviation: string
-  type: string
+  type: FederationType
   parentFederation?: mongoose.Types.ObjectId
   adminId?: mongoose.Types.ObjectId
   contactName?: string

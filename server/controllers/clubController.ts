@@ -1,14 +1,32 @@
 import type { Request, Response } from "express"
+import mongoose from "mongoose"
 import Club from "../models/Club"
 import User from "../models/User"
 import { sendInviteEmail } from "../utils/emailService"
+import { AuthenticatedRequest } from "./authController"
+
+interface CreateClubRequestBody {
+  name: string
+  abbreviation: string
+  federationId: mongoose.Types.ObjectId
+  adminId?: mongoose.Types.ObjectId
+  contactName?: string
+  contactEmail?: string
+  contactPhone?: string
+  website?: string
+  address?: string
+  city?: string
+  country?: string
+}
+
+interface UpdateClubRequestBody extends Partial<CreateClubRequestBody> {}
 
 // Get all clubs
-export const getAllClubs = async (req: Request, res: Response) => {
+export const getAllClubs = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const clubs = await Club.find()
-      .populate("federationId", "name abbreviation type")
-      .populate("adminId", "firstName lastName email")
+      .populate<{ federationId: { name: string; abbreviation: string; type: string } }>("federationId", "name abbreviation type")
+      .populate<{ adminId: { firstName: string; lastName: string; email: string } }>("adminId", "firstName lastName email")
 
     res.status(200).json({
       success: true,
@@ -24,11 +42,11 @@ export const getAllClubs = async (req: Request, res: Response) => {
 }
 
 // Get club by ID
-export const getClubById = async (req: Request, res: Response) => {
+export const getClubById = async (req: AuthenticatedRequest<{ id: string }>, res: Response) => {
   try {
     const club = await Club.findById(req.params.id)
-      .populate("federationId", "name abbreviation type")
-      .populate("adminId", "firstName lastName email")
+      .populate<{ federationId: { name: string; abbreviation: string; type: string } }>("federationId", "name abbreviation type")
+      .populate<{ adminId: { firstName: string; lastName: string; email: string } }>("adminId", "firstName lastName email")
 
     if (!club) {
       return res.status(404).json({
@@ -50,14 +68,17 @@ export const getClubById = async (req: Request, res: Response) => {
   }
 }
 
-// Create a new club
-export const createClub = async (req: Request, res: Response) => {
+// Create new club
+export const createClub = async (
+  req: AuthenticatedRequest<{}, {}, CreateClubRequestBody>,
+  res: Response
+) => {
   try {
     const {
       name,
       abbreviation,
       federationId,
-      adminEmail,
+      adminId,
       contactName,
       contactEmail,
       contactPhone,
@@ -65,51 +86,8 @@ export const createClub = async (req: Request, res: Response) => {
       address,
       city,
       country,
-      sendInvite,
     } = req.body
 
-    // Check if club with same name or abbreviation already exists
-    const existingClub = await Club.findOne({
-      $or: [{ name }, { abbreviation }],
-    })
-
-    if (existingClub) {
-      return res.status(400).json({
-        success: false,
-        error: "Club with this name or abbreviation already exists",
-      })
-    }
-
-    // Check if admin user already exists
-    let adminId
-    const existingUser = await User.findOne({ email: adminEmail })
-
-    if (existingUser) {
-      adminId = existingUser._id
-
-      // Update user role if needed
-      if (existingUser.role !== "clubAdmin") {
-        await User.findByIdAndUpdate(existingUser._id, { role: "clubAdmin" })
-      }
-    } else if (sendInvite) {
-      // Create a new user with club admin role
-      const newUser = new User({
-        email: adminEmail,
-        password: Math.random().toString(36).substring(2, 15), // Generate random password
-        firstName: contactName ? contactName.split(" ")[0] : "Admin",
-        lastName: contactName ? contactName.split(" ").slice(1).join(" ") : "User",
-        role: "clubAdmin",
-      })
-
-      await newUser.save()
-      adminId = newUser._id
-
-      // Send invite email
-      const inviteCode = Math.random().toString(36).substring(2, 15)
-      await sendInviteEmail(adminEmail, newUser.firstName, newUser.lastName, inviteCode, "clubAdmin")
-    }
-
-    // Create the club
     const club = new Club({
       name,
       abbreviation,
@@ -126,11 +104,6 @@ export const createClub = async (req: Request, res: Response) => {
 
     await club.save()
 
-    // Update user with clubId
-    if (adminId) {
-      await User.findByIdAndUpdate(adminId, { clubId: club._id })
-    }
-
     res.status(201).json({
       success: true,
       data: club,
@@ -144,23 +117,12 @@ export const createClub = async (req: Request, res: Response) => {
   }
 }
 
-// Update a club
-export const updateClub = async (req: Request, res: Response) => {
+// Update club
+export const updateClub = async (
+  req: AuthenticatedRequest<{ id: string }, {}, UpdateClubRequestBody>,
+  res: Response
+) => {
   try {
-    const {
-      name,
-      abbreviation,
-      federationId,
-      adminEmail,
-      contactName,
-      contactEmail,
-      contactPhone,
-      website,
-      address,
-      city,
-      country,
-    } = req.body
-
     const club = await Club.findById(req.params.id)
 
     if (!club) {
@@ -170,59 +132,15 @@ export const updateClub = async (req: Request, res: Response) => {
       })
     }
 
-    // Check if new admin email is provided
-    if (adminEmail && (!club.adminId || adminEmail !== club.contactEmail)) {
-      // Check if admin user already exists
-      const existingUser = await User.findOne({ email: adminEmail })
-
-      if (existingUser) {
-        // Update club with new admin
-        club.adminId = existingUser._id
-
-        // Update user role if needed
-        if (existingUser.role !== "clubAdmin") {
-          await User.findByIdAndUpdate(existingUser._id, { role: "clubAdmin" })
-        }
-
-        // Update user with clubId
-        await User.findByIdAndUpdate(existingUser._id, { clubId: club._id })
-      } else {
-        // Create a new user with club admin role
-        const newUser = new User({
-          email: adminEmail,
-          password: Math.random().toString(36).substring(2, 15), // Generate random password
-          firstName: contactName ? contactName.split(" ")[0] : "Admin",
-          lastName: contactName ? contactName.split(" ").slice(1).join(" ") : "User",
-          role: "clubAdmin",
-          clubId: club._id,
-        })
-
-        await newUser.save()
-        club.adminId = newUser._id
-
-        // Send invite email
-        const inviteCode = Math.random().toString(36).substring(2, 15)
-        await sendInviteEmail(adminEmail, newUser.firstName, newUser.lastName, inviteCode, "clubAdmin")
-      }
-    }
-
-    // Update club fields
-    club.name = name || club.name
-    club.abbreviation = abbreviation || club.abbreviation
-    club.federationId = federationId || club.federationId
-    club.contactName = contactName || club.contactName
-    club.contactEmail = contactEmail || club.contactEmail
-    club.contactPhone = contactPhone || club.contactPhone
-    club.website = website || club.website
-    club.address = address || club.address
-    club.city = city || club.city
-    club.country = country || club.country
-
-    await club.save()
+    const updatedClub = await Club.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    )
 
     res.status(200).json({
       success: true,
-      data: club,
+      data: updatedClub,
     })
   } catch (error) {
     console.error("Update club error:", error)
@@ -233,8 +151,8 @@ export const updateClub = async (req: Request, res: Response) => {
   }
 }
 
-// Delete a club
-export const deleteClub = async (req: Request, res: Response) => {
+// Delete club
+export const deleteClub = async (req: AuthenticatedRequest<{ id: string }>, res: Response) => {
   try {
     const club = await Club.findById(req.params.id)
 
@@ -245,13 +163,7 @@ export const deleteClub = async (req: Request, res: Response) => {
       })
     }
 
-    // Remove clubId from admin user
-    if (club.adminId) {
-      await User.findByIdAndUpdate(club.adminId, { $unset: { clubId: 1 } })
-    }
-
-    // Delete the club
-    await Club.findByIdAndDelete(req.params.id)
+    await club.deleteOne()
 
     res.status(200).json({
       success: true,
@@ -267,13 +179,14 @@ export const deleteClub = async (req: Request, res: Response) => {
 }
 
 // Get clubs by federation
-export const getClubsByFederation = async (req: Request, res: Response) => {
+export const getClubsByFederation = async (
+  req: AuthenticatedRequest<{ federationId: string }>,
+  res: Response
+) => {
   try {
-    const { federationId } = req.params
-
-    const clubs = await Club.find({ federationId })
-      .populate("federationId", "name abbreviation type")
-      .populate("adminId", "firstName lastName email")
+    const clubs = await Club.find({ federationId: req.params.federationId })
+      .populate<{ federationId: { name: string; abbreviation: string; type: string } }>("federationId", "name abbreviation type")
+      .populate<{ adminId: { firstName: string; lastName: string; email: string } }>("adminId", "firstName lastName email")
 
     res.status(200).json({
       success: true,
