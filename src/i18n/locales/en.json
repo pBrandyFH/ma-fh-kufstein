@@ -64,10 +64,12 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
+    "nominations": "Nominations",
     "competitions": "Competitions",
     "athletes": "Athletes",
     "results": "Results",
     "rankings": "Rankings",
+    "records": "Records",
     "myAccount": "My Account",
     "admin": "Administration",
     "settings": "Settings",
@@ -449,6 +451,20 @@
     "ipfPoints": "IPF Points",
     "competition": "Competition",
     "date": "Date"
+  },
+  "welcome": {
+    "title": "Welcome to GoodLift",
+    "subtitle": "The official platform for powerlifting competitions, results, and rankings",
+    "viewResults": "View Results",
+    "signIn": "Sign In",
+    "competitions": "Competitions",
+    "competitionsDesc": "Browse and participate in powerlifting competitions at all levels",
+    "rankings": "Rankings",
+    "rankingsDesc": "Track your progress and compare with other athletes in your category",
+    "records": "Records",
+    "recordsDesc": "View and track national and international powerlifting records",
+    "community": "Community",
+    "communityDesc": "Connect with athletes, coaches, and officials in the powerlifting community"
   }
 }
 

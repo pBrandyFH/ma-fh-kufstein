@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useForm } from "@mantine/form"
-import { TextInput, PasswordInput, Button, Group, Box, Anchor } from "@mantine/core"
+import { TextInput, PasswordInput, Button, Group, Box, Anchor, Container, Paper, Title, Text, Stack, rem } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { useTranslation } from "react-i18next"
 import type { LoginFormValues } from "../../types"
@@ -23,7 +23,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     },
     validate: {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : t("auth.invalidEmail")),
-      password: (value) => (value.length >= 8 ? null : t("auth.passwordTooShort")),
+      password: (value) => (value.length >= 4 ? null : t("auth.passwordTooShort")),
     },
   })
 
@@ -58,35 +58,62 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   }
 
   return (
-    <Box mx="auto" sx={{ maxWidth: 400 }}>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <TextInput
-          required
-          label={t("auth.email")}
-          placeholder="your.email@example.com"
-          {...form.getInputProps("email")}
-          mb="md"
-        />
+    <Container size="xs" sx={{ height: "100vh", display: "flex", alignItems: "center" }}>
+      <Paper
+        radius="md"
+        p="xl"
+        withBorder
+        sx={{
+          width: "100%",
+          background: "rgba(255, 255, 255, 0.9)",
+          backdropFilter: "blur(10px)",
+        }}
+      >
+        <Stack spacing="xl">
+          <Box ta="center">
+            <Title order={2} size="h1" fw={900} mb="xs">
+              GoodLift
+            </Title>
+            <Text c="dimmed" size="sm">
+              {t("auth.welcomeMessage")}
+            </Text>
+          </Box>
 
-        <PasswordInput
-          required
-          label={t("auth.password")}
-          placeholder={t("auth.enterPassword")}
-          {...form.getInputProps("password")}
-          mb="md"
-        />
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Stack spacing="md">
+              <TextInput
+                required
+                label={t("auth.email")}
+                placeholder="your.email@example.com"
+                size="md"
+                {...form.getInputProps("email")}
+              />
 
-        <Group position="apart" mt="lg">
-          <Anchor component="button" type="button" color="dimmed" size="sm">
-            {t("auth.forgotPassword")}
-          </Anchor>
-        </Group>
+              <PasswordInput
+                required
+                label={t("auth.password")}
+                placeholder={t("auth.enterPassword")}
+                size="md"
+                {...form.getInputProps("password")}
+              />
 
-        <Button fullWidth mt="xl" type="submit" loading={loading}>
-          {t("auth.login")}
-        </Button>
-      </form>
-    </Box>
+              <Group position="apart" mt="md">
+                <Anchor component="button" type="button" color="dimmed" size="sm">
+                  {t("auth.forgotPassword")}
+                </Anchor>
+                <Anchor component="button" type="button" color="blue" size="sm">
+                  {t("auth.createAccount")}
+                </Anchor>
+              </Group>
+
+              <Button fullWidth size="md" type="submit" loading={loading} mt="xl">
+                {t("auth.login")}
+              </Button>
+            </Stack>
+          </form>
+        </Stack>
+      </Paper>
+    </Container>
   )
 }
 

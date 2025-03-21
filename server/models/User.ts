@@ -1,5 +1,5 @@
 import mongoose, { type Document, Schema } from "mongoose"
-import * as bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs"
 import { UserRole } from "../types"
 
 export interface IUser extends Document {

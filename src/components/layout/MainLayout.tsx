@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import {
   AppShell,
@@ -24,6 +23,7 @@ import {
   Box,
 } from "@mantine/core"
 import { useTranslation } from "react-i18next"
+import { Link, useLocation } from "react-router-dom"
 import {
   Home,
   Trophy,
@@ -38,16 +38,29 @@ import {
   Moon,
   Globe,
   Mail,
+  Medal,
+  ClipboardList,
 } from "lucide-react"
 
+// Add onLogout to the props interface
 interface MainLayoutProps {
   children: React.ReactNode
+  onLogout?: () => void
 }
 
-export function MainLayout({ children }: MainLayoutProps) {
+// Update the component signature to include onLogout
+export function MainLayout({ children, onLogout }: MainLayoutProps) {
   const theme = useMantineTheme()
   const [opened, setOpened] = useState(false)
   const { t, i18n } = useTranslation()
+  const location = useLocation()
+
+  // Add the handleLogout function
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout()
+    }
+  }
 
   const changeLanguage = (language: string) => {
     i18n.changeLanguage(language)
@@ -55,14 +68,15 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   const navItems = [
     { icon: Home, label: t("navigation.dashboard"), link: "/dashboard" },
-    { icon: Calendar, label: t("navigation.competitions"), link: "/competitions" },
-    { icon: Users, label: t("navigation.athletes"), link: "/athletes" },
+    { icon: ClipboardList, label: t("navigation.nominations"), link: "/nominations" },
     { icon: Trophy, label: t("navigation.results"), link: "/results" },
     { icon: TrendingUp, label: t("navigation.rankings"), link: "/rankings" },
+    { icon: Medal, label: t("navigation.records"), link: "/records" },
   ]
 
   const adminItems = [
-    { icon: Settings, label: t("navigation.admin"), link: "/admin" },
+    { icon: Calendar, label: t("navigation.competitions"), link: "/competitions" },
+    { icon: Users, label: t("navigation.athletes"), link: "/athletes" },
     { icon: Mail, label: t("navigation.invitations"), link: "/invitations" },
   ]
 
@@ -85,9 +99,10 @@ export function MainLayout({ children }: MainLayoutProps) {
                 key={item.link}
                 label={item.label}
                 icon={<item.icon size={20} />}
-                component="a"
-                href={item.link}
+                component={Link}
+                to={item.link}
                 mb="xs"
+                active={location.pathname === item.link}
               />
             ))}
 
@@ -98,9 +113,10 @@ export function MainLayout({ children }: MainLayoutProps) {
                 key={item.link}
                 label={item.label}
                 icon={<item.icon size={20} />}
-                component="a"
-                href={item.link}
+                component={Link}
+                to={item.link}
                 mb="xs"
+                active={location.pathname === item.link}
               />
             ))}
           </Navbar.Section>
@@ -139,10 +155,12 @@ export function MainLayout({ children }: MainLayoutProps) {
                     </ActionIcon>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <Menu.Item icon={<User size={14} />}>{t("navigation.myAccount")}</Menu.Item>
+                    <Menu.Item component={Link} to="/account" icon={<User size={14} />}>
+                      {t("navigation.myAccount")}
+                    </Menu.Item>
                     <Menu.Item icon={<Settings size={14} />}>{t("navigation.settings")}</Menu.Item>
                     <Menu.Divider />
-                    <Menu.Item icon={<LogOut size={14} />} color="red">
+                    <Menu.Item icon={<LogOut size={14} />} color="red" onClick={handleLogout}>
                       {t("auth.logout")}
                     </Menu.Item>
                   </Menu.Dropdown>
@@ -180,7 +198,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               />
 
               <ActionIcon variant="default" size={30}>
-                <Sun size={16} />
+                {theme.colorScheme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
               </ActionIcon>
             </Group>
           </div>
@@ -190,14 +208,11 @@ export function MainLayout({ children }: MainLayoutProps) {
         <Footer height={60} p="md">
           <Group position="apart">
             <Text size="sm" color="dimmed">
-              © 2023 GoodLift. {t("common.allRightsReserved")}
+              © 2024 GoodLift. {t("common.allRightsReserved")}
             </Text>
             <Group spacing="xs">
               <ActionIcon size="lg" variant="default" radius="xl">
-                <Sun size={18} />
-              </ActionIcon>
-              <ActionIcon size="lg" variant="default" radius="xl">
-                <Moon size={18} />
+                {theme.colorScheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
               </ActionIcon>
             </Group>
           </Group>

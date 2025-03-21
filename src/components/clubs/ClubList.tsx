@@ -1,16 +1,6 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import {
   Card,
-  Title,
-  Text,
-  Group,
-  Button,
-  Loader,
-  SimpleGrid,
-  ActionIcon,
-  Menu,
   Title,
   Text,
   Group,

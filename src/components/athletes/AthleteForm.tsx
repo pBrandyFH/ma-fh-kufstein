@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import { useForm } from "@mantine/form"
-import { TextInput, Button, Box, Select, Grid, DatePicker, Divider, Title, Switch } from "@mantine/core"
+import { TextInput, Button, Box, Select, Grid, Divider, Title, Switch } from "@mantine/core"
+import { DatePicker } from "@mantine/dates";
 import { notifications } from "@mantine/notifications"
 import { useTranslation } from "react-i18next"
 import type { AthleteFormValues, Gender } from "../../types"

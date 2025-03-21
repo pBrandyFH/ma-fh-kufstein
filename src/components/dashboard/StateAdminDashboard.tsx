@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import {
   Grid,
@@ -57,7 +55,7 @@ export function StateAdminDashboard({ federationId }: StateAdminDashboardProps) 
         }
 
         // Fetch national team athletes
-        const athletesResponse = await getAthletesByFederation(federationId, true)
+        const athletesResponse = await getAthletesByFederation(federationId)
         if (athletesResponse.success && athletesResponse.data) {
           setNationalTeam(athletesResponse.data)
         }
