@@ -8,9 +8,20 @@ interface AuthResponse {
 
 export const login = async (data: LoginFormValues): Promise<ApiResponse<AuthResponse>> => {
   try {
+    console.log("Attempting login...") // Debug log
     const response = await api.post<ApiResponse<AuthResponse>>("/auth/login", data)
+    console.log("Login response:", response.data) // Debug log
+    
+    if (response.data.success && response.data.data) {
+      console.log("Storing token:", response.data.data.token) // Debug log
+      localStorage.setItem("token", response.data.data.token)
+      localStorage.setItem("user", JSON.stringify(response.data.data.user))
+      console.log("Token stored successfully") // Debug log
+    }
+    
     return response.data
   } catch (error) {
+    console.error("Login error:", error) // Debug log
     if (error instanceof Error) {
       return { success: false, error: error.message }
     }
@@ -32,10 +43,13 @@ export const register = async (data: RegisterFormValues): Promise<ApiResponse<Au
 
 export const logout = async (): Promise<ApiResponse<null>> => {
   try {
+    console.log("Logging out...") // Debug log
     localStorage.removeItem("token")
     localStorage.removeItem("user")
+    console.log("Token removed from localStorage") // Debug log
     return { success: true }
   } catch (error) {
+    console.error("Logout error:", error) // Debug log
     if (error instanceof Error) {
       return { success: false, error: error.message }
     }
@@ -44,11 +58,12 @@ export const logout = async (): Promise<ApiResponse<null>> => {
 }
 
 export const getCurrentUser = (): User | null => {
-  const userJson = localStorage.getItem("user")
-  if (userJson) {
+  const userStr = localStorage.getItem("user")
+  if (userStr) {
     try {
-      return JSON.parse(userJson) as User
-    } catch {
+      return JSON.parse(userStr)
+    } catch (error) {
+      console.error("Error parsing user data:", error) // Debug log
       return null
     }
   }
@@ -56,6 +71,8 @@ export const getCurrentUser = (): User | null => {
 }
 
 export const isAuthenticated = (): boolean => {
-  return !!localStorage.getItem("token")
+  const token = localStorage.getItem("token")
+  console.log("Checking authentication, token:", token) // Debug log
+  return !!token
 }
 

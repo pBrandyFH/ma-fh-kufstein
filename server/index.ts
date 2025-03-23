@@ -13,12 +13,20 @@ import clubRoutes from "./routes/clubRoutes"
 import nominationRoutes from "./routes/nominationRoutes"
 import resultRoutes from "./routes/resultRoutes"
 import { initializeAuth } from "./controllers/authController"
+import { initializeAuth as initializeAuthMiddleware } from "./middleware/auth"
 
 // Load environment variables
 dotenv.config()
 
 // Initialize auth
-initializeAuth()
+try {
+  initializeAuth()
+  initializeAuthMiddleware()
+  console.log("Auth initialized successfully")
+} catch (error) {
+  console.error("Failed to initialize auth:", error)
+  process.exit(1)
+}
 
 const app = express()
 const PORT = process.env.PORT || 5000

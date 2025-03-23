@@ -18,7 +18,24 @@
     "refresh": "Aktualisieren",
     "error": "Fehler",
     "unknownError": "Ein unbekannter Fehler ist aufgetreten",
-    "allRightsReserved": "Alle Rechte vorbehalten"
+    "allRightsReserved": "Alle Rechte vorbehalten",
+    "emptyState": {
+      "noData": "Keine Daten verfügbar",
+      "noDataDescription": "Derzeit sind keine Daten zum Anzeigen vorhanden.",
+      "noCompetitions": "Keine Wettkämpfe",
+      "noCompetitionsDescription": "Derzeit sind keine Wettkämpfe geplant.",
+      "noAthletes": "Keine Athleten",
+      "noAthletesDescription": "Derzeit sind keine Athleten registriert.",
+      "noClubs": "Keine Vereine",
+      "noClubsDescription": "Derzeit sind keine Vereine registriert.",
+      "noFederations": "Keine Verbände",
+      "noFederationsDescription": "Derzeit sind keine Verbände registriert.",
+      "noResults": "Keine Ergebnisse",
+      "noResultsDescription": "Derzeit sind keine Ergebnisse verfügbar.",
+      "noNominations": "Keine Nominierungen",
+      "noNominationsDescription": "Derzeit sind keine Nominierungen eingereicht.",
+      "addNew": "Neu hinzufügen"
+    }
   },
   "auth": {
     "login": "Anmelden",
@@ -60,7 +77,9 @@
     "invitedAs": "Sie wurden eingeladen als",
     "federation": "Verband",
     "club": "Verein",
-    "inviteExpires": "Einladung läuft ab am"
+    "inviteExpires": "Einladung läuft ab am",
+    "welcomeMessage": "Willkommen bei GoodLift",
+    "loginMessage": "Dies ist eine Einladungsplattform. Bitte kontaktieren Sie Ihren Verbands- oder Vereinsadministrator, um eine Einladung zu erhalten."
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -73,7 +92,10 @@
     "myAccount": "Mein Konto",
     "admin": "Verwaltung",
     "settings": "Einstellungen",
-    "invitations": "Einladungen"
+    "invitations": "Einladungen",
+    "signIn": "Anmelden",
+    "language": "Sprache",
+    "theme": "Design"
   },
   "dashboard": {
     "welcome": "Willkommen",
@@ -231,7 +253,27 @@
       "masters3": "Masters 3",
       "masters4": "Masters 4",
       "masters": "Masters"
-    }
+    },
+    "searchPlaceholder": "Nach Name, Ort oder Organisator suchen",
+    "typePlaceholder": "Nach Typ filtern",
+    "statusPlaceholder": "Nach Status filtern",
+    "type": "Typ",
+    "status": {
+      "upcoming": "Kommend",
+      "registration": "Anmeldung offen",
+      "completed": "Abgeschlossen"
+    },
+    "types": {
+      "national": "National",
+      "regional": "Regional",
+      "local": "Lokal"
+    },
+    "participants": "Teilnehmer",
+    "rules": "Regeln",
+    "schedule": "Zeitplan",
+    "organizer": "Organisator",
+    "registrationDeadline": "Anmeldefrist",
+    "categories": "Kategorien"
   },
   "athletes": {
     "title": "Athleten",
@@ -249,7 +291,68 @@
     "selectGender": "Geschlecht auswählen",
     "weightCategory": "Gewichtskategorie",
     "selectWeightCategory": "Gewichtskategorie auswählen",
-    "club": "Verein"
+    "club": "Verein",
+    "selectClub": "Verein auswählen",
+    "federation": "Verband",
+    "selectFederation": "Verband auswählen",
+    "results": "Ergebnisse",
+    "history": "Wettkampfhistorie",
+    "invite": "Athlet einladen",
+    "sendInviteEmail": "Einladungs-E-Mail senden",
+    "selectDate": "Datum auswählen",
+    "updateSuccess": "Athlet aktualisiert",
+    "athleteUpdated": "Der Athlet wurde erfolgreich aktualisiert",
+    "updateFailed": "Aktualisierung fehlgeschlagen",
+    "createSuccess": "Athlet erstellt",
+    "athleteCreated": "Der Athlet wurde erfolgreich erstellt",
+    "createFailed": "Erstellung fehlgeschlagen",
+    "notFound": "Athlet nicht gefunden",
+    "personalBests": "Persönliche Bestleistungen",
+    "nationalRanking": "Nationaler Rang",
+    "internationalRanking": "Internationaler Rang",
+    "performanceHistory": "Leistungsverlauf",
+    "individualLifts": "Einzelne Übungen",
+    "competitionHistory": "Wettkampfhistorie",
+    "bodyweight": "Körpergewicht",
+    "performance": "Leistung",
+    "phone": "Telefon",
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "pending": "Ausstehend"
+    },
+    "notes": "Notizen",
+    "weight": "Gewicht",
+    "height": "Größe",
+    "categories": {
+      "open": "Offen",
+      "junior": "Junioren",
+      "master": "Masters"
+    },
+    "weightCategories": {
+      "men": {
+        "u53": "-53kg",
+        "u59": "-59kg",
+        "u66": "-66kg",
+        "u74": "-74kg",
+        "u83": "-83kg",
+        "u93": "-93kg",
+        "u105": "-105kg",
+        "u120": "-120kg",
+        "o120": "+120kg"
+      },
+      "women": {
+        "u43": "-43kg",
+        "u47": "-47kg",
+        "u52": "-52kg",
+        "u57": "-57kg",
+        "u63": "-63kg",
+        "u69": "-69kg",
+        "u76": "-76kg",
+        "u84": "-84kg",
+        "o84": "+84kg"
+      }
+    }
   },
   "welcome": {
     "title": "Willkommen bei GoodLift",
@@ -264,5 +367,113 @@
     "recordsDesc": "Anzeigen und verfolgen von nationalen und internationalen Powerlifting-Rekorden",
     "community": "Community",
     "communityDesc": "Verbinden Sie sich mit Athleten, Trainern und Offiziellen in der Powerlifting-Community"
+  },
+  "nominations": {
+    "title": "Nominierungen",
+    "create": "Nominierung erstellen",
+    "edit": "Nominierung bearbeiten",
+    "athlete": "Athlet",
+    "competition": "Wettkampf",
+    "weightCategory": "Gewichtskategorie",
+    "ageCategory": "Alterskategorie",
+    "status": "Status",
+    "submit": "Nominierung einreichen",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "pending": "Ausstehend",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt",
+    "confirmed": "Bestätigt",
+    "nominate": "Nominieren",
+    "createNomination": "Nominierung erstellen",
+    "selectCompetition": "Wettkampf auswählen",
+    "selectAthletes": "Athleten auswählen",
+    "selectAtLeastOneAthlete": "Mindestens einen Athleten auswählen",
+    "success": "Nominierung erfolgreich",
+    "athletesNominated": "Athleten wurden erfolgreich nominiert",
+    "failed": "Nominierung fehlgeschlagen",
+    "searchPlaceholder": "Nach Athlet, Wettkampf oder Verein suchen",
+    "statusPlaceholder": "Nach Status filtern",
+    "categoryPlaceholder": "Nach Kategorie filtern",
+    "category": "Kategorie",
+    "weightClass": "Gewichtsklasse",
+    "submittedBy": "Eingereicht von",
+    "submissionDate": "Einreichungsdatum"
+  },
+  "rankings": {
+    "title": "Ranglisten",
+    "about": "Über Ranglisten",
+    "description": "Die Ranglisten werden basierend auf den besten Leistungen bei offiziellen Wettkämpfen berechnet. Punkte werden nach der IPF-Punktformel vergeben.",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "category": "Kategorie",
+    "categoryPlaceholder": "Kategorie auswählen",
+    "weightClass": "Gewichtsklasse",
+    "weightClassPlaceholder": "Gewichtsklasse auswählen",
+    "rank": "Rang",
+    "name": "Name",
+    "club": "Verein",
+    "total": "Gesamt",
+    "points": "Punkte",
+    "categories": {
+      "open": "Offen",
+      "junior": "Junioren",
+      "master": "Masters"
+    }
+  },
+  "records": {
+    "title": "Rekorde",
+    "about": "Über Rekorde",
+    "description": "Dies sind die aktuellen offiziellen Rekorde in jeder Kategorie und Gewichtsklasse. Rekorde können nur bei offiziellen Wettkämpfen aufgestellt werden.",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "category": "Kategorie",
+    "categoryPlaceholder": "Kategorie auswählen",
+    "weightClass": "Gewichtsklasse",
+    "weightClassPlaceholder": "Gewichtsklasse auswählen",
+    "lift": "Übung",
+    "weight": "Gewicht",
+    "holder": "Inhaber",
+    "date": "Datum",
+    "competition": "Wettkampf",
+    "lifts": {
+      "squat": "Kniebeuge",
+      "benchPress": "Bankdrücken",
+      "deadlift": "Kreuzheben",
+      "total": "Gesamt"
+    },
+    "categories": {
+      "open": "Offen",
+      "junior": "Junioren",
+      "master": "Masters"
+    }
+  },
+  "account": {
+    "title": "Mein Konto",
+    "personalInfo": "Persönliche Informationen",
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "federation": "Verband",
+    "club": "Verein",
+    "createdAt": "Konto erstellt",
+    "lastLogin": "Letzter Login",
+    "notes": "Notizen",
+    "roles": {
+      "admin": "Administrator",
+      "user": "Benutzer"
+    }
+  },
+  "results": {
+    "title": "Ergebnisse",
+    "date": "Datum",
+    "competition": "Wettkampf",
+    "weightCategory": "Gewichtsklasse",
+    "bodyweight": "Körpergewicht",
+    "squat": "Kniebeuge",
+    "bench": "Bankdrücken",
+    "deadlift": "Kreuzheben",
+    "total": "Gesamt",
+    "wilks": "Wilks",
+    "ipfPoints": "IPF-Punkte",
+    "place": "Platz"
   }
 } 

@@ -1,231 +1,376 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
 import {
   AppShell,
-  Navbar,
   Header,
-  Footer,
+  Group,
+  Button,
+  Title,
+  Container,
+  ScrollArea,
+  MantineProvider,
   Text,
+  Menu,
+  ActionIcon,
+  Box,
+  Portal,
+  Navbar,
   MediaQuery,
   Burger,
   useMantineTheme,
-  Group,
-  ActionIcon,
-  Menu,
-  UnstyledButton,
-  Avatar,
-  Divider,
-  ScrollArea,
-  NavLink,
-  Select,
-  Box,
-} from "@mantine/core"
-import { useTranslation } from "react-i18next"
-import { Link, useLocation } from "react-router-dom"
-import {
-  Home,
-  Trophy,
-  Users,
-  Calendar,
-  TrendingUp,
-  Settings,
-  LogOut,
-  ChevronDown,
-  User,
-  Sun,
-  Moon,
-  Globe,
-  Mail,
-  Medal,
-  ClipboardList,
-} from "lucide-react"
+} from "@mantine/core";
+import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Menu as MenuIcon } from "lucide-react";
+import { useState } from "react";
 
-// Add onLogout to the props interface
 interface MainLayoutProps {
-  children: React.ReactNode
-  onLogout?: () => void
+  children: React.ReactNode;
+  authenticated: boolean;
+  onLogout: () => void;
 }
 
-// Update the component signature to include onLogout
-export function MainLayout({ children, onLogout }: MainLayoutProps) {
-  const theme = useMantineTheme()
-  const [opened, setOpened] = useState(false)
-  const { t, i18n } = useTranslation()
-  const location = useLocation()
+export function MainLayout({
+  children,
+  authenticated,
+  onLogout,
+}: MainLayoutProps) {
+  const { t } = useTranslation();
+  const location = useLocation();
+  const theme = useMantineTheme();
+  const [opened, setOpened] = useState(false);
 
-  // Add the handleLogout function
+  const publicNavItems = [
+    { label: t("results.title"), path: "/results" },
+    { label: t("nominations.title"), path: "/nominations" },
+    { label: t("rankings.title"), path: "/rankings" },
+    { label: t("records.title"), path: "/records" },
+  ];
+
+  const protectedNavItems = [
+    { label: t("dashboard.title"), path: "/dashboard" },
+    { label: t("athletes.title"), path: "/athletes" },
+    { label: t("competitions.title"), path: "/competitions" },
+    { label: t("federations.title"), path: "/federations" },
+    { label: t("clubs.title"), path: "/clubs" },
+    { label: t("invitations.title"), path: "/invitations" },
+    { label: t("account.title"), path: "/account" },
+  ];
+
+  const navItems = authenticated
+    ? [...protectedNavItems, ...publicNavItems]
+    : publicNavItems;
+
   const handleLogout = () => {
-    if (onLogout) {
-      onLogout()
-    }
-  }
-
-  const changeLanguage = (language: string) => {
-    i18n.changeLanguage(language)
-  }
-
-  const navItems = [
-    { icon: Home, label: t("navigation.dashboard"), link: "/dashboard" },
-    { icon: ClipboardList, label: t("navigation.nominations"), link: "/nominations" },
-    { icon: Trophy, label: t("navigation.results"), link: "/results" },
-    { icon: TrendingUp, label: t("navigation.rankings"), link: "/rankings" },
-    { icon: Medal, label: t("navigation.records"), link: "/records" },
-  ]
-
-  const adminItems = [
-    { icon: Calendar, label: t("navigation.competitions"), link: "/competitions" },
-    { icon: Users, label: t("navigation.athletes"), link: "/athletes" },
-    { icon: Mail, label: t("navigation.invitations"), link: "/invitations" },
-  ]
+    onLogout();
+  };
 
   return (
-    <AppShell
-      padding="md"
-      navbar={
-        <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 250, lg: 300 }}>
-          <Navbar.Section mt="xs">
-            <Text size="xl" weight={700} align="center" mb="lg">
-              GoodLift
-            </Text>
-          </Navbar.Section>
-
-          <Divider my="sm" />
-
-          <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.link}
-                label={item.label}
-                icon={<item.icon size={20} />}
-                component={Link}
-                to={item.link}
-                mb="xs"
-                active={location.pathname === item.link}
-              />
-            ))}
-
-            <Divider my="sm" label={t("navigation.admin")} labelPosition="center" />
-
-            {adminItems.map((item) => (
-              <NavLink
-                key={item.link}
-                label={item.label}
-                icon={<item.icon size={20} />}
-                component={Link}
-                to={item.link}
-                mb="xs"
-                active={location.pathname === item.link}
-              />
-            ))}
-          </Navbar.Section>
-
-          <Divider my="sm" />
-
-          <Navbar.Section>
-            <UnstyledButton
-              sx={{
-                display: "block",
-                width: "100%",
-                padding: theme.spacing.xs,
-                borderRadius: theme.radius.sm,
-                color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-                "&:hover": {
-                  backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
-                },
+    <MantineProvider
+      theme={{ colorScheme: "light" }}
+      withGlobalStyles
+      withNormalizeCSS
+    >
+      <AppShell
+        padding="md"
+        navbar={
+          <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+            <Navbar
+              p="md"
+              hidden={!opened}
+              position={{ top: 0, left: 0 }}
+              style={{
+                position: "fixed",
+                zIndex: 1000,
+                backgroundColor: theme.white,
+                borderRight: `1px solid ${theme.colors.gray[3]}`,
               }}
             >
+              <Navbar.Section grow mt="xs">
+                <ScrollArea>
+                  {navItems.map((item) => (
+                    <Button
+                      key={item.path}
+                      component={Link}
+                      to={item.path}
+                      variant={
+                        location.pathname.startsWith(item.path)
+                          ? "filled"
+                          : "subtle"
+                      }
+                      fullWidth
+                      mb="xs"
+                      onClick={() => setOpened(false)}
+                    >
+                      {item.label}
+                    </Button>
+                  ))}
+                </ScrollArea>
+              </Navbar.Section>
+
+              <Navbar.Section>
+                {authenticated ? (
+                  <Button
+                    variant="subtle"
+                    fullWidth
+                    color="red"
+                    onClick={() => {
+                      handleLogout();
+                      setOpened(false);
+                    }}
+                  >
+                    {t("auth.logout")}
+                  </Button>
+                ) : (
+                  <Button
+                    component={Link}
+                    to="/login"
+                    variant={
+                      location.pathname === "/login" ? "filled" : "subtle"
+                    }
+                    fullWidth
+                    onClick={() => setOpened(false)}
+                  >
+                    {t("auth.signIn")}
+                  </Button>
+                )}
+              </Navbar.Section>
+            </Navbar>
+          </MediaQuery>
+        }
+        header={
+          <Header height={60} p="xs" withBorder>
+            <Group position="apart" h="100%" px="md">
               <Group>
-                <Avatar radius="xl" color="blue">
-                  JD
-                </Avatar>
-                <Box sx={{ flex: 1 }}>
-                  <Text size="sm" weight={500}>
-                    John Doe
-                  </Text>
-                  <Text color="dimmed" size="xs">
-                    john.doe@example.com
-                  </Text>
-                </Box>
-                <Menu position="top-end">
-                  <Menu.Target>
-                    <ActionIcon>
-                      <ChevronDown size={16} />
-                    </ActionIcon>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Item component={Link} to="/account" icon={<User size={14} />}>
-                      {t("navigation.myAccount")}
-                    </Menu.Item>
-                    <Menu.Item icon={<Settings size={14} />}>{t("navigation.settings")}</Menu.Item>
-                    <Menu.Divider />
-                    <Menu.Item icon={<LogOut size={14} />} color="red" onClick={handleLogout}>
-                      {t("auth.logout")}
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
+                <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+                  <Burger
+                    opened={opened}
+                    onClick={() => setOpened((o) => !o)}
+                    size="sm"
+                    color={theme.colors.gray[6]}
+                    mr="xl"
+                  />
+                </MediaQuery>
+                <Link to="/" style={{ textDecoration: "none" }}>
+                  <Group spacing="xs">
+                    {/* <img src="/logo.png" alt="Logo" style={{ height: 32 }} /> */}
+                    <Text size="xl" weight={700} color="blue">
+                      GoodLift
+                    </Text>
+                  </Group>
+                </Link>
               </Group>
-            </UnstyledButton>
-          </Navbar.Section>
-        </Navbar>
-      }
-      header={
-        <Header height={60} p="md">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%" }}>
-            <Group>
-              <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-                <Burger opened={opened} onClick={() => setOpened((o) => !o)} size="sm" color={theme.colors.gray[6]} />
+
+              <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
+                <Group spacing="xs">
+                  {publicNavItems.map((item) => (
+                    <Button
+                      key={item.path}
+                      component={Link}
+                      to={item.path}
+                      variant={
+                        location.pathname.startsWith(item.path)
+                          ? "filled"
+                          : "subtle"
+                      }
+                      size="sm"
+                      compact
+                    >
+                      {item.label}
+                    </Button>
+                  ))}
+
+                  {authenticated && (
+                    <>
+                      <Menu shadow="md" width={200}>
+                        <Menu.Target>
+                          <Button
+                            variant={
+                              location.pathname.startsWith("/competitions") ||
+                              location.pathname.startsWith("/nominations")
+                                ? "filled"
+                                : "subtle"
+                            }
+                            size="sm"
+                            compact
+                          >
+                            {t("navigation.competitions")}
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            component={Link}
+                            to="/competitions"
+                            onClick={() => setOpened(false)}
+                          >
+                            {t("competitions.title")}
+                          </Menu.Item>
+                          <Menu.Item
+                            component={Link}
+                            to="/nominations"
+                            onClick={() => setOpened(false)}
+                          >
+                            {t("nominations.title")}
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+
+                      <Menu shadow="md" width={200}>
+                        <Menu.Target>
+                          <Button
+                            variant={
+                              location.pathname.startsWith("/federations") ||
+                              location.pathname.startsWith("/clubs")
+                                ? "filled"
+                                : "subtle"
+                            }
+                            size="sm"
+                            compact
+                          >
+                            {t("navigation.organizations")}
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            component={Link}
+                            to="/federations"
+                            onClick={() => setOpened(false)}
+                          >
+                            {t("federations.title")}
+                          </Menu.Item>
+                          <Menu.Item
+                            component={Link}
+                            to="/clubs"
+                            onClick={() => setOpened(false)}
+                          >
+                            {t("clubs.title")}
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+
+                      <Menu shadow="md" width={200}>
+                        <Menu.Target>
+                          <Button
+                            variant={
+                              location.pathname.startsWith("/athletes") ||
+                              location.pathname.startsWith("/invitations")
+                                ? "filled"
+                                : "subtle"
+                            }
+                            size="sm"
+                            compact
+                          >
+                            {t("navigation.users")}
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            component={Link}
+                            to="/athletes"
+                            onClick={() => setOpened(false)}
+                          >
+                            {t("athletes.title")}
+                          </Menu.Item>
+                          <Menu.Item
+                            component={Link}
+                            to="/invitations"
+                            onClick={() => setOpened(false)}
+                          >
+                            {t("invitations.title")}
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+
+                      <Menu shadow="md" width={200}>
+                        <Menu.Target>
+                          <Button
+                            variant={
+                              location.pathname.startsWith("/dashboard") ||
+                              location.pathname.startsWith("/account")
+                                ? "filled"
+                                : "subtle"
+                            }
+                            size="sm"
+                            compact
+                          >
+                            {t("navigation.account")}
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            component={Link}
+                            to="/dashboard"
+                            onClick={() => setOpened(false)}
+                          >
+                            {t("dashboard.title")}
+                          </Menu.Item>
+                          <Menu.Item
+                            component={Link}
+                            to="/account"
+                            onClick={() => setOpened(false)}
+                          >
+                            {t("account.title")}
+                          </Menu.Item>
+                          <Menu.Divider />
+                          <Menu.Item
+                            color="red"
+                            onClick={() => {
+                              handleLogout();
+                              setOpened(false);
+                            }}
+                          >
+                            {t("auth.logout")}
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    </>
+                  )}
+                </Group>
               </MediaQuery>
-              <Text size="lg" weight={700}>
-                GoodLift
-              </Text>
-            </Group>
 
-            <Group>
-              <Select
-                value={i18n.language}
-                onChange={(value) => changeLanguage(value || "en")}
-                data={[
-                  { value: "en", label: "English" },
-                  { value: "de", label: "Deutsch" },
-                  { value: "fr", label: "Français" },
-                  { value: "it", label: "Italiano" },
-                ]}
-                icon={<Globe size={16} />}
-                size="xs"
-                styles={{ input: { width: 120 } }}
-              />
-
-              <ActionIcon variant="default" size={30}>
-                {theme.colorScheme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              </ActionIcon>
+              <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
+                <Group spacing="xs">
+                  {authenticated ? (
+                    <Button
+                      variant="subtle"
+                      size="sm"
+                      compact
+                      onClick={handleLogout}
+                    >
+                      {t("auth.logout")}
+                    </Button>
+                  ) : (
+                    <Button
+                      component={Link}
+                      to="/login"
+                      variant={
+                        location.pathname === "/login" ? "filled" : "subtle"
+                      }
+                      size="sm"
+                      compact
+                    >
+                      {t("auth.signIn")}
+                    </Button>
+                  )}
+                </Group>
+              </MediaQuery>
             </Group>
-          </div>
-        </Header>
-      }
-      footer={
-        <Footer height={60} p="md">
-          <Group position="apart">
-            <Text size="sm" color="dimmed">
-              © 2024 GoodLift. {t("common.allRightsReserved")}
-            </Text>
-            <Group spacing="xs">
-              <ActionIcon size="lg" variant="default" radius="xl">
-                {theme.colorScheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-              </ActionIcon>
-            </Group>
-          </Group>
-        </Footer>
-      }
-      styles={(theme) => ({
-        main: {
-          backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[0],
-        },
-      })}
-    >
-      {children}
-    </AppShell>
-  )
+          </Header>
+        }
+        styles={(theme) => ({
+          main: {
+            backgroundColor: theme.white,
+          },
+          navbar: {
+            [theme.fn.smallerThan("sm")]: {
+              width: 0,
+              margin: 0,
+            },
+          },
+        })}
+      >
+        <Container size="xl">{children}</Container>
+      </AppShell>
+    </MantineProvider>
+  );
 }
-

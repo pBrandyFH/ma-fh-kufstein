@@ -1,7 +1,5 @@
-"use client"
-
 import { useEffect, useState } from "react"
-import { Navigate } from "react-router-dom"
+import { Navigate, Routes, Route } from "react-router-dom"
 import { Loader, Center } from "@mantine/core"
 import type { User } from "../../types"
 import { getCurrentUser } from "../../services/authService"
@@ -37,25 +35,33 @@ export function DashboardRouter() {
   }
 
   // Render the appropriate dashboard based on user role
-  switch (user.role) {
-    case "athlete":
-      return <AthleteDashboard athleteId={user.athleteId || ""} />
-    case "coach":
-      return <CoachDashboard userId={user._id} />
-    case "official":
-      return <OfficialDashboard userId={user._id} />
-    case "clubAdmin":
-      return <ClubAdminDashboard clubId={user.clubId || ""} />
-    case "federalStateAdmin":
-      return <FederalStateAdminDashboard federationId={user.federationId || ""} />
-    case "stateAdmin":
-      return <StateAdminDashboard federationId={user.federationId || ""} />
-    case "continentalAdmin":
-      return <ContinentalAdminDashboard federationId={user.federationId || ""} />
-    case "internationalAdmin":
-      return <InternationalAdminDashboard federationId={user.federationId || ""} />
-    default:
-      return <Navigate to="/login" />
+  const renderDashboard = () => {
+    switch (user.role) {
+      case "athlete":
+        return <AthleteDashboard athleteId={user.athleteId || ""} />
+      case "coach":
+        return <CoachDashboard userId={user._id} />
+      case "official":
+        return <OfficialDashboard userId={user._id} />
+      case "clubAdmin":
+        return <ClubAdminDashboard clubId={user.clubId || ""} />
+      case "federalStateAdmin":
+        return <FederalStateAdminDashboard federationId={user.federationId || ""} />
+      case "stateAdmin":
+        return <StateAdminDashboard federationId={user.federationId || ""} />
+      case "continentalAdmin":
+        return <ContinentalAdminDashboard federationId={user.federationId || ""} />
+      case "internationalAdmin":
+        return <InternationalAdminDashboard federationId={user.federationId || ""} />
+      default:
+        return <Navigate to="/login" />
+    }
   }
+
+  return (
+    <Routes>
+      <Route index element={renderDashboard()} />
+    </Routes>
+  )
 }
 

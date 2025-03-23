@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, Title, Text, Group, Button, Loader, ActionIcon, Menu, Badge, Accordion, Box } from "@mantine/core"
 import { useTranslation } from "react-i18next"
 import { Plus, MoreVertical, Edit, Trash, Mail } from "lucide-react"
+import { Link } from "react-router-dom"
 import type { Federation } from "../../types"
 import { getAllFederations } from "../../services/federationService"
 
@@ -71,8 +72,13 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
     }
   }
 
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
   const renderFederationItem = (federation: Federation) => (
-    <Card key={federation._id} withBorder p="md" mb="md">
+    <Card key={federation._id} withBorder p="md" mb="md" component={Link} to={`/federations/${federation._id}`} sx={{ textDecoration: 'none' }}>
       <Group position="apart">
         <div>
           <Group>
@@ -88,30 +94,32 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
         </div>
         <Group>
           <Badge color={getFederationTypeColor(federation.type)}>{getFederationTypeLabel(federation.type)}</Badge>
-          <Menu position="bottom-end">
-            <Menu.Target>
-              <ActionIcon>
-                <MoreVertical size={16} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              {onEdit && (
-                <Menu.Item icon={<Edit size={14} />} onClick={() => onEdit(federation)}>
-                  {t("common.edit")}
-                </Menu.Item>
-              )}
-              {onContact && (
-                <Menu.Item icon={<Mail size={14} />} onClick={() => onContact(federation)}>
-                  {t("common.contact")}
-                </Menu.Item>
-              )}
-              {onDelete && (
-                <Menu.Item icon={<Trash size={14} />} color="red" onClick={() => onDelete(federation)}>
-                  {t("common.delete")}
-                </Menu.Item>
-              )}
-            </Menu.Dropdown>
-          </Menu>
+          <Box onClick={handleMenuClick}>
+            <Menu position="bottom-end">
+              <Menu.Target>
+                <ActionIcon>
+                  <MoreVertical size={16} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {onEdit && (
+                  <Menu.Item icon={<Edit size={14} />} onClick={() => onEdit(federation)}>
+                    {t("common.edit")}
+                  </Menu.Item>
+                )}
+                {onContact && (
+                  <Menu.Item icon={<Mail size={14} />} onClick={() => onContact(federation)}>
+                    {t("common.contact")}
+                  </Menu.Item>
+                )}
+                {onDelete && (
+                  <Menu.Item icon={<Trash size={14} />} color="red" onClick={() => onDelete(federation)}>
+                    {t("common.delete")}
+                  </Menu.Item>
+                )}
+              </Menu.Dropdown>
+            </Menu>
+          </Box>
         </Group>
       </Group>
     </Card>
@@ -158,7 +166,7 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
     <Card withBorder p="xl">
       <Group position="apart" mb="xl">
         <Title order={2}>{t("federations.title")}</Title>
-        <Button leftIcon={<Plus size={16} />} component="a" href="/federations/create">
+        <Button leftIcon={<Plus size={16} />} component={Link} to="/federations/create">
           {t("federations.create")}
         </Button>
       </Group>

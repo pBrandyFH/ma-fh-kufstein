@@ -1,16 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, Title, Text, Group, Avatar, Badge, Tabs, Table, Grid, Divider, SimpleGrid } from "@mantine/core"
+import { Card, Title, Text, Group, Avatar, Badge, Tabs, Table, Grid, Divider, SimpleGrid, Container, Stack, Button } from "@mantine/core"
 import { useTranslation } from "react-i18next"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { Link, useParams } from "react-router-dom"
+import { ArrowLeft, Edit } from "lucide-react"
 
 interface AthleteProfileProps {
-  athleteId: string
+  athleteId?: string
 }
 
-export function AthleteProfile({ athleteId }: AthleteProfileProps) {
+export function AthleteProfile({ athleteId: propAthleteId }: AthleteProfileProps) {
   const { t } = useTranslation()
+  const { id } = useParams()
+  const athleteId = propAthleteId || id
   const [loading, setLoading] = useState(true)
   const [athlete, setAthlete] = useState<any>(null)
   const [results, setResults] = useState<any[]>([])

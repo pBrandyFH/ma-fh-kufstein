@@ -8,7 +8,7 @@ import { Edit, Trash, Mail, Users, Building, Calendar, MoreVertical } from "luci
 import type { Federation } from "../../types"
 import { getFederationById, deleteFederation } from "../../services/federationService"
 import { ClubList } from "../clubs/ClubList"
-import { FederationList } from "./FederationList"
+import { ChildFederationList } from "./ChildFederationList"
 import { notifications } from "@mantine/notifications"
 
 export function FederationDetail() {
@@ -255,7 +255,7 @@ export function FederationDetail() {
               federation.type === "continental" ||
               federation.type === "national") && (
               <Tabs.Panel value="federations">
-                <FederationList />
+                <ChildFederationList parentFederationId={federation._id} />
               </Tabs.Panel>
             )}
 

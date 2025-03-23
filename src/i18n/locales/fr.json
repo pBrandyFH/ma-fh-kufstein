@@ -18,7 +18,24 @@
     "refresh": "Actualiser",
     "error": "Erreur",
     "unknownError": "Une erreur inconnue s'est produite",
-    "allRightsReserved": "Tous droits réservés"
+    "allRightsReserved": "Tous droits réservés",
+    "emptyState": {
+      "noData": "Aucune donnée disponible",
+      "noDataDescription": "Il n'y a pas de données à afficher pour le moment.",
+      "noCompetitions": "Aucune compétition",
+      "noCompetitionsDescription": "Il n'y a pas de compétitions prévues pour le moment.",
+      "noAthletes": "Aucun athlète",
+      "noAthletesDescription": "Il n'y a pas d'athlètes enregistrés pour le moment.",
+      "noClubs": "Aucun club",
+      "noClubsDescription": "Il n'y a pas de clubs enregistrés pour le moment.",
+      "noFederations": "Aucune fédération",
+      "noFederationsDescription": "Il n'y a pas de fédérations enregistrées pour le moment.",
+      "noResults": "Aucun résultat",
+      "noResultsDescription": "Il n'y a pas de résultats disponibles pour le moment.",
+      "noNominations": "Aucune nomination",
+      "noNominationsDescription": "Il n'y a pas de nominations soumises pour le moment.",
+      "addNew": "Ajouter nouveau"
+    }
   },
   "auth": {
     "login": "Connexion",
@@ -60,7 +77,9 @@
     "invitedAs": "Vous avez été invité en tant que",
     "federation": "Fédération",
     "club": "Club",
-    "inviteExpires": "L'invitation expire le"
+    "inviteExpires": "L'invitation expire le",
+    "welcomeMessage": "Bienvenue sur GoodLift",
+    "loginMessage": "Ceci est une plateforme sur invitation uniquement. Veuillez contacter votre administrateur de fédération ou de club pour recevoir une invitation."
   },
   "navigation": {
     "dashboard": "Tableau de bord",
@@ -73,7 +92,10 @@
     "myAccount": "Mon compte",
     "admin": "Administration",
     "settings": "Paramètres",
-    "invitations": "Invitations"
+    "invitations": "Invitations",
+    "signIn": "Se connecter",
+    "language": "Langue",
+    "theme": "Thème"
   },
   "dashboard": {
     "welcome": "Bienvenue",

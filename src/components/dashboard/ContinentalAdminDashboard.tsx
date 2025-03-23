@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Grid, Card, Title, Text, Group, Button, Badge, SimpleGrid, ActionIcon, Menu, Loader } from "@mantine/core"
+import { Grid, Card, Title, Text, Group, Button, Badge, SimpleGrid, ActionIcon, Menu, Loader, TextInput } from "@mantine/core"
 import { useTranslation } from "react-i18next"
-import { Plus, MoreVertical, Edit, Trash, Mail } from "lucide-react"
+import { Plus, MoreVertical, Edit, Trash, Mail, Search } from "lucide-react"
+import { Link } from "react-router-dom"
 import type { Federation, Competition } from "../../types"
 import { getFederationById, getFederationsByParent } from "../../services/federationService"
 import { getCompetitionsByFederation } from "../../services/competitionService"
@@ -18,39 +19,50 @@ export function ContinentalAdminDashboard({ federationId }: ContinentalAdminDash
   const [federation, setFederation] = useState<Federation | null>(null)
   const [competitions, setCompetitions] = useState<Competition[]>([])
   const [nationalFederations, setNationalFederations] = useState<Federation[]>([])
+  const [searchCompetitions, setSearchCompetitions] = useState("")
+  const [searchFederations, setSearchFederations] = useState("")
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      // Fetch federation details
+      const fedResponse = await getFederationById(federationId)
+      if (fedResponse.success && fedResponse.data) {
+        setFederation(fedResponse.data)
+      }
+
+      // Fetch competitions
+      const compsResponse = await getCompetitionsByFederation(federationId)
+      if (compsResponse.success && compsResponse.data) {
+        setCompetitions(compsResponse.data)
+      }
+
+      // Fetch national federations
+      const natlFedsResponse = await getFederationsByParent(federationId)
+      if (natlFedsResponse.success && natlFedsResponse.data) {
+        setNationalFederations(natlFedsResponse.data)
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      try {
-        // Fetch federation details
-        const fedResponse = await getFederationById(federationId)
-        if (fedResponse.success && fedResponse.data) {
-          setFederation(fedResponse.data)
-        }
-
-        // Fetch competitions
-        const compsResponse = await getCompetitionsByFederation(federationId)
-        if (compsResponse.success && compsResponse.data) {
-          setCompetitions(compsResponse.data)
-        }
-
-        // Fetch national federations
-        const natlFedsResponse = await getFederationsByParent(federationId)
-        if (natlFedsResponse.success && natlFedsResponse.data) {
-          setNationalFederations(natlFedsResponse.data)
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     if (federationId) {
       fetchData()
     }
   }, [federationId])
+
+  const filteredCompetitions = competitions.filter(comp => 
+    comp.name.toLowerCase().includes(searchCompetitions.toLowerCase())
+  )
+
+  const filteredFederations = nationalFederations.filter(fed => 
+    fed.name.toLowerCase().includes(searchFederations.toLowerCase()) ||
+    fed.abbreviation.toLowerCase().includes(searchFederations.toLowerCase())
+  )
 
   if (loading) {
     return (
@@ -91,36 +103,40 @@ export function ContinentalAdminDashboard({ federationId }: ContinentalAdminDash
 
       <Grid.Col span={12}>
         <Card withBorder p="xl">
-          <Title order={3} mb="md">
-            {t("dashboard.continentalCompetitions")}
-          </Title>
-          {competitions.length > 0 ? (
+          <Title order={2} mb="md">{t("dashboard.continentalCompetitions")}</Title>
+          <TextInput
+            icon={<Search size={16} />}
+            placeholder={t("common.search")}
+            value={searchCompetitions}
+            onChange={(e) => setSearchCompetitions(e.target.value)}
+            mb="md"
+          />
+          {filteredCompetitions.length > 0 ? (
             <SimpleGrid cols={1} spacing="md">
-              {competitions.map((comp) => (
-                <Card key={comp._id} withBorder p="md">
-                  <Group position="apart">
-                    <div>
-                      <Text weight={500}>{comp.name}</Text>
-                      <Text size="sm" color="dimmed">
-                        {new Date(comp.startDate).toLocaleDateString()} • {comp.city}, {comp.country}
-                      </Text>
-                      <Text size="xs" color="dimmed" mt={5}>
-                        {t("competitions.nominationDeadline")}: {new Date(comp.nominationDeadline).toLocaleDateString()}
-                      </Text>
-                    </div>
-                    <Group>
-                      <Badge color={comp.status === "upcoming" ? "green" : "red"}>
-                        {comp.status === "upcoming" ? t("competitions.open") : t("competitions.closed")}
-                      </Badge>
-                      <Button size="xs" component="a" href={`/competitions/${comp._id}`}>
-                        {t("common.view")}
-                      </Button>
-                      <Button size="xs" component="a" href={`/competitions/${comp._id}/edit`}>
-                        {t("common.edit")}
-                      </Button>
+              {filteredCompetitions.map((comp) => (
+                <Link key={comp._id} to={`/competitions/${comp._id}`} style={{ textDecoration: 'none' }}>
+                  <Card withBorder p="md">
+                    <Group position="apart">
+                      <div>
+                        <Text weight={500}>{comp.name}</Text>
+                        <Text size="sm" color="dimmed">
+                          {new Date(comp.startDate).toLocaleDateString()} • {comp.city}, {comp.country}
+                        </Text>
+                        <Text size="xs" color="dimmed" mt={5}>
+                          {t("competitions.nominationDeadline")}: {new Date(comp.nominationDeadline).toLocaleDateString()}
+                        </Text>
+                      </div>
+                      <Group>
+                        <Badge color={comp.status === "upcoming" ? "green" : "red"}>
+                          {comp.status === "upcoming" ? t("competitions.open") : t("competitions.closed")}
+                        </Badge>
+                        <Button size="xs" component="a" href={`/competitions/${comp._id}/edit`}>
+                          {t("common.edit")}
+                        </Button>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
+                  </Card>
+                </Link>
               ))}
             </SimpleGrid>
           ) : (
@@ -131,44 +147,45 @@ export function ContinentalAdminDashboard({ federationId }: ContinentalAdminDash
 
       <Grid.Col span={12}>
         <Card withBorder p="xl">
-          <Group position="apart" mb="md">
-            <Title order={3}>{t("dashboard.nationalFederations")}</Title>
-            <Button leftIcon={<Plus size={16} />} component="a" href="/federations/create">
-              {t("federations.create")}
-            </Button>
-          </Group>
-
-          {nationalFederations.length > 0 ? (
+          <Title order={2} mb="md">{t("dashboard.nationalFederations")}</Title>
+          <TextInput
+            icon={<Search size={16} />}
+            placeholder={t("common.search")}
+            value={searchFederations}
+            onChange={(e) => setSearchFederations(e.target.value)}
+            mb="md"
+          />
+          {filteredFederations.length > 0 ? (
             <SimpleGrid cols={1} spacing="md">
-              {nationalFederations.map((fed) => (
-                <Card key={fed._id} withBorder p="md">
-                  <Group position="apart">
-                    <div>
-                      <Text weight={500}>{fed.name}</Text>
-                      <Text size="sm" color="dimmed">
-                        {fed.abbreviation}
-                      </Text>
-                    </div>
-                    <Group>
-                      <Menu position="bottom-end">
-                        <Menu.Target>
-                          <ActionIcon>
-                            <MoreVertical size={16} />
-                          </ActionIcon>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Item icon={<Edit size={14} />} component="a" href={`/federations/${fed._id}/edit`}>
-                            {t("common.edit")}
-                          </Menu.Item>
-                          <Menu.Item icon={<Mail size={14} />}>{t("dashboard.contactAdmin")}</Menu.Item>
-                          <Menu.Item icon={<Trash size={14} />} color="red">
-                            {t("common.delete")}
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
+              {filteredFederations.map((fed) => (
+                <Link key={fed._id} to={`/federations/${fed._id}`} style={{ textDecoration: 'none' }}>
+                  <Card withBorder p="md">
+                    <Group position="apart">
+                      <div>
+                        <Text weight={500}>{fed.name}</Text>
+                        <Text size="sm" color="dimmed">{fed.abbreviation}</Text>
+                      </div>
+                      <Group>
+                        <Menu position="bottom-end">
+                          <Menu.Target>
+                            <ActionIcon>
+                              <MoreVertical size={16} />
+                            </ActionIcon>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Item icon={<Edit size={14} />} component="a" href={`/federations/${fed._id}/edit`}>
+                              {t("common.edit")}
+                            </Menu.Item>
+                            <Menu.Item icon={<Mail size={14} />}>{t("dashboard.contactAdmin")}</Menu.Item>
+                            <Menu.Item icon={<Trash size={14} />} color="red">
+                              {t("common.delete")}
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
+                  </Card>
+                </Link>
               ))}
             </SimpleGrid>
           ) : (

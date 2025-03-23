@@ -19,7 +19,7 @@ import { LoginForm } from "./components/auth/LoginForm";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { DashboardRouter } from "./components/dashboard/DashboardRouter";
-import { ResultsView } from "./components/results/ResultsView";
+import { ResultsRouter } from "./components/results/ResultsRouter";
 import { AthleteProfile } from "./components/athletes/AthleteProfile";
 import { AthleteForm } from "./components/athletes/AthleteForm";
 import { CompetitionForm } from "./components/competitions/CompetitionForm";
@@ -29,36 +29,91 @@ import {
   getCurrentUser,
   logout,
 } from "./services/authService";
-import type { UserRole } from "./types";
+import type { UserRole, Federation, Club } from "./types";
 import "./i18n";
 import { FederationList } from "./components/federations/FederationList";
 import { FederationDetail } from "./components/federations/FederationDetail";
 import { FederationEditPage } from "./components/federations/FederationEditPage";
-import { createFederation } from "./services/federationService";
+import {
+  createFederation,
+  getAllFederations,
+} from "./services/federationService";
 import { ClubList } from "./components/clubs/ClubList";
 import { ClubForm } from "./components/clubs/ClubForm";
 import { ClubDetail } from "./components/clubs/ClubDetail";
 import { ClubEditPage } from "./components/clubs/ClubEditPage";
 import { ClubAthletes } from "./components/clubs/ClubAthletes";
-import { createClub } from "./services/clubService";
+import { createClub, getAllClubs } from "./services/clubService";
 import { InvitationList } from "./components/invitations/InvitationList";
 import { InvitationForm } from "./components/invitations/InvitationForm";
+import { NominationsView } from "./components/nominations/NominationsView";
+import { CompetitionsView } from "./components/competitions/CompetitionsView";
+import { CompetitionDetails } from "./components/competitions/CompetitionDetails";
+import { EditCompetition } from "./components/competitions/EditCompetition";
+import { RankingsView } from "./components/rankings/RankingsView";
+import { RecordsView } from "./components/records/RecordsView";
+import { AthletesView } from "./components/athletes/AthletesView";
+import { EditAthlete } from "./components/athletes/EditAthlete";
+import { MyAccount } from "./components/account/MyAccount";
+import { I18nextProvider } from "react-i18next";
+import i18n from "./i18n";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./providers/ThemeProvider";
+import { I18nProvider } from "./providers/I18nProvider";
+import { RouterProvider } from "./providers/RouterProvider";
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+const transformToSelectOptions = (
+  items: (Federation | Club)[]
+): SelectOption[] => {
+  return items.map((item) => ({
+    value: item._id,
+    label: item.name,
+  }));
+};
 
 export default function App() {
-  const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
-  const [authenticated, setAuthenticated] = useState<boolean>(false);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState<{ role: UserRole } | null>(null);
+  const [federations, setFederations] = useState<Federation[]>([]);
+  const [clubs, setClubs] = useState<Club[]>([]);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const checkAuth = async () => {
-      const isAuth = isAuthenticated();
-      setAuthenticated(isAuth);
+    const fetchData = async () => {
+      if (authenticated) {
+        try {
+          const [federationsResponse, clubsResponse] = await Promise.all([
+            getAllFederations(),
+            getAllClubs(),
+          ]);
 
+          if (federationsResponse.success && federationsResponse.data) {
+            setFederations(federationsResponse.data);
+          }
+          if (clubsResponse.success && clubsResponse.data) {
+            setClubs(clubsResponse.data);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [authenticated]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const isAuth = await isAuthenticated();
+      setAuthenticated(isAuth);
       if (isAuth) {
         const user = getCurrentUser();
         if (user) {
-          setUserRole(user.role);
+          setUser(user);
         }
       }
     };
@@ -66,327 +121,34 @@ export default function App() {
     checkAuth();
   }, []);
 
-  const toggleColorScheme = (value?: ColorScheme) => {
-    const nextColorScheme =
-      value || (colorScheme === "dark" ? "light" : "dark");
-    setColorScheme(nextColorScheme);
-    localStorage.setItem("colorScheme", nextColorScheme);
-  };
-
-  const handleLogin = () => {
-    setAuthenticated(true);
-    const user = getCurrentUser();
-    if (user) {
-      setUserRole(user.role);
+  const handleLogin = async () => {
+    const isAuth = await isAuthenticated();
+    setAuthenticated(isAuth);
+    if (isAuth) {
+      const user = getCurrentUser();
+      if (user) {
+        setUser(user);
+      }
     }
   };
 
   const handleLogout = async () => {
     await logout();
     setAuthenticated(false);
-    setUserRole(null);
+    setUser(null);
   };
 
-  // Define role-based access for routes
-  const adminRoles: UserRole[] = [
-    "clubAdmin",
-    "federalStateAdmin",
-    "stateAdmin",
-    "continentalAdmin",
-    "internationalAdmin",
-  ];
-  const federationAdminRoles: UserRole[] = [
-    "federalStateAdmin",
-    "stateAdmin",
-    "continentalAdmin",
-    "internationalAdmin",
-  ];
-  const nationalAdminRoles: UserRole[] = [
-    "stateAdmin",
-    "continentalAdmin",
-    "internationalAdmin",
-  ];
-  const continentalAdminRoles: UserRole[] = [
-    "continentalAdmin",
-    "internationalAdmin",
-  ];
-  const internationalAdminRoles: UserRole[] = ["internationalAdmin"];
-
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        theme={{ colorScheme }}
-        withGlobalStyles
-        withNormalizeCSS
-      >
-        <Notifications />
-        <Router>
-          <Routes>
-            {/* Public Routes */}
-            <Route
-              path="/"
-              element={
-                <AuthLayout>
-                  <WelcomePage />
-                </AuthLayout>
-              }
-            />
-            <Route path="/results" element={<ResultsView />} />
-            <Route
-              path="/results/live"
-              element={<ResultsView isLive={true} />}
-            />
-            <Route path="/rankings" element={<div>Rankings Page</div>} />
-            <Route path="/records" element={<div>Records Page</div>} />
-            <Route
-              path="/athletes/:id"
-              element={<AthleteProfile athleteId="1" />}
-            />
-
-            {/* Auth Routes */}
-            <Route
-              path="/login"
-              element={
-                authenticated ? (
-                  <Navigate to="/dashboard" replace />
-                ) : (
-                  <AuthLayout>
-                    <LoginForm onSuccess={handleLogin} />
-                  </AuthLayout>
-                )
-              }
-            />
-
-            {/* Protected Routes */}
-            <Route
-              path="/*"
-              element={
-                authenticated ? (
-                  <MainLayout onLogout={handleLogout}>
-                    <Routes>
-                      <Route path="/dashboard" element={<DashboardRouter />} />
-                      <Route
-                        path="/nominations"
-                        element={<div>Nominations Page</div>}
-                      />
-                      <Route
-                        path="/competitions"
-                        element={<div>Competitions Page</div>}
-                      />
-                      <Route
-                        path="/competitions/create"
-                        element={
-                          <ProtectedRoute allowedRoles={federationAdminRoles}>
-                            <CompetitionForm
-                              onSubmit={async (values) => console.log(values)}
-                              federations={[]}
-                              clubs={[]}
-                            />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/competitions/:id"
-                        element={<div>Competition Details</div>}
-                      />
-                      <Route
-                        path="/competitions/:id/edit"
-                        element={
-                          <ProtectedRoute allowedRoles={federationAdminRoles}>
-                            <div>Edit Competition</div>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/athletes"
-                        element={<div>Athletes Page</div>}
-                      />
-                      <Route
-                        path="/athletes/create"
-                        element={
-                          <ProtectedRoute allowedRoles={adminRoles}>
-                            <AthleteForm
-                              onSubmit={async (values) => console.log(values)}
-                              clubs={[]}
-                              federations={[]}
-                            />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/athletes/:id/edit"
-                        element={
-                          <ProtectedRoute allowedRoles={adminRoles}>
-                            <div>Edit Athlete</div>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/federations"
-                        element={
-                          <ProtectedRoute
-                            allowedRoles={[
-                              "stateAdmin",
-                              "continentalAdmin",
-                              "internationalAdmin",
-                            ]}
-                          >
-                            <FederationList />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/federations/create"
-                        element={
-                          <ProtectedRoute
-                            allowedRoles={[
-                              "stateAdmin",
-                              "continentalAdmin",
-                              "internationalAdmin",
-                            ]}
-                          >
-                            <FederationForm
-                              onSubmit={async (values) => {
-                                await createFederation(values);
-                              }}
-                              parentFederations={[]}
-                            />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/federations/:id"
-                        element={
-                          <ProtectedRoute>
-                            <FederationDetail />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/federations/:id/edit"
-                        element={
-                          <ProtectedRoute
-                            allowedRoles={[
-                              "federalStateAdmin",
-                              "stateAdmin",
-                              "continentalAdmin",
-                              "internationalAdmin",
-                            ]}
-                          >
-                            <FederationEditPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/clubs"
-                        element={
-                          <ProtectedRoute>
-                            <ClubList />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/clubs/create"
-                        element={
-                          <ProtectedRoute
-                            allowedRoles={[
-                              "federalStateAdmin",
-                              "stateAdmin",
-                              "continentalAdmin",
-                              "internationalAdmin",
-                            ]}
-                          >
-                            <ClubForm
-                              onSubmit={async (values) => {
-                                await createClub(values);
-                              }}
-                              federations={[]}
-                            />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/clubs/:id"
-                        element={
-                          <ProtectedRoute>
-                            <ClubDetail />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/clubs/:id/edit"
-                        element={
-                          <ProtectedRoute
-                            allowedRoles={[
-                              "clubAdmin",
-                              "federalStateAdmin",
-                              "stateAdmin",
-                              "continentalAdmin",
-                              "internationalAdmin",
-                            ]}
-                          >
-                            <ClubEditPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/clubs/:id/athletes"
-                        element={
-                          <ProtectedRoute>
-                            <ClubAthletes />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/invitations"
-                        element={
-                          <ProtectedRoute
-                            allowedRoles={[
-                              "clubAdmin",
-                              "federalStateAdmin",
-                              "stateAdmin",
-                              "continentalAdmin",
-                              "internationalAdmin",
-                            ]}
-                          >
-                            <InvitationList />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/invitations/new"
-                        element={
-                          <ProtectedRoute
-                            allowedRoles={[
-                              "clubAdmin",
-                              "federalStateAdmin",
-                              "stateAdmin",
-                              "continentalAdmin",
-                              "internationalAdmin",
-                            ]}
-                          >
-                            <InvitationForm />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route path="/account" element={<div>My Account</div>} />
-                      <Route
-                        path="*"
-                        element={<Navigate to="/dashboard" replace />}
-                      />
-                    </Routes>
-                  </MainLayout>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-          </Routes>
-        </Router>
-      </MantineProvider>
-    </ColorSchemeProvider>
+    <I18nProvider>
+      <ThemeProvider>
+        <RouterProvider
+          authenticated={authenticated}
+          onLogout={handleLogout}
+          onLogin={handleLogin}
+          federations={federations}
+          clubs={clubs}
+        />
+      </ThemeProvider>
+    </I18nProvider>
   );
 }

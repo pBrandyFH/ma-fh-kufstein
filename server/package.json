@@ -8,7 +8,8 @@
     "dev": "nodemon --exec ts-node index.ts",
     "build": "tsc",
     "test": "jest",
-    "create-test-user": "ts-node scripts/createTestUser.ts"
+    "create-test-user": "ts-node scripts/createTestUser.ts",
+    "seed:federations": "ts-node scripts/seedFederations.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

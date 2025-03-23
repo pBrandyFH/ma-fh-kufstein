@@ -5,64 +5,72 @@ import { Grid, Card, Title, Text, Group, Button, Badge, List, ThemeIcon, Divider
 import { useTranslation } from "react-i18next"
 import { Calendar, Medal, TrendingUp, Award, ChevronRight } from "lucide-react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { EmptyState } from "../common/EmptyState"
 
 interface AthleteDashboardProps {
-  athlete: any
+  athleteId: string
 }
 
-export function AthleteDashboard({ athlete }: AthleteDashboardProps) {
+export function AthleteDashboard({ athleteId }: AthleteDashboardProps) {
   const { t } = useTranslation()
+  const [loading, setLoading] = useState(true)
+  const [athlete, setAthlete] = useState<any>(null)
   const [performanceData, setPerformanceData] = useState<any[]>([])
   const [upcomingCompetitions, setUpcomingCompetitions] = useState<any[]>([])
   const [recentResults, setRecentResults] = useState<any[]>([])
 
   useEffect(() => {
-    // Mock data - in a real app, these would be API calls
-    setPerformanceData([
-      { date: "2022-01", total: 500 },
-      { date: "2022-03", total: 520 },
-      { date: "2022-06", total: 535 },
-      { date: "2022-09", total: 550 },
-      { date: "2022-12", total: 560 },
-      { date: "2023-03", total: 575 },
-    ])
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        // TODO: Replace with actual API calls
+        // const athleteResponse = await getAthleteById(athleteId)
+        // if (athleteResponse.success && athleteResponse.data) {
+        //   setAthlete(athleteResponse.data)
+        // }
+        // const performanceResponse = await getAthletePerformance(athleteId)
+        // if (performanceResponse.success && performanceResponse.data) {
+        //   setPerformanceData(performanceResponse.data)
+        // }
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-    setUpcomingCompetitions([
-      {
-        id: "1",
-        name: "2023 National Championships",
-        date: "2023-07-15",
-        location: "Vienna, Austria",
-        status: "confirmed",
-      },
-      {
-        id: "2",
-        name: "2023 European Championships",
-        date: "2023-09-22",
-        location: "Berlin, Germany",
-        status: "pending",
-      },
-    ])
+    if (athleteId) {
+      fetchData()
+    }
+  }, [athleteId])
 
-    setRecentResults([
-      {
-        id: "1",
-        competition: "2023 Regional Cup",
-        date: "2023-02-18",
-        place: 1,
-        total: 565,
-        wilks: 350.2,
-      },
-      {
-        id: "2",
-        competition: "2022 National Championships",
-        date: "2022-12-10",
-        place: 2,
-        total: 560,
-        wilks: 347.5,
-      },
-    ])
-  }, [])
+  if (loading) {
+    return (
+      <Grid gutter="md">
+        <Grid.Col span={12}>
+          <Card withBorder p="xl">
+            <Group position="center">
+              <Text>Loading...</Text>
+            </Group>
+          </Card>
+        </Grid.Col>
+      </Grid>
+    )
+  }
+
+  if (!athlete) {
+    return (
+      <Grid gutter="md">
+        <Grid.Col span={12}>
+          <EmptyState
+            title={t("common.emptyState.noData")}
+            description={t("common.emptyState.noDataDescription")}
+            icon="users"
+          />
+        </Grid.Col>
+      </Grid>
+    )
+  }
 
   return (
     <Grid gutter="md">
@@ -85,15 +93,23 @@ export function AthleteDashboard({ athlete }: AthleteDashboardProps) {
           <Title order={3} mb="md">
             {t("dashboard.performance")}
           </Title>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={performanceData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="total" stroke="#1c7ed6" strokeWidth={2} dot={{ r: 4 }} />
-            </LineChart>
-          </ResponsiveContainer>
+          {performanceData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={performanceData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="total" stroke="#1c7ed6" strokeWidth={2} dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <EmptyState
+              title={t("common.emptyState.noResults")}
+              description={t("common.emptyState.noResultsDescription")}
+              icon="award"
+            />
+          )}
         </Card>
       </Grid.Col>
 

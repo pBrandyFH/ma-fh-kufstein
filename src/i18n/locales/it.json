@@ -18,7 +18,24 @@
     "refresh": "Aggiorna",
     "error": "Errore",
     "unknownError": "Si è verificato un errore sconosciuto",
-    "allRightsReserved": "Tutti i diritti riservati"
+    "allRightsReserved": "Tutti i diritti riservati",
+    "emptyState": {
+      "noData": "Nessun dato disponibile",
+      "noDataDescription": "Non ci sono dati da visualizzare al momento.",
+      "noCompetitions": "Nessuna gara",
+      "noCompetitionsDescription": "Non ci sono gare programmate al momento.",
+      "noAthletes": "Nessun atleta",
+      "noAthletesDescription": "Non ci sono atleti registrati al momento.",
+      "noClubs": "Nessun club",
+      "noClubsDescription": "Non ci sono club registrati al momento.",
+      "noFederations": "Nessuna federazione",
+      "noFederationsDescription": "Non ci sono federazioni registrate al momento.",
+      "noResults": "Nessun risultato",
+      "noResultsDescription": "Non ci sono risultati disponibili al momento.",
+      "noNominations": "Nessuna nomina",
+      "noNominationsDescription": "Non ci sono nomine inviate al momento.",
+      "addNew": "Aggiungi nuovo"
+    }
   },
   "auth": {
     "login": "Accedi",
@@ -60,7 +77,9 @@
     "invitedAs": "Sei stato invitato come",
     "federation": "Federazione",
     "club": "Club",
-    "inviteExpires": "L'invito scade il"
+    "inviteExpires": "L'invito scade il",
+    "welcomeMessage": "Benvenuto su GoodLift",
+    "loginMessage": "Questa è una piattaforma solo su invito. Contatta il tuo amministratore di federazione o club per ricevere un invito."
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -73,7 +92,10 @@
     "myAccount": "Il mio account",
     "admin": "Amministrazione",
     "settings": "Impostazioni",
-    "invitations": "Inviti"
+    "invitations": "Inviti",
+    "signIn": "Accedi",
+    "language": "Lingua",
+    "theme": "Tema"
   },
   "dashboard": {
     "welcome": "Benvenuto",

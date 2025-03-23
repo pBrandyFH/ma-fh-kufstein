@@ -22,7 +22,7 @@ export function TopNav() {
   return (
     <Container size="100%" px="md" py="md" style={{ backgroundColor: "rgba(0, 0, 0, 0.1)", backdropFilter: "blur(10px)" }}>
       <Group position="apart" noWrap>
-        <Logo size="sm" />
+        <Logo size="lg" />
 
         <Group spacing="md" noWrap>
           {navItems.map((item) => (

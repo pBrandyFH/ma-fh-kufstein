@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useForm } from "@mantine/form"
-import { TextInput, PasswordInput, Button, Group, Box, Anchor, Container, Paper, Title, Text, Stack, rem } from "@mantine/core"
+import { TextInput, PasswordInput, Button, Group, Box, Anchor, Container, Paper, Title, Text, Stack, rem, Alert } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { useTranslation } from "react-i18next"
 import type { LoginFormValues } from "../../types"
@@ -18,8 +18,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
   const form = useForm<LoginFormValues>({
     initialValues: {
-      email: "",
-      password: "",
+      email: "ipf.admin@example.com",
+      password: "password123",
     },
     validate: {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : t("auth.invalidEmail")),
@@ -72,10 +72,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <Stack spacing="xl">
           <Box ta="center">
             <Title order={2} size="h1" fw={900} mb="xs">
-              GoodLift
-            </Title>
-            <Text c="dimmed" size="sm">
               {t("auth.welcomeMessage")}
+            </Title>
+            <Text c="dimmed" size="sm" mb="md">
+              {t("auth.loginMessage")}
             </Text>
           </Box>
 
@@ -100,9 +100,6 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
               <Group position="apart" mt="md">
                 <Anchor component="button" type="button" color="dimmed" size="sm">
                   {t("auth.forgotPassword")}
-                </Anchor>
-                <Anchor component="button" type="button" color="blue" size="sm">
-                  {t("auth.createAccount")}
                 </Anchor>
               </Group>
 

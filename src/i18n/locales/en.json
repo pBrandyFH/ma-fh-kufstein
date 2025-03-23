@@ -18,20 +18,41 @@
     "refresh": "Refresh",
     "error": "Error",
     "unknownError": "An unknown error occurred",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "emptyState": {
+      "noData": "No Data Available",
+      "noDataDescription": "There is no data to display at the moment.",
+      "noCompetitions": "No Competitions",
+      "noCompetitionsDescription": "There are no competitions scheduled at the moment.",
+      "noAthletes": "No Athletes",
+      "noAthletesDescription": "There are no athletes registered at the moment.",
+      "noClubs": "No Clubs",
+      "noClubsDescription": "There are no clubs registered at the moment.",
+      "noFederations": "No Federations",
+      "noFederationsDescription": "There are no federations registered at the moment.",
+      "noResults": "No Results",
+      "noResultsDescription": "There are no results available at the moment.",
+      "noNominations": "No Nominations",
+      "noNominationsDescription": "There are no nominations submitted at the moment.",
+      "addNew": "Add New"
+    }
   },
   "auth": {
     "login": "Login",
-    "register": "Register",
     "logout": "Logout",
+    "register": "Register",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUp": "Sign Up",
+    "signIn": "Sign In",
     "firstName": "First Name",
     "lastName": "Last Name",
     "name": "Name",
     "inviteCode": "Invitation Code",
-    "forgotPassword": "Forgot password?",
     "enterEmail": "Enter your email",
     "enterPassword": "Enter your password",
     "enterPasswordAgain": "Enter your password again",
@@ -60,7 +81,9 @@
     "invitedAs": "You have been invited as",
     "federation": "Federation",
     "club": "Club",
-    "inviteExpires": "Invitation expires on"
+    "inviteExpires": "Invitation expires on",
+    "welcomeMessage": "Welcome to GoodLift",
+    "loginMessage": "This is an invite-only platform. Please contact your federation or club administrator to receive an invitation."
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -73,9 +96,17 @@
     "myAccount": "My Account",
     "admin": "Administration",
     "settings": "Settings",
-    "invitations": "Invitations"
+    "invitations": "Invitations",
+    "signIn": "Sign In",
+    "language": "Language",
+    "theme": "Theme",
+    "main": "Main",
+    "organizations": "Organizations",
+    "users": "Users",
+    "account": "Account"
   },
   "dashboard": {
+    "title": "Dashboard",
     "welcome": "Welcome",
     "upcomingCompetitions": "Upcoming Competitions",
     "recentResults": "Recent Results",
@@ -122,7 +153,11 @@
     "noNationalTeamMembers": "No national team members found",
     "myAthletes": "My Athletes",
     "assignedCompetitions": "Assigned Competitions",
-    "noAssignedCompetitions": "No assigned competitions found"
+    "noAssignedCompetitions": "No assigned competitions found",
+    "internationalAdminDashboardSubtitle": "International Admin Dashboard",
+    "continentalAdminDashboardSubtitle": "Continental Admin Dashboard",
+    "stateAdminDashboardSubtitle": "State Admin Dashboard",
+    "federalStateAdminDashboardSubtitle": "Federal State Admin Dashboard"
   },
   "roles": {
     "athlete": "Athlete",
@@ -231,7 +266,29 @@
       "masters3": "Masters 3",
       "masters4": "Masters 4",
       "masters": "Masters"
-    }
+    },
+    "searchPlaceholder": "Search by name, location, or organizer",
+    "typePlaceholder": "Filter by type",
+    "statusPlaceholder": "Filter by status",
+    "type": "Type",
+    "status": {
+      "upcoming": "Upcoming",
+      "registration": "Registration Open",
+      "completed": "Completed"
+    },
+    "types": {
+      "national": "National",
+      "regional": "Regional",
+      "local": "Local"
+    },
+    "participants": "Participants",
+    "rules": "Rules",
+    "schedule": "Schedule",
+    "organizer": "Organizer",
+    "registrationDeadline": "Registration Deadline",
+    "categories": "Categories",
+    "startDate": "Start Date",
+    "endDate": "End Date"
   },
   "athletes": {
     "title": "Athletes",
@@ -296,6 +353,20 @@
         "u84": "-84kg",
         "o84": "+84kg"
       }
+    },
+    "phone": "Phone",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending"
+    },
+    "notes": "Notes",
+    "weight": "Weight",
+    "height": "Height",
+    "categories": {
+      "open": "Open",
+      "junior": "Junior",
+      "master": "Master"
     }
   },
   "federations": {
@@ -413,7 +484,14 @@
     "selectAtLeastOneAthlete": "Select at least one athlete",
     "success": "Nomination Successful",
     "athletesNominated": "Athletes have been nominated successfully",
-    "failed": "Nomination Failed"
+    "failed": "Nomination Failed",
+    "searchPlaceholder": "Search by athlete, competition, or club",
+    "statusPlaceholder": "Filter by status",
+    "categoryPlaceholder": "Filter by category",
+    "category": "Category",
+    "weightClass": "Weight Class",
+    "submittedBy": "Submitted By",
+    "submissionDate": "Submission Date"
   },
   "results": {
     "title": "Results",
@@ -434,7 +512,8 @@
     "resultsDescription": "Competition results",
     "selectCompetition": "Select Competition",
     "federation": "Federation",
-    "bodyweight": "Bodyweight"
+    "bodyweight": "Bodyweight",
+    "date": "Date"
   },
   "rankings": {
     "title": "Rankings",
@@ -450,7 +529,41 @@
     "wilks": "Wilks",
     "ipfPoints": "IPF Points",
     "competition": "Competition",
-    "date": "Date"
+    "date": "Date",
+    "about": "About Rankings",
+    "description": "The rankings are calculated based on the best performances in official competitions. Points are awarded using the IPF points formula.",
+    "lastUpdated": "Last Updated",
+    "categoryPlaceholder": "Select category",
+    "weightClassPlaceholder": "Select weight class",
+    "categories": {
+      "open": "Open",
+      "junior": "Junior",
+      "master": "Master"
+    }
+  },
+  "records": {
+    "title": "Records",
+    "about": "About Records",
+    "description": "These are the current official records in each category and weight class. Records can only be set at official competitions.",
+    "lastUpdated": "Last Updated",
+    "categoryPlaceholder": "Select category",
+    "weightClassPlaceholder": "Select weight class",
+    "lift": "Lift",
+    "weight": "Weight",
+    "holder": "Holder",
+    "date": "Date",
+    "competition": "Competition",
+    "lifts": {
+      "squat": "Squat",
+      "benchPress": "Bench Press",
+      "deadlift": "Deadlift",
+      "total": "Total"
+    },
+    "categories": {
+      "open": "Open",
+      "junior": "Junior",
+      "master": "Master"
+    }
   },
   "welcome": {
     "title": "Welcome to GoodLift",
@@ -465,6 +578,22 @@
     "recordsDesc": "View and track national and international powerlifting records",
     "community": "Community",
     "communityDesc": "Connect with athletes, coaches, and officials in the powerlifting community"
+  },
+  "account": {
+    "title": "Account",
+    "personalInfo": "Personal Information",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "federation": "Federation",
+    "club": "Club",
+    "createdAt": "Account Created",
+    "lastLogin": "Last Login",
+    "notes": "Notes",
+    "roles": {
+      "admin": "Administrator",
+      "user": "User"
+    }
   }
 }
 
