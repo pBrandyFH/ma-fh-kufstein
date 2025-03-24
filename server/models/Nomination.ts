@@ -54,11 +54,6 @@ const NominationSchema = new Schema<INomination>(
     },
     status: {
       type: String,
-      enum: ["pending", "  'masters"],
-      required: true,
-    },
-    status: {
-      type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
       required: true,

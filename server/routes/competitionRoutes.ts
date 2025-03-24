@@ -1,6 +1,8 @@
 import express from "express"
 import { auth, authorize } from "../middleware/auth"
 import type { UserRole } from "../types"
+import Competition from "../models/Competition"
+import Nomination from "../models/Nomination"
 
 const router = express.Router()
 
@@ -8,11 +10,11 @@ const router = express.Router()
  * @swagger
  * /api/competitions:
  *   get:
- *     summary: Get all competitions
+ *     summary: Get all competitions with athlete counts
  *     tags: [Competitions]
  *     responses:
  *       200:
- *         description: List of all competitions
+ *         description: List of all competitions with athlete counts
  *         content:
  *           application/json:
  *             schema:
@@ -46,13 +48,43 @@ const router = express.Router()
  *                         type: array
  *                         items:
  *                           type: string
+ *                       athleteCount:
+ *                         type: number
  */
-router.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Get all competitions endpoint",
-  })
-})
+router.get("/", async (req, res) => {
+  try {
+    const competitions = await Competition.find()
+      .populate("hostFederationId", "name")
+      .populate("hostClubId", "name")
+      .sort({ startDate: -1 });
+
+    // Get athlete counts for each competition
+    const competitionsWithCounts = await Promise.all(
+      competitions.map(async (competition) => {
+        const athleteCount = await Nomination.countDocuments({
+          competitionId: competition._id,
+          status: "approved"
+        });
+
+        return {
+          ...competition.toObject(),
+          athleteCount
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      data: competitionsWithCounts
+    });
+  } catch (error) {
+    console.error("Error fetching competitions:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch competitions"
+    });
+  }
+});
 
 /**
  * @swagger

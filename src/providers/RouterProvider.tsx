@@ -23,7 +23,6 @@ import { ClubAthletes } from "../components/clubs/ClubAthletes";
 import { InvitationList } from "../components/invitations/InvitationList";
 import { InvitationForm } from "../components/invitations/InvitationForm";
 import { NominationsView } from "../components/nominations/NominationsView";
-import { CompetitionsView } from "../components/competitions/CompetitionsView";
 import { CompetitionDetails } from "../components/competitions/CompetitionDetails";
 import { EditCompetition } from "../components/competitions/EditCompetition";
 import { RankingsView } from "../components/rankings/RankingsView";
@@ -34,6 +33,7 @@ import { MyAccount } from "../components/account/MyAccount";
 import { AuthProvider } from "../contexts/AuthContext";
 import type { Federation, Club } from "../types";
 import { createFederation } from "../services/federationService";
+import { CompetitionsPage } from "../pages/CompetitionsPage";
 
 interface SelectOption {
   value: string;
@@ -150,7 +150,7 @@ export function RouterProvider({
                 index
                 element={
                   <ProtectedRoute>
-                    <CompetitionsView />
+                    <CompetitionsPage />
                   </ProtectedRoute>
                 }
               />

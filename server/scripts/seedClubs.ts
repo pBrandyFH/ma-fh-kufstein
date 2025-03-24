@@ -8,101 +8,98 @@ dotenv.config()
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/goodlift"
 
+const clubs = [
+  {
+    name: "Powerlifting Berlin",
+    abbreviation: "PLB",
+    contactName: "John Smith",
+    contactEmail: "john.smith@plb.de",
+    contactPhone: "+49 30 1234567",
+    website: "www.powerlifting-berlin.de",
+    address: "Kraftstraße 10",
+    city: "Berlin",
+    country: "Germany",
+  },
+  {
+    name: "Munich Powerlifting Club",
+    abbreviation: "MPC",
+    contactName: "Maria Schmidt",
+    contactEmail: "maria.schmidt@mpc.de",
+    contactPhone: "+49 89 9876543",
+    website: "www.mpc.de",
+    address: "Sportplatzstraße 1",
+    city: "Munich",
+    country: "Germany",
+  },
+  {
+    name: "Hamburg Powerlifting",
+    abbreviation: "HPL",
+    contactName: "Thomas Weber",
+    contactEmail: "thomas.weber@hpl.de",
+    contactPhone: "+49 40 4567890",
+    website: "www.hpl.de",
+    address: "Kraftweg 5",
+    city: "Hamburg",
+    country: "Germany",
+  },
+  {
+    name: "Frankfurt Powerlifting",
+    abbreviation: "FPL",
+    contactName: "Sarah Müller",
+    contactEmail: "sarah.mueller@fpl.de",
+    contactPhone: "+49 69 2345678",
+    website: "www.fpl.de",
+    address: "Sportstraße 15",
+    city: "Frankfurt",
+    country: "Germany",
+  },
+  {
+    name: "Cologne Powerlifting",
+    abbreviation: "CPL",
+    contactName: "Michael Koch",
+    contactEmail: "michael.koch@cpl.de",
+    contactPhone: "+49 221 3456789",
+    website: "www.cpl.de",
+    address: "Kraftplatz 3",
+    city: "Cologne",
+    country: "Germany",
+  },
+]
+
 const seedClubs = async () => {
   try {
     // Connect to MongoDB
     await mongoose.connect(MONGODB_URI)
     console.log("Connected to MongoDB")
 
+    // Get all federations
+    const federations = await Federation.find()
+
+    if (federations.length === 0) {
+      console.error("No federations found. Please run seedFederations first.")
+      process.exit(1)
+    }
+
     // Clear existing clubs
     await Club.deleteMany({})
     console.log("Cleared existing clubs")
 
-    // Get federations
-    const slv = await Federation.findOne({ abbreviation: "SLV" })
-    const kdb = await Federation.findOne({ abbreviation: "KDB" })
+    // Create clubs with references to existing federations
+    const clubsWithRefs = clubs.map((club, index) => ({
+      ...club,
+      federationId: federations[index % federations.length]._id,
+    }))
 
-    if (!slv || !kdb) {
-      console.error("Required federations not found. Run seedFederations.ts first.")
-      process.exit(1)
-    }
+    // Insert clubs
+    const result = await Club.insertMany(clubsWithRefs)
+    console.log(`Successfully seeded ${result.length} clubs`)
 
-    // Create admin users for each club
-    const psvAdmin = new User({
-      email: "psv.admin@example.com",
-      password: "password123",
-      firstName: "PSV",
-      lastName: "Admin",
-      role: "clubAdmin",
-    })
-    await psvAdmin.save()
-
-    const askAdmin = new User({
-      email: "ask.admin@example.com",
-      password: "password123",
-      firstName: "ASK",
-      lastName: "Admin",
-      role: "clubAdmin",
-    })
-    await askAdmin.save()
-
-    const kscAdmin = new User({
-      email: "ksc.admin@example.com",
-      password: "password123",
-      firstName: "KSC",
-      lastName: "Admin",
-      role: "clubAdmin",
-    })
-    await kscAdmin.save()
-
-    // Create clubs
-    const psv = new Club({
-      name: "PSV Salzburg",
-      abbreviation: "PSV",
-      federationId: slv._id,
-      adminId: psvAdmin._id,
-      contactEmail: "psv.admin@example.com",
-      city: "Salzburg",
-      country: "Austria",
-    })
-    await psv.save()
-
-    // Update admin with club ID
-    psvAdmin.clubId = psv._id
-    await psvAdmin.save()
-
-    const ask = new Club({
-      name: "ASK Salzburg",
-      abbreviation: "ASK",
-      federationId: slv._id,
-      adminId: askAdmin._id,
-      contactEmail: "ask.admin@example.com",
-      city: "Salzburg",
-      country: "Austria",
-    })
-    await ask.save()
-
-    askAdmin.clubId = ask._id
-    await askAdmin.save()
-
-    const ksc = new Club({
-      name: "Kraftsport Club München",
-      abbreviation: "KSC",
-      federationId: kdb._id,
-      adminId: kscAdmin._id,
-      contactEmail: "ksc.admin@example.com",
-      city: "Munich",
-      country: "Germany",
-    })
-    await ksc.save()
-
-    kscAdmin.clubId = ksc._id
-    await kscAdmin.save()
-
-    console.log("Clubs seeded successfully")
+    await mongoose.disconnect()
+    console.log("Disconnected from MongoDB")
     process.exit(0)
   } catch (error) {
     console.error("Error seeding clubs:", error)
+    await mongoose.disconnect()
     process.exit(1)
   }
 }

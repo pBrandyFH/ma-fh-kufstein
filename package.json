@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "server": "nodemon --exec ts-node server/index.ts",
     "client": "vite",
-    "start": "concurrently \"npm run server\" \"npm run client\""
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "seed:competitions": "ts-node server/scripts/seedCompetitions.ts",
+    "seed:clubs": "ts-node server/scripts/seedClubs.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -19,10 +21,12 @@
     "@mantine/form": "^6.0.19",
     "@mantine/hooks": "^6.0.19",
     "@mantine/notifications": "^6.0.19",
+    "@tabler/icons-react": "^3.31.0",
     "axios": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.9",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

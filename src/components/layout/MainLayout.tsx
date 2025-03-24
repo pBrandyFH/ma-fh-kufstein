@@ -1,5 +1,3 @@
-"use client";
-
 import {
   AppShell,
   Header,
@@ -74,7 +72,7 @@ export function MainLayout({
       <AppShell
         padding="md"
         navbar={
-          <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+          <MediaQuery largerThan="md" styles={{ display: "none" }}>
             <Navbar
               p="md"
               hidden={!opened}
@@ -142,11 +140,11 @@ export function MainLayout({
           <Header height={60} p="xs" withBorder>
             <Group position="apart" h="100%" px="md">
               <Group>
-                <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+                <MediaQuery largerThan="md" styles={{ display: "none" }}>
                   <Burger
                     opened={opened}
                     onClick={() => setOpened((o) => !o)}
-                    size="sm"
+                    size="md"
                     color={theme.colors.gray[6]}
                     mr="xl"
                   />
@@ -161,25 +159,8 @@ export function MainLayout({
                 </Link>
               </Group>
 
-              <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
+              <MediaQuery smallerThan="md" styles={{ display: "none" }}>
                 <Group spacing="xs">
-                  {publicNavItems.map((item) => (
-                    <Button
-                      key={item.path}
-                      component={Link}
-                      to={item.path}
-                      variant={
-                        location.pathname.startsWith(item.path)
-                          ? "filled"
-                          : "subtle"
-                      }
-                      size="sm"
-                      compact
-                    >
-                      {item.label}
-                    </Button>
-                  ))}
-
                   {authenticated && (
                     <>
                       <Menu shadow="md" width={200}>
@@ -325,6 +306,22 @@ export function MainLayout({
                       </Menu>
                     </>
                   )}
+                  {publicNavItems.map((item) => (
+                    <Button
+                      key={item.path}
+                      component={Link}
+                      to={item.path}
+                      variant={
+                        location.pathname.startsWith(item.path)
+                          ? "filled"
+                          : "subtle"
+                      }
+                      size="sm"
+                      compact
+                    >
+                      {item.label}
+                    </Button>
+                  ))}
                 </Group>
               </MediaQuery>
 

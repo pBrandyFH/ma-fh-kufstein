@@ -34,8 +34,10 @@
       "noResultsDescription": "There are no results available at the moment.",
       "noNominations": "No Nominations",
       "noNominationsDescription": "There are no nominations submitted at the moment.",
-      "addNew": "Add New"
-    }
+      "addNew": "Add New",
+      "viewDetails": "View Details"
+    },
+    "viewDetails": "View Details"
   },
   "auth": {
     "login": "Login",
@@ -198,6 +200,7 @@
   },
   "competitions": {
     "title": "Competitions",
+    "createNew": "Create New Competition",
     "upcoming": "Upcoming",
     "past": "Past",
     "all": "All Competitions",
@@ -213,13 +216,15 @@
     "ageCategory": "Age Category",
     "nominations": "Nominations",
     "results": "Results",
-    "status": "Status",
+    "status": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "completed": "Completed"
+    },
     "international": "International",
     "national": "National",
     "open": "Open",
     "closed": "Closed",
-    "ongoing": "Ongoing",
-    "completed": "Completed",
     "enterScores": "Enter Scores",
     "nominationDeadline": "Nomination Deadline",
     "organization": "Organization",
@@ -252,14 +257,14 @@
     "createFailed": "Creation Failed",
     "noCompetitions": "No competitions found",
     "equipmentTypes": {
-      "equipped": "Equipped Powerlifting",
-      "classic": "Classic Powerlifting",
-      "equippedBench": "Equipped Bench Press Only",
-      "classicBench": "Classic Bench Press Only"
+      "equipped": "Equipped",
+      "classic": "Classic",
+      "equippedBench": "Equipped Bench",
+      "classicBench": "Classic Bench"
     },
     "ageCategories": {
-      "subJuniors": "Sub-Juniors (U18)",
-      "juniors": "Juniors (U23)",
+      "subJuniors": "Sub-Juniors",
+      "juniors": "Juniors",
       "open": "Open",
       "masters1": "Masters 1",
       "masters2": "Masters 2",
@@ -271,11 +276,6 @@
     "typePlaceholder": "Filter by type",
     "statusPlaceholder": "Filter by status",
     "type": "Type",
-    "status": {
-      "upcoming": "Upcoming",
-      "registration": "Registration Open",
-      "completed": "Completed"
-    },
     "types": {
       "national": "National",
       "regional": "Regional",
@@ -288,7 +288,8 @@
     "registrationDeadline": "Registration Deadline",
     "categories": "Categories",
     "startDate": "Start Date",
-    "endDate": "End Date"
+    "endDate": "End Date",
+    "athletes": "Athletes"
   },
   "athletes": {
     "title": "Athletes",

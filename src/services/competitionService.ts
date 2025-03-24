@@ -1,9 +1,13 @@
 import type { Competition, CompetitionFormValues, ApiResponse } from "../types"
 import { api } from "./api"
 
-export const getAllCompetitions = async (): Promise<ApiResponse<Competition[]>> => {
+export interface CompetitionWithAthleteCount extends Competition {
+  athleteCount: number;
+}
+
+export const getAllCompetitions = async (): Promise<ApiResponse<CompetitionWithAthleteCount[]>> => {
   try {
-    const response = await api.get<ApiResponse<Competition[]>>("/competitions")
+    const response = await api.get<ApiResponse<CompetitionWithAthleteCount[]>>("/competitions")
     return response.data
   } catch (error) {
     if (error instanceof Error) {
