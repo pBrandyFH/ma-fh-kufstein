@@ -61,6 +61,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import { I18nProvider } from "./providers/I18nProvider";
 import { RouterProvider } from "./providers/RouterProvider";
+import { DashboardPage } from "./pages/DashboardPage";
 
 interface SelectOption {
   value: string;
@@ -139,16 +140,18 @@ export default function App() {
   };
 
   return (
-    <I18nProvider>
-      <ThemeProvider>
-        <RouterProvider
-          authenticated={authenticated}
-          onLogout={handleLogout}
-          onLogin={handleLogin}
-          federations={federations}
-          clubs={clubs}
-        />
-      </ThemeProvider>
-    </I18nProvider>
+    <AuthProvider>
+      <I18nProvider>
+        <ThemeProvider>
+          <RouterProvider
+            authenticated={authenticated}
+            onLogout={handleLogout}
+            onLogin={handleLogin}
+            federations={federations}
+            clubs={clubs}
+          />
+        </ThemeProvider>
+      </I18nProvider>
+    </AuthProvider>
   );
 }

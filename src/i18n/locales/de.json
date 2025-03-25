@@ -35,6 +35,50 @@
       "noNominations": "Keine Nominierungen",
       "noNominationsDescription": "Derzeit sind keine Nominierungen eingereicht.",
       "addNew": "Neu hinzufügen"
+    },
+    "status": "Status",
+    "date": "Datum",
+    "name": "Name",
+    "description": "Beschreibung",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "website": "Webseite",
+    "federation": "Verband",
+    "club": "Verein",
+    "athlete": "Athlet",
+    "competition": "Wettkampf",
+    "weightCategory": "Gewichtsklasse",
+    "gender": "Geschlecht",
+    "male": "Männlich",
+    "female": "Weiblich",
+    "other": "Andere",
+    "startDate": "Startdatum",
+    "endDate": "Enddatum",
+    "venue": "Veranstaltungsort",
+    "city": "Stadt",
+    "country": "Land",
+    "organizer": "Veranstalter",
+    "contactPerson": "Kontaktperson",
+    "contactEmail": "Kontakt-E-Mail",
+    "contactPhone": "Kontakt-Telefon",
+    "notes": "Notizen",
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "pending": "Ausstehend",
+      "completed": "Abgeschlossen",
+      "cancelled": "Abgebrochen"
+    },
+    "validation": {
+      "required": "Dieses Feld ist erforderlich",
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "minLength": "Muss mindestens {{count}} Zeichen lang sein",
+      "maxLength": "Darf maximal {{count}} Zeichen lang sein",
+      "number": "Bitte geben Sie eine gültige Nummer ein",
+      "positive": "Bitte geben Sie eine positive Nummer ein",
+      "date": "Bitte geben Sie ein gültiges Datum ein",
+      "dateRange": "Enddatum muss nach Startdatum liegen"
     }
   },
   "auth": {
@@ -79,7 +123,13 @@
     "club": "Verein",
     "inviteExpires": "Einladung läuft ab am",
     "welcomeMessage": "Willkommen bei GoodLift",
-    "loginMessage": "Dies ist eine Einladungsplattform. Bitte kontaktieren Sie Ihren Verbands- oder Vereinsadministrator, um eine Einladung zu erhalten."
+    "loginMessage": "Dies ist eine Einladungsplattform. Bitte kontaktieren Sie Ihren Verbands- oder Vereinsadministrator, um eine Einladung zu erhalten.",
+    "rememberMe": "Angemeldet bleiben",
+    "loginButton": "Anmelden",
+    "loginError": "Ungültige E-Mail oder Passwort",
+    "logoutSuccess": "Erfolgreich abgemeldet",
+    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "unauthorized": "Sie sind nicht berechtigt, auf diese Ressource zuzugreifen."
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -144,7 +194,21 @@
     "noNationalTeamMembers": "Keine Nationalmannschaftsmitglieder gefunden",
     "myAthletes": "Meine Athleten",
     "assignedCompetitions": "Zugewiesene Wettkämpfe",
-    "noAssignedCompetitions": "Keine zugewiesenen Wettkämpfe gefunden"
+    "noAssignedCompetitions": "Keine zugewiesenen Wettkämpfe gefunden",
+    "title": "Dashboard",
+    "overview": "Übersicht",
+    "competitions": "Wettkämpfe",
+    "athletes": "Athleten",
+    "officials": "Offizielle",
+    "clubs": "Vereine",
+    "myResults": "Meine Ergebnisse",
+    "stats": {
+      "totalCompetitions": "Gesamtwettkämpfe",
+      "totalAthletes": "Gesamtathleten",
+      "totalOfficials": "Gesamtoffizielle",
+      "totalClubs": "Gesamtvereine"
+    },
+    "loginRequired": "Bitte melden Sie sich an, um das Dashboard zu sehen"
   },
   "roles": {
     "athlete": "Athlet",
@@ -225,11 +289,8 @@
     "enterVenue": "Veranstaltungsort eingeben",
     "address": "Adresse",
     "enterAddress": "Adresse eingeben",
-    "city": "Stadt",
     "enterCity": "Stadt eingeben",
-    "country": "Land",
     "enterCountry": "Land eingeben",
-    "description": "Beschreibung",
     "enterDescription": "Beschreibung eingeben",
     "updateSuccess": "Wettkampf aktualisiert",
     "competitionUpdated": "Der Wettkampf wurde erfolgreich aktualisiert",
@@ -273,28 +334,84 @@
     "schedule": "Zeitplan",
     "organizer": "Organisator",
     "registrationDeadline": "Anmeldefrist",
-    "categories": "Kategorien"
+    "categories": "Kategorien",
+    "list": "Wettkampfliste",
+    "form": {
+      "title": "Wettkampfinformationen",
+      "name": "Wettkampfname",
+      "type": "Wettkampftyp",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "venue": "Veranstaltungsort",
+      "city": "Stadt",
+      "country": "Land",
+      "organizer": "Veranstalter",
+      "contactPerson": "Kontaktperson",
+      "contactEmail": "Kontakt-E-Mail",
+      "contactPhone": "Kontakt-Telefon",
+      "notes": "Notizen",
+      "status": "Status"
+    },
+    "status": {
+      "draft": "Entwurf",
+      "published": "Veröffentlicht",
+      "registrationOpen": "Registrierung offen",
+      "registrationClosed": "Registrierung geschlossen",
+      "inProgress": "In Bearbeitung",
+      "completed": "Abgeschlossen",
+      "cancelled": "Abgebrochen"
+    },
+    "actions": {
+      "create": "Wettkampf erstellen",
+      "edit": "Wettkampf bearbeiten",
+      "delete": "Wettkampf löschen",
+      "viewDetails": "Details anzeigen",
+      "register": "Registrieren",
+      "submitResults": "Ergebnisse einreichen"
+    },
+    "messages": {
+      "createSuccess": "Wettkampf erfolgreich erstellt",
+      "updateSuccess": "Wettkampf erfolgreich aktualisiert",
+      "deleteSuccess": "Wettkampf erfolgreich gelöscht",
+      "deleteConfirm": "Sind Sie sicher, dass Sie diesen Wettkampf löschen möchten?",
+      "registrationClosed": "Die Registrierung für diesen Wettkampf ist geschlossen",
+      "registrationNotOpen": "Die Registrierung für diesen Wettkampf ist noch nicht geöffnet"
+    }
   },
   "athletes": {
     "title": "Athleten",
     "create": "Athlet erstellen",
     "edit": "Athlet bearbeiten",
     "details": "Athletendetails",
+    "list": "Athletenliste",
     "profile": "Athletenprofil",
-    "firstName": "Vorname",
-    "lastName": "Nachname",
-    "email": "E-Mail",
-    "dateOfBirth": "Geburtsdatum",
-    "gender": "Geschlecht",
-    "male": "Männlich",
-    "female": "Weiblich",
-    "selectGender": "Geschlecht auswählen",
-    "weightCategory": "Gewichtskategorie",
-    "selectWeightCategory": "Gewichtskategorie auswählen",
-    "club": "Verein",
-    "selectClub": "Verein auswählen",
-    "federation": "Verband",
-    "selectFederation": "Verband auswählen",
+    "form": {
+      "title": "Athleteninformationen",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "dateOfBirth": "Geburtsdatum",
+      "gender": "Geschlecht",
+      "weightCategory": "Gewichtsklasse",
+      "federation": "Verband",
+      "club": "Verein",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "address": "Adresse",
+      "notes": "Notizen"
+    },
+    "actions": {
+      "create": "Athlet erstellen",
+      "edit": "Athlet bearbeiten",
+      "delete": "Athlet löschen",
+      "viewProfile": "Profil anzeigen",
+      "viewResults": "Ergebnisse anzeigen"
+    },
+    "messages": {
+      "createSuccess": "Athlet erfolgreich erstellt",
+      "updateSuccess": "Athlet erfolgreich aktualisiert",
+      "deleteSuccess": "Athlet erfolgreich gelöscht",
+      "deleteConfirm": "Sind Sie sicher, dass Sie diesen Athleten löschen möchten?"
+    },
     "results": "Ergebnisse",
     "history": "Wettkampfhistorie",
     "invite": "Athlet einladen",
@@ -303,9 +420,7 @@
     "updateSuccess": "Athlet aktualisiert",
     "athleteUpdated": "Der Athlet wurde erfolgreich aktualisiert",
     "updateFailed": "Aktualisierung fehlgeschlagen",
-    "createSuccess": "Athlet erstellt",
     "athleteCreated": "Der Athlet wurde erfolgreich erstellt",
-    "createFailed": "Erstellung fehlgeschlagen",
     "notFound": "Athlet nicht gefunden",
     "personalBests": "Persönliche Bestleistungen",
     "nationalRanking": "Nationaler Rang",
@@ -448,12 +563,29 @@
   },
   "account": {
     "title": "Mein Konto",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "form": {
+      "title": "Kontoinformationen",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Passwort bestätigen"
+    },
+    "actions": {
+      "updateProfile": "Profil aktualisieren",
+      "changePassword": "Passwort ändern"
+    },
+    "messages": {
+      "updateSuccess": "Profil erfolgreich aktualisiert",
+      "passwordChangeSuccess": "Passwort erfolgreich geändert",
+      "passwordMismatch": "Passwörter stimmen nicht überein"
+    },
     "personalInfo": "Persönliche Informationen",
     "name": "Name",
-    "email": "E-Mail",
-    "phone": "Telefon",
-    "federation": "Verband",
-    "club": "Verein",
     "createdAt": "Konto erstellt",
     "lastLogin": "Letzter Login",
     "notes": "Notizen",
@@ -464,8 +596,30 @@
   },
   "results": {
     "title": "Ergebnisse",
+    "list": "Ergebnisliste",
+    "details": "Ergebnisdetails",
+    "form": {
+      "title": "Ergebnisinformationen",
+      "competition": "Wettkampf",
+      "athlete": "Athlet",
+      "weightCategory": "Gewichtsklasse",
+      "rank": "Rang",
+      "score": "Punktzahl",
+      "notes": "Notizen"
+    },
+    "actions": {
+      "create": "Ergebnis erstellen",
+      "edit": "Ergebnis bearbeiten",
+      "delete": "Ergebnis löschen",
+      "viewDetails": "Details anzeigen"
+    },
+    "messages": {
+      "createSuccess": "Ergebnis erfolgreich erstellt",
+      "updateSuccess": "Ergebnis erfolgreich aktualisiert",
+      "deleteSuccess": "Ergebnis erfolgreich gelöscht",
+      "deleteConfirm": "Sind Sie sicher, dass Sie dieses Ergebnis löschen möchten?"
+    },
     "date": "Datum",
-    "competition": "Wettkampf",
     "weightCategory": "Gewichtsklasse",
     "bodyweight": "Körpergewicht",
     "squat": "Kniebeuge",
@@ -475,5 +629,103 @@
     "wilks": "Wilks",
     "ipfPoints": "IPF-Punkte",
     "place": "Platz"
+  },
+  "federations": {
+    "title": "Verbände",
+    "create": "Verband erstellen",
+    "edit": "Verband bearbeiten",
+    "details": "Verbandsdetails",
+    "list": "Verbandsliste",
+    "form": {
+      "title": "Verbandsinformationen",
+      "name": "Verbandsname",
+      "code": "Verbandscode",
+      "parentFederation": "Übergeordneter Verband",
+      "contactPerson": "Kontaktperson",
+      "contactEmail": "Kontakt-E-Mail",
+      "contactPhone": "Kontakt-Telefon",
+      "website": "Webseite",
+      "address": "Adresse",
+      "notes": "Notizen"
+    },
+    "actions": {
+      "create": "Verband erstellen",
+      "edit": "Verband bearbeiten",
+      "delete": "Verband löschen",
+      "viewDetails": "Details anzeigen"
+    },
+    "messages": {
+      "createSuccess": "Verband erfolgreich erstellt",
+      "updateSuccess": "Verband erfolgreich aktualisiert",
+      "deleteSuccess": "Verband erfolgreich gelöscht",
+      "deleteConfirm": "Sind Sie sicher, dass Sie diesen Verband löschen möchten?"
+    }
+  },
+  "clubs": {
+    "title": "Vereine",
+    "create": "Verein erstellen",
+    "edit": "Verein bearbeiten",
+    "details": "Vereinsdetails",
+    "list": "Vereinsliste",
+    "athletes": "Vereinsathleten",
+    "form": {
+      "title": "Vereinsinformationen",
+      "name": "Vereinsname",
+      "federation": "Verband",
+      "contactPerson": "Kontaktperson",
+      "contactEmail": "Kontakt-E-Mail",
+      "contactPhone": "Kontakt-Telefon",
+      "website": "Webseite",
+      "address": "Adresse",
+      "notes": "Notizen"
+    },
+    "actions": {
+      "create": "Verein erstellen",
+      "edit": "Verein bearbeiten",
+      "delete": "Verein löschen",
+      "viewDetails": "Details anzeigen",
+      "viewAthletes": "Athleten anzeigen"
+    },
+    "messages": {
+      "createSuccess": "Verein erfolgreich erstellt",
+      "updateSuccess": "Verein erfolgreich aktualisiert",
+      "deleteSuccess": "Verein erfolgreich gelöscht",
+      "deleteConfirm": "Sind Sie sicher, dass Sie diesen Verein löschen möchten?"
+    }
+  },
+  "officials": {
+    "title": "Offizielle",
+    "create": "Offiziellen erstellen",
+    "edit": "Offiziellen bearbeiten",
+    "details": "Offiziellendetails",
+    "list": "Offiziellenliste",
+    "form": {
+      "title": "Offizielleninformationen",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "role": "Rolle",
+      "federation": "Verband",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "notes": "Notizen"
+    },
+    "roles": {
+      "referee": "Schiedsrichter",
+      "judge": "Kampfrichter",
+      "coach": "Trainer",
+      "admin": "Administrator"
+    },
+    "actions": {
+      "create": "Offiziellen erstellen",
+      "edit": "Offiziellen bearbeiten",
+      "delete": "Offiziellen löschen",
+      "viewDetails": "Details anzeigen"
+    },
+    "messages": {
+      "createSuccess": "Offiziellen erfolgreich erstellt",
+      "updateSuccess": "Offiziellen erfolgreich aktualisiert",
+      "deleteSuccess": "Offiziellen erfolgreich gelöscht",
+      "deleteConfirm": "Sind Sie sicher, dass Sie diesen Offiziellen löschen möchten?"
+    }
   }
-} 
+}

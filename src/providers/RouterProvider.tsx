@@ -30,32 +30,17 @@ import { RecordsView } from "../components/records/RecordsView";
 import { AthletesView } from "../components/athletes/AthletesView";
 import { EditAthlete } from "../components/athletes/EditAthlete";
 import { MyAccount } from "../components/account/MyAccount";
-import { AuthProvider } from "../contexts/AuthContext";
-import type { Federation, Club } from "../types";
+import { DashboardPage } from "../pages/DashboardPage";
+import { CompetitionsView } from "../components/competitions/CompetitionsView";
 import { createFederation } from "../services/federationService";
-import { CompetitionsPage } from "../pages/CompetitionsPage";
-
-interface SelectOption {
-  value: string;
-  label: string;
-}
 
 interface RouterProviderProps {
   authenticated: boolean;
   onLogout: () => void;
   onLogin: () => void;
-  federations: Federation[];
-  clubs: Club[];
+  federations: any[];
+  clubs: any[];
 }
-
-const transformToSelectOptions = (
-  items: (Federation | Club)[]
-): SelectOption[] => {
-  return items.map((item) => ({
-    value: item._id,
-    label: item.name,
-  }));
-};
 
 export function RouterProvider({
   authenticated,
@@ -73,242 +58,240 @@ export function RouterProvider({
 
   return (
     <Router>
-      <AuthProvider>
-        <MainLayout authenticated={authenticated} onLogout={onLogout}>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Navigate
-                  to={authenticated ? "/dashboard" : "/results"}
-                  replace
-                />
-              }
-            />
+      <MainLayout authenticated={authenticated} onLogout={onLogout}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Navigate
+                to={authenticated ? "/dashboard" : "/results"}
+                replace
+              />
+            }
+          />
 
-            <Route
-              path="/login"
-              element={
-                authenticated ? (
-                  <Navigate to="/" replace />
-                ) : (
-                  <LoginForm onSuccess={onLogin} />
-                )
-              }
-            />
+          <Route
+            path="/login"
+            element={
+              authenticated ? (
+                <Navigate to="/" replace />
+              ) : (
+                <LoginForm onSuccess={onLogin} />
+              )
+            }
+          />
 
+          <Route
+            path="/dashboard/*"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/athletes">
             <Route
-              path="/dashboard/*"
+              index
               element={
                 <ProtectedRoute>
-                  <DashboardRouter />
+                  <AthletesView />
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="create"
+              element={
+                <ProtectedRoute>
+                  <AthleteForm
+                    federations={federations}
+                    clubs={clubs}
+                    onSubmit={async (values) => console.log(values)}
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id"
+              element={
+                <ProtectedRoute>
+                  <AthleteProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditAthlete />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-            <Route path="/athletes">
-              <Route
-                index
-                element={
-                  <ProtectedRoute>
-                    <AthletesView />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="create"
-                element={
-                  <ProtectedRoute>
-                    <AthleteForm
-                      federations={transformToSelectOptions(federations)}
-                      clubs={transformToSelectOptions(clubs)}
-                      onSubmit={async (values) => console.log(values)}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id"
-                element={
-                  <ProtectedRoute>
-                    <AthleteProfile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id/edit"
-                element={
-                  <ProtectedRoute>
-                    <EditAthlete />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
+          <Route path="/competitions">
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <CompetitionsView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="create"
+              element={
+                <ProtectedRoute>
+                  <CompetitionForm
+                    federations={federations}
+                    clubs={clubs}
+                    onSubmit={async (values) => console.log(values)}
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id"
+              element={
+                <ProtectedRoute>
+                  <CompetitionDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditCompetition />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-            <Route path="/competitions">
-              <Route
-                index
-                element={
-                  <ProtectedRoute>
-                    <CompetitionsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="create"
-                element={
-                  <ProtectedRoute>
-                    <CompetitionForm
-                      federations={transformToSelectOptions(federations)}
-                      clubs={transformToSelectOptions(clubs)}
-                      onSubmit={async (values) => console.log(values)}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id"
-                element={
-                  <ProtectedRoute>
-                    <CompetitionDetails />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id/edit"
-                element={
-                  <ProtectedRoute>
-                    <EditCompetition />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
+          <Route path="/federations">
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <FederationList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="create"
+              element={
+                <ProtectedRoute>
+                  <FederationForm
+                    onSubmit={async (values) => {
+                      await createFederation(values);
+                    }}
+                    parentFederations={federations}
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id"
+              element={
+                <ProtectedRoute>
+                  <FederationDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id/edit"
+              element={
+                <ProtectedRoute>
+                  <FederationEditPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-            <Route path="/federations">
-              <Route
-                index
-                element={
-                  <ProtectedRoute>
-                    <FederationList />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="create"
-                element={
-                  <ProtectedRoute>
-                    <FederationForm
-                      onSubmit={async (values) => {
-                        await createFederation(values);
-                      }}
-                      parentFederations={transformToSelectOptions(federations)}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id"
-                element={
-                  <ProtectedRoute>
-                    <FederationDetail />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id/edit"
-                element={
-                  <ProtectedRoute>
-                    <FederationEditPage />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
+          <Route path="/clubs">
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <ClubList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="create"
+              element={
+                <ProtectedRoute>
+                  <ClubForm
+                    federations={federations}
+                    onSubmit={async (values) => console.log(values)}
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id"
+              element={
+                <ProtectedRoute>
+                  <ClubDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id/edit"
+              element={
+                <ProtectedRoute>
+                  <ClubEditPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id/athletes"
+              element={
+                <ProtectedRoute>
+                  <ClubAthletes />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-            <Route path="/clubs">
-              <Route
-                index
-                element={
-                  <ProtectedRoute>
-                    <ClubList />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="create"
-                element={
-                  <ProtectedRoute>
-                    <ClubForm
-                      federations={transformToSelectOptions(federations)}
-                      onSubmit={async (values) => console.log(values)}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id"
-                element={
-                  <ProtectedRoute>
-                    <ClubDetail />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id/edit"
-                element={
-                  <ProtectedRoute>
-                    <ClubEditPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path=":id/athletes"
-                element={
-                  <ProtectedRoute>
-                    <ClubAthletes />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
+          <Route path="/invitations">
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <InvitationList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="create"
+              element={
+                <ProtectedRoute>
+                  <InvitationForm />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-            <Route path="/invitations">
-              <Route
-                index
-                element={
-                  <ProtectedRoute>
-                    <InvitationList />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="create"
-                element={
-                  <ProtectedRoute>
-                    <InvitationForm />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
+          <Route path="/account">
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <MyAccount />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-            <Route path="/account">
-              <Route
-                index
-                element={
-                  <ProtectedRoute>
-                    <MyAccount />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
+          <Route path="/results/*" element={<ResultsRouter />} />
+          <Route path="/nominations" element={<NominationsView />} />
+          <Route path="/rankings" element={<RankingsView />} />
+          <Route path="/records" element={<RecordsView />} />
 
-            <Route path="/results/*" element={<ResultsRouter />} />
-            <Route path="/nominations" element={<NominationsView />} />
-            <Route path="/rankings" element={<RankingsView />} />
-            <Route path="/records" element={<RecordsView />} />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </MainLayout>
-      </AuthProvider>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </MainLayout>
     </Router>
   );
 }
