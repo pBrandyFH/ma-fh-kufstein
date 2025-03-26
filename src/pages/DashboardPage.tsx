@@ -24,9 +24,14 @@ import {
 import { format } from "date-fns";
 import { getAllCompetitions } from "../services/competitionService";
 import { getAthletes } from "../services/athleteService";
-import type { Competition, Athlete } from "../types";
+import type { Competition, Athlete, Federation } from "../types";
+import { DashboardCompetitionsList } from "../components/dashboard/competitions/DashboardCompetitionsList";
 
-export function DashboardPage() {
+interface DashboardPageProps {
+  federations: Federation[];
+}
+
+export function DashboardPage({ federations }: DashboardPageProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<string | null>("overview");
@@ -140,20 +145,29 @@ export function DashboardPage() {
         icon: IconUserCheck,
       });
     }
-
-    // Admins can see clubs
-    if (
-      [
-        "clubAdmin",
-        "federalStateAdmin",
-        "stateAdmin",
-        "continentalAdmin",
-        "internationalAdmin",
-      ].includes(user.role)
-    ) {
+    
+    // Add federation tabs based on admin role
+    if (["stateAdmin", "federalStateAdmin"].includes(user.role)) {
       tabs.push({
         value: "clubs",
         label: t("dashboard.clubs"),
+        icon: IconBuilding,
+      });
+      tabs.push({
+        value: "nationalFederation",
+        label: t("dashboard.nationalFederation"),
+        icon: IconBuilding,
+      });
+    }
+
+    if (
+      ["internationalAdmin", "continentalAdmin", "stateAdmin"].includes(
+        user.role
+      )
+    ) {
+      tabs.push({
+        value: "internationalFederation",
+        label: t("dashboard.internationalFederation"),
         icon: IconBuilding,
       });
     }
@@ -270,9 +284,7 @@ export function DashboardPage() {
           </Tabs.Panel>
 
           <Tabs.Panel value="competitions" pt="xl">
-            <Card withBorder>
-              <Text>Competitions content will go here</Text>
-            </Card>
+            <DashboardCompetitionsList federations={federations} />
           </Tabs.Panel>
 
           <Tabs.Panel value="athletes" pt="xl">
@@ -290,6 +302,18 @@ export function DashboardPage() {
           <Tabs.Panel value="clubs" pt="xl">
             <Card withBorder>
               <Text>Clubs content will go here</Text>
+            </Card>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="nationalFederation" pt="xl">
+            <Card withBorder>
+              <Text>National Federation content will go here</Text>
+            </Card>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="internationalFederation" pt="xl">
+            <Card withBorder>
+              <Text>International Federation content will go here</Text>
             </Card>
           </Tabs.Panel>
 

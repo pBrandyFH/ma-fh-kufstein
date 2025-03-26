@@ -202,12 +202,12 @@
     "officials": "Offizielle",
     "clubs": "Vereine",
     "myResults": "Meine Ergebnisse",
-    "stats": {
-      "totalCompetitions": "Gesamtwettkämpfe",
-      "totalAthletes": "Gesamtathleten",
-      "totalOfficials": "Gesamtoffizielle",
-      "totalClubs": "Gesamtvereine"
-    },
+    "nationalFederation": "Nationaler Verband",
+    "internationalFederation": "Internationaler Verband",
+    "totalCompetitions": "Gesamtwettkämpfe",
+    "totalAthletes": "Gesamtathleten",
+    "totalOfficials": "Gesamtoffizielle",
+    "totalClubs": "Gesamtvereine",
     "loginRequired": "Bitte melden Sie sich an, um das Dashboard zu sehen"
   },
   "roles": {
@@ -387,13 +387,13 @@
     "profile": "Athletenprofil",
     "form": {
       "title": "Athleteninformationen",
-      "firstName": "Vorname",
-      "lastName": "Nachname",
-      "dateOfBirth": "Geburtsdatum",
-      "gender": "Geschlecht",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "dateOfBirth": "Geburtsdatum",
+    "gender": "Geschlecht",
       "weightCategory": "Gewichtsklasse",
       "federation": "Verband",
-      "club": "Verein",
+    "club": "Verein",
       "email": "E-Mail",
       "phone": "Telefon",
       "address": "Adresse",

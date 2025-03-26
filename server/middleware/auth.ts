@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
 import type { UserRole } from "../types";
+import User from "../models/User";
 
 let JWT_SECRET: string;
 
@@ -16,6 +17,7 @@ interface DecodedToken {
   id: string;
   email: string;
   role: UserRole;
+  federationId?: string;
   iat: number;
   exp: number;
 }
@@ -30,7 +32,7 @@ declare global {
 }
 
 // Middleware to verify JWT token
-export const auth = (req: Request, res: Response, next: NextFunction) => {
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
   // Get token from header
   const authHeader = req.header("Authorization");
   console.log("Auth header:", authHeader); // Debug log
@@ -53,8 +55,20 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     const decoded = verify(token, JWT_SECRET) as DecodedToken;
     console.log("Decoded token:", decoded); // Debug log
 
-    // Add user from payload to request
-    req.user = decoded;
+    // Fetch user to get federationId
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    // Add user from payload to request with federationId
+    req.user = {
+      ...decoded,
+      federationId: user.federationId?.toString(),
+    };
     next();
   } catch (error) {
     console.error("Token verification error:", error); // Debug log

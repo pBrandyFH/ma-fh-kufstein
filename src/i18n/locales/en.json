@@ -204,14 +204,33 @@
     "myAthletes": "My Athletes",
     "assignedCompetitions": "Assigned Competitions",
     "noAssignedCompetitions": "No assigned competitions found",
-    "overview": "Overview",
     "stats": {
       "totalCompetitions": "Total Competitions",
       "totalAthletes": "Total Athletes",
       "totalOfficials": "Total Officials",
       "totalClubs": "Total Clubs"
     },
-    "loginRequired": "Please log in to view the dashboard"
+    "loginRequired": "Please log in to view the dashboard",
+    "overview": "Overview",
+    "athletes": "Athletes",
+    "clubs": "Clubs",
+    "myResults": "My Results",
+    "nationalFederation": "National Federation",
+    "internationalFederation": "International Federation",
+    "totalCompetitions": "Total Competitions",
+    "totalAthletes": "Total Athletes",
+    "totalOfficials": "Total Officials",
+    "totalClubs": "Total Clubs",
+    "competitions": "Competitions",
+    "competitionsTab": {
+      "overview": "Overview",
+      "officials": "Officials",
+      "status": {
+        "upcoming": "Upcoming",
+        "ongoing": "Ongoing",
+        "completed": "Completed"
+      }
+    }
   },
   "roles": {
     "athlete": "Athlete",
@@ -268,11 +287,6 @@
     "ageCategory": "Age Category",
     "nominations": "Nominations",
     "results": "Results",
-    "status": {
-      "upcoming": "Upcoming",
-      "ongoing": "Ongoing",
-      "completed": "Completed"
-    },
     "international": "International",
     "national": "National",
     "open": "Open",
@@ -762,6 +776,7 @@
       "master": "Master"
     }
   },
+
   "welcome": {
     "title": "Welcome to GoodLift",
     "subtitle": "The official platform for powerlifting competitions, results, and rankings",

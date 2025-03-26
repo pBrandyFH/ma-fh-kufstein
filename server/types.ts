@@ -18,6 +18,7 @@ export interface DecodedToken {
   id: string;
   email: string;
   role: UserRole;
+  federationId?: string;
   iat: number;
   exp: number;
 }

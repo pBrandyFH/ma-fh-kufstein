@@ -85,7 +85,7 @@ export function RouterProvider({
             path="/dashboard/*"
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <DashboardPage federations={federations} />
               </ProtectedRoute>
             }
           />
