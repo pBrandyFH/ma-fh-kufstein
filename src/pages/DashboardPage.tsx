@@ -27,6 +27,8 @@ import { getAthletes } from "../services/athleteService";
 import type { Competition, Athlete, Federation } from "../types";
 import { DashboardCompetitionsList } from "../components/dashboard/competitions/DashboardCompetitionsList";
 import { useUrlParams } from "@/hooks/useUrlParams";
+import { DashboardInternationalFederationsList } from "@/components/dashboard/federations/InternationalFederation";
+import { Page } from "@/components/common/Page";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -41,7 +43,6 @@ export function DashboardPage() {
     officials: 0,
     clubs: 0,
   });
-
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -190,145 +191,139 @@ export function DashboardPage() {
   }
 
   return (
-    <Container size="xl">
-      <Stack spacing="xl">
-        <Title order={1}>{t("dashboard.title")}</Title>
+    <Page title={t("dashboard.title")}>
+      <Tabs
+        value={openedTab}
+        onTabChange={(value) =>
+          setParam("tab", value?.toString() ?? "overview")
+        }
+      >
+        <Tabs.List>
+          {visibleTabs.map((tab) => (
+            <Tabs.Tab
+              key={tab.value}
+              value={tab.value}
+              icon={<tab.icon size={14} />}
+            >
+              {tab.label}
+            </Tabs.Tab>
+          ))}
+        </Tabs.List>
 
-        <Tabs
-          value={openedTab}
-          onTabChange={(value) =>
-            setParam("tab", value?.toString() ?? "overview")
-          }
-        >
-          <Tabs.List>
-            {visibleTabs.map((tab) => (
-              <Tabs.Tab
-                key={tab.value}
-                value={tab.value}
-                icon={<tab.icon size={14} />}
-              >
-                {tab.label}
-              </Tabs.Tab>
-            ))}
-          </Tabs.List>
+        <Tabs.Panel value="overview" pt="xl">
+          <Grid>
+            <Grid.Col span={12} md={6} lg={3}>
+              <Card withBorder>
+                <Group position="apart" mb="xs">
+                  <Text size="sm" color="dimmed">
+                    {t("dashboard.totalCompetitions")}
+                  </Text>
+                  <IconTrophy size={16} />
+                </Group>
+                {loading ? (
+                  <Loader size="sm" />
+                ) : (
+                  <Text size="xl" weight={500}>
+                    {stats.competitions}
+                  </Text>
+                )}
+              </Card>
+            </Grid.Col>
 
-          <Tabs.Panel value="overview" pt="xl">
-            <Grid>
-              <Grid.Col span={12} md={6} lg={3}>
-                <Card withBorder>
-                  <Group position="apart" mb="xs">
-                    <Text size="sm" color="dimmed">
-                      {t("dashboard.totalCompetitions")}
-                    </Text>
-                    <IconTrophy size={16} />
-                  </Group>
-                  {loading ? (
-                    <Loader size="sm" />
-                  ) : (
-                    <Text size="xl" weight={500}>
-                      {stats.competitions}
-                    </Text>
-                  )}
-                </Card>
-              </Grid.Col>
+            <Grid.Col span={12} md={6} lg={3}>
+              <Card withBorder>
+                <Group position="apart" mb="xs">
+                  <Text size="sm" color="dimmed">
+                    {t("dashboard.totalAthletes")}
+                  </Text>
+                  <IconUsers size={16} />
+                </Group>
+                {loading ? (
+                  <Loader size="sm" />
+                ) : (
+                  <Text size="xl" weight={500}>
+                    {stats.athletes}
+                  </Text>
+                )}
+              </Card>
+            </Grid.Col>
 
-              <Grid.Col span={12} md={6} lg={3}>
-                <Card withBorder>
-                  <Group position="apart" mb="xs">
-                    <Text size="sm" color="dimmed">
-                      {t("dashboard.totalAthletes")}
-                    </Text>
-                    <IconUsers size={16} />
-                  </Group>
-                  {loading ? (
-                    <Loader size="sm" />
-                  ) : (
-                    <Text size="xl" weight={500}>
-                      {stats.athletes}
-                    </Text>
-                  )}
-                </Card>
-              </Grid.Col>
+            <Grid.Col span={12} md={6} lg={3}>
+              <Card withBorder>
+                <Group position="apart" mb="xs">
+                  <Text size="sm" color="dimmed">
+                    {t("dashboard.totalOfficials")}
+                  </Text>
+                  <IconUserCheck size={16} />
+                </Group>
+                {loading ? (
+                  <Loader size="sm" />
+                ) : (
+                  <Text size="xl" weight={500}>
+                    {stats.officials}
+                  </Text>
+                )}
+              </Card>
+            </Grid.Col>
 
-              <Grid.Col span={12} md={6} lg={3}>
-                <Card withBorder>
-                  <Group position="apart" mb="xs">
-                    <Text size="sm" color="dimmed">
-                      {t("dashboard.totalOfficials")}
-                    </Text>
-                    <IconUserCheck size={16} />
-                  </Group>
-                  {loading ? (
-                    <Loader size="sm" />
-                  ) : (
-                    <Text size="xl" weight={500}>
-                      {stats.officials}
-                    </Text>
-                  )}
-                </Card>
-              </Grid.Col>
+            <Grid.Col span={12} md={6} lg={3}>
+              <Card withBorder>
+                <Group position="apart" mb="xs">
+                  <Text size="sm" color="dimmed">
+                    {t("dashboard.totalClubs")}
+                  </Text>
+                  <IconBuilding size={16} />
+                </Group>
+                {loading ? (
+                  <Loader size="sm" />
+                ) : (
+                  <Text size="xl" weight={500}>
+                    {stats.clubs}
+                  </Text>
+                )}
+              </Card>
+            </Grid.Col>
+          </Grid>
+        </Tabs.Panel>
 
-              <Grid.Col span={12} md={6} lg={3}>
-                <Card withBorder>
-                  <Group position="apart" mb="xs">
-                    <Text size="sm" color="dimmed">
-                      {t("dashboard.totalClubs")}
-                    </Text>
-                    <IconBuilding size={16} />
-                  </Group>
-                  {loading ? (
-                    <Loader size="sm" />
-                  ) : (
-                    <Text size="xl" weight={500}>
-                      {stats.clubs}
-                    </Text>
-                  )}
-                </Card>
-              </Grid.Col>
-            </Grid>
-          </Tabs.Panel>
+        <Tabs.Panel value="competitions" pt="xl">
+          <DashboardCompetitionsList />
+        </Tabs.Panel>
 
-          <Tabs.Panel value="competitions" pt="xl">
-            <DashboardCompetitionsList />
-          </Tabs.Panel>
+        <Tabs.Panel value="athletes" pt="xl">
+          <Card withBorder>
+            <Text>Athletes content will go here</Text>
+          </Card>
+        </Tabs.Panel>
 
-          <Tabs.Panel value="athletes" pt="xl">
-            <Card withBorder>
-              <Text>Athletes content will go here</Text>
-            </Card>
-          </Tabs.Panel>
+        <Tabs.Panel value="officials" pt="xl">
+          <Card withBorder>
+            <Text>Officials content will go here</Text>
+          </Card>
+        </Tabs.Panel>
 
-          <Tabs.Panel value="officials" pt="xl">
-            <Card withBorder>
-              <Text>Officials content will go here</Text>
-            </Card>
-          </Tabs.Panel>
+        <Tabs.Panel value="clubs" pt="xl">
+          <Card withBorder>
+            <Text>Clubs content will go here</Text>
+          </Card>
+        </Tabs.Panel>
 
-          <Tabs.Panel value="clubs" pt="xl">
-            <Card withBorder>
-              <Text>Clubs content will go here</Text>
-            </Card>
-          </Tabs.Panel>
+        <Tabs.Panel value="nationalFederation" pt="xl">
+          <Card withBorder>
+            <Text>National Federation content will go here</Text>
+          </Card>
+        </Tabs.Panel>
 
-          <Tabs.Panel value="nationalFederation" pt="xl">
-            <Card withBorder>
-              <Text>National Federation content will go here</Text>
-            </Card>
-          </Tabs.Panel>
+        <Tabs.Panel value="internationalFederation" pt="xl">
+          <DashboardInternationalFederationsList />
+        </Tabs.Panel>
 
-          <Tabs.Panel value="internationalFederation" pt="xl">
-            <Card withBorder>
-              <Text>International Federation content will go here</Text>
-            </Card>
-          </Tabs.Panel>
-
-          <Tabs.Panel value="myResults" pt="xl">
-            <Card withBorder>
-              <Text>My Results content will go here</Text>
-            </Card>
-          </Tabs.Panel>
-        </Tabs>
-      </Stack>
-    </Container>
+        <Tabs.Panel value="myResults" pt="xl">
+          <Card withBorder>
+            <Text>My Results content will go here</Text>
+          </Card>
+        </Tabs.Panel>
+      </Tabs>
+    </Page>
   );
 }

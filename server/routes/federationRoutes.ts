@@ -8,6 +8,7 @@ import {
   getFederationsByType,
   getFederationsByParent,
   getChildFederations,
+  getFederationsByTypeFilter,
 } from "../controllers/federationController"
 import { auth, authorize } from "../middleware/auth"
 
@@ -272,6 +273,11 @@ router.put(
  *         description: Federation not found
  */
 router.delete("/:id", auth, authorize(["stateAdmin", "continentalAdmin", "internationalAdmin"]), deleteFederation)
+
+router.post(
+  "/type-filter",
+  getFederationsByTypeFilter
+)
 
 export default router
 

@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export type UserRole =
   | "athlete"
   | "coach"
@@ -21,6 +23,14 @@ export interface DecodedToken {
   federationId?: string;
   iat: number;
   exp: number;
+}
+
+export interface AuthenticatedRequest<
+  P = {},
+  ResBody = {},
+  ReqBody = {}
+> extends Request<P, ResBody, ReqBody> {
+  user?: DecodedToken;
 }
 
 export interface InviteValidationResponse {

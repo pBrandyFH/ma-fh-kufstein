@@ -5,7 +5,8 @@ export interface IFederation extends Document {
   name: string
   abbreviation: string
   type: FederationType
-  parentFederation?: mongoose.Types.ObjectId
+  parent?: mongoose.Types.ObjectId
+  children: mongoose.Types.ObjectId[]
   adminId?: mongoose.Types.ObjectId
   contactName?: string
   contactEmail?: string
@@ -35,10 +36,14 @@ const FederationSchema = new Schema<IFederation>(
       enum: ["international", "continental", "national", "federalState"],
       required: true,
     },
-    parentFederation: {
+    parent: {
       type: Schema.Types.ObjectId,
       ref: "Federation",
     },
+    children: [{
+      type: Schema.Types.ObjectId,
+      ref: "Federation",
+    }],
     adminId: {
       type: Schema.Types.ObjectId,
       ref: "User",

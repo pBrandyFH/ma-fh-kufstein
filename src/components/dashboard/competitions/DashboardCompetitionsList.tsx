@@ -94,7 +94,7 @@ export function DashboardCompetitionsList() {
           .filter(
             (fed) =>
               fed.type === "national" &&
-              fed.parentFederation === user.federationId
+              fed.parent?._id === user.federationId
           )
           .map((fed) => ({
             value: fed._id,
@@ -107,7 +107,7 @@ export function DashboardCompetitionsList() {
             (fed) =>
               (fed.type === "national" && fed._id === user.federationId) ||
               (fed.type === "federalState" &&
-                fed.parentFederation === user.federationId)
+                fed.parent?._id === user.federationId)
           )
           .map((fed) => ({
             value: fed._id,

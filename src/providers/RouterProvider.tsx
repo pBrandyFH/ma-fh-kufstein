@@ -2,21 +2,14 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
+  Outlet,
 } from "react-router-dom";
 import { MainLayout } from "../components/layout/MainLayout";
-import { LoginForm } from "../components/auth/LoginForm";
-import { DashboardRouter } from "../components/dashboard/DashboardRouter";
 import { ResultsRouter } from "../components/results/ResultsRouter";
 import { AthleteProfile } from "../components/athletes/AthleteProfile";
-import { AthleteForm } from "../components/athletes/AthleteForm";
-import { CompetitionForm } from "../components/competitions/CompetitionForm";
-import { FederationForm } from "../components/federations/FederationForm";
 import { FederationList } from "../components/federations/FederationList";
-import { FederationDetail } from "../components/federations/FederationDetail";
 import { FederationEditPage } from "../components/federations/FederationEditPage";
 import { ClubList } from "../components/clubs/ClubList";
-import { ClubForm } from "../components/clubs/ClubForm";
 import { ClubDetail } from "../components/clubs/ClubDetail";
 import { ClubEditPage } from "../components/clubs/ClubEditPage";
 import { ClubAthletes } from "../components/clubs/ClubAthletes";
@@ -32,49 +25,44 @@ import { EditAthlete } from "../components/athletes/EditAthlete";
 import { MyAccount } from "../components/account/MyAccount";
 import { DashboardPage } from "../pages/DashboardPage";
 import { CompetitionsView } from "../components/competitions/CompetitionsView";
-import { createFederation } from "../services/federationService";
 import { CustomNavigate } from "../components/common/CustomNavigate";
+import { useAuth } from "@/contexts/AuthContext";
+import { Card, Group, Loader } from "@mantine/core";
+import { LoginForm } from "@/components/auth/LoginForm";
+import FederationDetailsPage from "@/pages/FederationDetailsPage";
 
-interface RouterProviderProps {
-  authenticated: boolean;
-  onLogout: () => void;
-  onLogin: () => void;
-}
+export function RouterProvider() {
+  const { authenticated, isAuthLoading, logout, login } = useAuth();
 
-export function RouterProvider({
-  authenticated,
-  onLogout,
-  onLogin,
-}: RouterProviderProps) {
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    if (!authenticated) {
-      return <CustomNavigate to="/auth/login" replace preserveSearch />;
+    if (isAuthLoading) {
+      return (
+        <Card>
+          <Group position="center" py="xl">
+            <Loader />
+          </Group>
+        </Card>
+      );
     }
+
+    if (!authenticated) {
+      return <CustomNavigate to="/login" replace preserveSearch />;
+    }
+
     return children;
   };
 
   return (
     <Router>
-      <MainLayout authenticated={authenticated} onLogout={onLogout}>
+      <MainLayout authenticated={authenticated} onLogout={logout}>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <CustomNavigate
-                to={authenticated ? "/dashboard" : "/results"}
-                preserveSearch
-                replace
-              />
-            }
-          />
-
           <Route
             path="/login"
             element={
               authenticated ? (
                 <CustomNavigate to="/" replace preserveSearch />
               ) : (
-                <LoginForm onSuccess={onLogin} />
+                <LoginForm onSuccess={login} />
               )
             }
           />
@@ -128,7 +116,7 @@ export function RouterProvider({
             />
           </Route>
 
-          <Route path="/competitions">
+          <Route path="/competitions" element={<Outlet />}>
             <Route
               index
               element={
@@ -168,7 +156,7 @@ export function RouterProvider({
             />
           </Route>
 
-          <Route path="/federations">
+          <Route path="/federations" element={<Outlet />}>
             <Route
               index
               element={
@@ -195,7 +183,7 @@ export function RouterProvider({
               path=":id"
               element={
                 <ProtectedRoute>
-                  <FederationDetail />
+                  <FederationDetailsPage />
                 </ProtectedRoute>
               }
             />
@@ -291,6 +279,16 @@ export function RouterProvider({
           <Route path="/rankings" element={<RankingsView />} />
           <Route path="/records" element={<RecordsView />} />
 
+          <Route
+            path="/"
+            element={
+              <CustomNavigate
+                to={authenticated ? "/dashboard" : "/results"}
+                preserveSearch
+                replace
+              />
+            }
+          />
           <Route path="*" element={<CustomNavigate to="/" replace />} />
         </Routes>
       </MainLayout>

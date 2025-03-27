@@ -28,50 +28,11 @@ const transformToSelectOptions = (
 };
 
 export default function App() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [_, setUser] = useState<{ role: UserRole } | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const isAuth = await isAuthenticated();
-      setAuthenticated(isAuth);
-      if (isAuth) {
-        const user = getCurrentUser();
-        if (user) {
-          setUser(user);
-        }
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  const handleLogin = async () => {
-    const isAuth = await isAuthenticated();
-    setAuthenticated(isAuth);
-    if (isAuth) {
-      const user = getCurrentUser();
-      if (user) {
-        setUser(user);
-      }
-    }
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    setAuthenticated(false);
-    setUser(null);
-  };
-
   return (
     <AuthProvider>
       <I18nProvider>
         <ThemeProvider>
-          <RouterProvider
-            authenticated={authenticated}
-            onLogout={handleLogout}
-            onLogin={handleLogin}
-          />
+          <RouterProvider />
         </ThemeProvider>
       </I18nProvider>
     </AuthProvider>

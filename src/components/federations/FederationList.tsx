@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, Title, Text, Group, Button, Loader, ActionIcon, Menu, Badge, Accordion, Box } from "@mantine/core"
 import { useTranslation } from "react-i18next"
 import { Plus, MoreVertical, Edit, Trash, Mail } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, Outlet } from "react-router-dom"
 import type { Federation } from "../../types"
 import { getAllFederations } from "../../services/federationService"
 

@@ -22,8 +22,9 @@ export function ProtectedRoute({
   }
 
   if (allowedRoles && currentUser && !allowedRoles.includes(currentUser.role)) {
+    console.log("Redirecting to dashboard");
     // Preserve search params when redirecting to dashboard
-    return <Navigate to={`/dashboard${location.search}`} />;
+    return <Navigate to={`/results${location.search}`} />;
   }
 
   return <>{children}</>;
