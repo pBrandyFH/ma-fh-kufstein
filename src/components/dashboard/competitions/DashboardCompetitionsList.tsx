@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Card,
@@ -20,18 +20,13 @@ import { getEligibleCompetitions } from "../../../services/competitionService";
 import type { Competition, Federation } from "../../../types";
 import { DashboardCompetitionDrawer } from "./DashboardCompetitionDrawer";
 import { getCompetitionType } from "@/utils/competitions/competitionUtils";
+import { useDataFetching } from "../../../hooks/useDataFetching"; // Import the custom hook
+import { getAllFederations } from "@/services/federationService";
+import { CompetitionCard } from "@/components/competitions/CompetitionCard";
 
-interface CompetitionsListProps {
-  federations: Federation[];
-}
-
-export function DashboardCompetitionsList({
-  federations,
-}: CompetitionsListProps) {
+export function DashboardCompetitionsList() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [selectedFederation, setSelectedFederation] = useState<string | null>(
     null
   );
@@ -39,42 +34,30 @@ export function DashboardCompetitionsList({
     Competition[]
   >([]);
   const [selectedStatus, setSelectedStatus] = useState<string>("upcoming");
-  const [drawerOpen, setDrawerOpen] = useState(false); // State for drawer visibility
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCompetition, setSelectedCompetition] =
-    useState<Competition | null>(null); // State for selected competition
+    useState<Competition | null>(null);
+
+  const {
+    data: competitions,
+    loading: competitionsLoading,
+    error: competitionsError,
+  } = useDataFetching<Competition[]>(getEligibleCompetitions);
+  const {
+    data: federations,
+    loading: federationsLoading,
+    error: federationsError,
+  } = useDataFetching<Federation[]>(getAllFederations);
+
+  const loading = competitionsLoading || federationsLoading;
+  const error = competitionsError || federationsError;
 
   useEffect(() => {
-    const fetchCompetitions = async () => {
-      try {
-        setLoading(true);
-        const response = await getEligibleCompetitions();
-        console.log("Competitions API Response:", response);
-        if (response.success) {
-          setCompetitions(response.data || []);
-          console.log("Set competitions:", response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching competitions:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCompetitions();
-  }, []);
-
-  // Update the filtering logic in the second useEffect
-  useEffect(() => {
-    console.log("Selected Federation:", selectedFederation);
-    console.log("All Competitions:", competitions);
+    if (!competitions) return;
 
     if (!selectedFederation) {
       setFilteredCompetitions(
         competitions.filter((comp) => comp.status === selectedStatus)
-      );
-      console.log(
-        "No federation selected, showing filtered competitions:",
-        competitions
       );
       return;
     }
@@ -84,20 +67,18 @@ export function DashboardCompetitionsList({
         if (typeof fed === "string") return fed;
         return fed._id;
       });
-      console.log("Competition eligible federations:", eligibleFederations);
-      console.log("Checking if federation is eligible:", selectedFederation);
 
       return (
         eligibleFederations.includes(selectedFederation) &&
         comp.status === selectedStatus
-      ); // Filter by status
+      );
     });
-    console.log("Filtered competitions:", filtered);
+
     setFilteredCompetitions(filtered);
-  }, [competitions, selectedFederation, selectedStatus]); // Add selectedStatus to dependencies
+  }, [competitions, selectedFederation, selectedStatus]);
 
   const getFederationOptions = () => {
-    if (!user) return [];
+    if (!user || !federations) return [];
 
     switch (user.role) {
       case "internationalAdmin":
@@ -163,6 +144,14 @@ export function DashboardCompetitionsList({
     );
   }
 
+  if (error) {
+    return (
+      <Container>
+        <Text color="red">Error fetching competitions: {error}</Text>
+      </Container>
+    );
+  }
+
   return (
     <Container size="xl">
       <Stack spacing="xl">
@@ -177,7 +166,6 @@ export function DashboardCompetitionsList({
             style={{ width: 300 }}
           />
         </Group>
-        {/* Button Group for Status Filter */}
         <Group>
           <Button
             variant={selectedStatus === "upcoming" ? "filled" : "outline"}
@@ -200,74 +188,17 @@ export function DashboardCompetitionsList({
         </Group>
 
         <Stack spacing="md">
-          {filteredCompetitions.map((competition) => {
-            const hostFederation =
-              typeof competition.hostFederationId === "string"
-                ? federations.find(
-                    (f) => f._id === competition.hostFederationId
-                  )
-                : competition.hostFederationId;
-
-            return (
-              <Card
-                key={competition._id}
-                withBorder
-                onClick={() => handleCardClick(competition)}
-                style={{ cursor: "pointer" }}
-              >
-                <Stack spacing="xs">
-                  <Group position="apart">
-                    <Text size="lg" weight={500}>
-                      {competition.name}
-                    </Text>
-                    <Badge color="blue">
-                      {getCompetitionType(competition, federations)}
-                    </Badge>
-                  </Group>
-
-                  <Divider />
-
-                  <Group spacing="xl">
-                    <Group spacing="xs">
-                      <IconCalendar size={16} />
-                      <Text size="sm">
-                        {format(new Date(competition.startDate), "PPP")}
-                        {competition.endDate &&
-                          ` - ${format(new Date(competition.endDate), "PPP")}`}
-                      </Text>
-                    </Group>
-
-                    <Group spacing="xs">
-                      <IconTrophy size={16} />
-                      <Text size="sm">{competition.location}</Text>
-                    </Group>
-
-                    <Group spacing="xs">
-                      <IconBuilding size={16} />
-                      <Text size="sm">{hostFederation?.name || ""}</Text>
-                    </Group>
-                  </Group>
-
-                  <Group position="apart" mt="xs">
-                    <Badge
-                      color={
-                        competition.status === "upcoming"
-                          ? "green"
-                          : competition.status === "ongoing"
-                          ? "blue"
-                          : "gray"
-                      }
-                    >
-                      {t(`dashboard.competitionsTab.status.${competition.status}`)}
-                    </Badge>
-                    <Button variant="subtle" size="sm">
-                      {t("common.viewDetails")}
-                    </Button>
-                  </Group>
-                </Stack>
-              </Card>
-            );
-          })}
+          {filteredCompetitions.map((competition) => (
+            <CompetitionCard
+              key={competition._id}
+              competition={competition}
+              federations={federations ?? []}
+              onClick={() => {
+                setSelectedCompetition(competition);
+                setDrawerOpen(true);
+              }}
+            />
+          ))}
         </Stack>
 
         {filteredCompetitions.length === 0 && (
@@ -280,8 +211,9 @@ export function DashboardCompetitionsList({
         opened={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         competition={selectedCompetition}
-        federations={federations}
+        federations={federations ?? []}
       />
     </Container>
   );
 }
+

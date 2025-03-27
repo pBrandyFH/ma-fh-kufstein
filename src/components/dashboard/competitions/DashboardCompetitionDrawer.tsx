@@ -25,7 +25,7 @@ export const DashboardCompetitionDrawer = ({
       onClose={onClose}
       title={competition ? competition.name : ""}
       padding="xl"
-      size="60rem"
+      size="80rem"
       position="right"
       overlayProps={{ blur: 4 }}
     >

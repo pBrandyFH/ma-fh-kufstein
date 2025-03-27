@@ -2,7 +2,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
+  useLocation,
 } from "react-router-dom";
 import { MainLayout } from "../components/layout/MainLayout";
 import { LoginForm } from "../components/auth/LoginForm";
@@ -33,25 +33,22 @@ import { MyAccount } from "../components/account/MyAccount";
 import { DashboardPage } from "../pages/DashboardPage";
 import { CompetitionsView } from "../components/competitions/CompetitionsView";
 import { createFederation } from "../services/federationService";
+import { CustomNavigate } from "../components/common/CustomNavigate";
 
 interface RouterProviderProps {
   authenticated: boolean;
   onLogout: () => void;
   onLogin: () => void;
-  federations: any[];
-  clubs: any[];
 }
 
 export function RouterProvider({
   authenticated,
   onLogout,
   onLogin,
-  federations,
-  clubs,
 }: RouterProviderProps) {
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (!authenticated) {
-      return <Navigate to="/auth/login" replace />;
+      return <CustomNavigate to="/auth/login" replace preserveSearch />;
     }
     return children;
   };
@@ -63,8 +60,9 @@ export function RouterProvider({
           <Route
             path="/"
             element={
-              <Navigate
+              <CustomNavigate
                 to={authenticated ? "/dashboard" : "/results"}
+                preserveSearch
                 replace
               />
             }
@@ -74,7 +72,7 @@ export function RouterProvider({
             path="/login"
             element={
               authenticated ? (
-                <Navigate to="/" replace />
+                <CustomNavigate to="/" replace preserveSearch />
               ) : (
                 <LoginForm onSuccess={onLogin} />
               )
@@ -82,10 +80,10 @@ export function RouterProvider({
           />
 
           <Route
-            path="/dashboard/*"
+            path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashboardPage federations={federations} />
+                <DashboardPage />
               </ProtectedRoute>
             }
           />
@@ -103,11 +101,12 @@ export function RouterProvider({
               path="create"
               element={
                 <ProtectedRoute>
-                  <AthleteForm
+                  {/* <AthleteForm
                     federations={federations}
                     clubs={clubs}
                     onSubmit={async (values) => console.log(values)}
-                  />
+                  /> */}
+                  <div>Athlete Form</div>
                 </ProtectedRoute>
               }
             />
@@ -142,11 +141,12 @@ export function RouterProvider({
               path="create"
               element={
                 <ProtectedRoute>
-                  <CompetitionForm
+                  <div>Competition Form</div>
+                  {/* <CompetitionForm
                     federations={federations}
                     clubs={clubs}
                     onSubmit={async (values) => console.log(values)}
-                  />
+                  /> */}
                 </ProtectedRoute>
               }
             />
@@ -181,12 +181,13 @@ export function RouterProvider({
               path="create"
               element={
                 <ProtectedRoute>
-                  <FederationForm
+                  {/* <FederationForm
                     onSubmit={async (values) => {
                       await createFederation(values);
                     }}
                     parentFederations={federations}
-                  />
+                  /> */}
+                  <div>Federation Form</div>
                 </ProtectedRoute>
               }
             />
@@ -221,10 +222,11 @@ export function RouterProvider({
               path="create"
               element={
                 <ProtectedRoute>
-                  <ClubForm
-                    federations={federations}
-                    onSubmit={async (values) => console.log(values)}
-                  />
+                  {/* <ClubForm
+                        federations={federations}
+                        onSubmit={async (values) => console.log(values)}
+                      /> */}
+                  <div>Club Form</div>
                 </ProtectedRoute>
               }
             />
@@ -289,7 +291,7 @@ export function RouterProvider({
           <Route path="/rankings" element={<RankingsView />} />
           <Route path="/records" element={<RecordsView />} />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<CustomNavigate to="/" replace />} />
         </Routes>
       </MainLayout>
     </Router>

@@ -26,15 +26,14 @@ import { getAllCompetitions } from "../services/competitionService";
 import { getAthletes } from "../services/athleteService";
 import type { Competition, Athlete, Federation } from "../types";
 import { DashboardCompetitionsList } from "../components/dashboard/competitions/DashboardCompetitionsList";
+import { useUrlParams } from "@/hooks/useUrlParams";
 
-interface DashboardPageProps {
-  federations: Federation[];
-}
-
-export function DashboardPage({ federations }: DashboardPageProps) {
+export function DashboardPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<string | null>("overview");
+  const { getParam, setParam } = useUrlParams();
+  const openedTab = getParam("tab") || "overview";
+  // const [activeTab, setActiveTab] = useState<string | null>("overview");
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     competitions: 0,
@@ -42,6 +41,7 @@ export function DashboardPage({ federations }: DashboardPageProps) {
     officials: 0,
     clubs: 0,
   });
+
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -145,7 +145,7 @@ export function DashboardPage({ federations }: DashboardPageProps) {
         icon: IconUserCheck,
       });
     }
-    
+
     // Add federation tabs based on admin role
     if (["stateAdmin", "federalStateAdmin"].includes(user.role)) {
       tabs.push({
@@ -194,7 +194,12 @@ export function DashboardPage({ federations }: DashboardPageProps) {
       <Stack spacing="xl">
         <Title order={1}>{t("dashboard.title")}</Title>
 
-        <Tabs value={activeTab} onTabChange={setActiveTab}>
+        <Tabs
+          value={openedTab}
+          onTabChange={(value) =>
+            setParam("tab", value?.toString() ?? "overview")
+          }
+        >
           <Tabs.List>
             {visibleTabs.map((tab) => (
               <Tabs.Tab
@@ -284,7 +289,7 @@ export function DashboardPage({ federations }: DashboardPageProps) {
           </Tabs.Panel>
 
           <Tabs.Panel value="competitions" pt="xl">
-            <DashboardCompetitionsList federations={federations} />
+            <DashboardCompetitionsList />
           </Tabs.Panel>
 
           <Tabs.Panel value="athletes" pt="xl">
