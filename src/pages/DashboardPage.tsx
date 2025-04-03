@@ -27,7 +27,7 @@ import { getAthletes } from "../services/athleteService";
 import type { Competition, Athlete, Federation } from "../types";
 import { DashboardCompetitionsList } from "../components/dashboard/competitions/DashboardCompetitionsList";
 import { useUrlParams } from "@/hooks/useUrlParams";
-import { DashboardInternationalFederationsList } from "@/components/dashboard/federations/InternationalFederation";
+import { DashboardInternationalFederationsList } from "@/components/dashboard/federations/DashboardInternationalFederationsList";
 import { Page } from "@/components/common/Page";
 
 export function DashboardPage() {

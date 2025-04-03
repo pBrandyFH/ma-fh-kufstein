@@ -24,6 +24,10 @@ interface CreateFederationRequestBody {
 interface UpdateFederationRequestBody
   extends Partial<CreateFederationRequestBody> {}
 
+// --------------------------------------------------------------------------------------------------------------
+// READ REQUESTS
+// --------------------------------------------------------------------------------------------------------------
+
 // Get all federations
 export const getAllFederations = async (
   req: AuthenticatedRequest,
@@ -93,121 +97,6 @@ export const getFederationById = async (
   }
 };
 
-// Create new federation
-export const createFederation = async (
-  req: AuthenticatedRequest<{}, {}, CreateFederationRequestBody>,
-  res: Response
-) => {
-  try {
-    const {
-      name,
-      abbreviation,
-      type,
-      parent,
-      adminId,
-      contactName,
-      contactEmail,
-      contactPhone,
-      website,
-      address,
-      city,
-      country,
-    } = req.body;
-
-    const federation = new Federation({
-      name,
-      abbreviation,
-      type,
-      parent,
-      adminId,
-      contactName,
-      contactEmail,
-      contactPhone,
-      website,
-      address,
-      city,
-      country,
-    });
-
-    await federation.save();
-
-    res.status(201).json({
-      success: true,
-      data: federation,
-    });
-  } catch (error) {
-    console.error("Create federation error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Server error while creating federation",
-    });
-  }
-};
-
-// Update federation
-export const updateFederation = async (
-  req: AuthenticatedRequest<{ id: string }, {}, UpdateFederationRequestBody>,
-  res: Response
-) => {
-  try {
-    const federation = await Federation.findById(req.params.id);
-
-    if (!federation) {
-      return res.status(404).json({
-        success: false,
-        error: "Federation not found",
-      });
-    }
-
-    const updatedFederation = await Federation.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-
-    res.status(200).json({
-      success: true,
-      data: updatedFederation,
-    });
-  } catch (error) {
-    console.error("Update federation error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Server error while updating federation",
-    });
-  }
-};
-
-// Delete federation
-export const deleteFederation = async (
-  req: AuthenticatedRequest<{ id: string }>,
-  res: Response
-) => {
-  try {
-    const federation = await Federation.findById(req.params.id);
-
-    if (!federation) {
-      return res.status(404).json({
-        success: false,
-        error: "Federation not found",
-      });
-    }
-
-    await federation.deleteOne();
-
-    res.status(200).json({
-      success: true,
-      message: "Federation deleted successfully",
-    });
-  } catch (error) {
-    console.error("Delete federation error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Server error while deleting federation",
-    });
-  }
-};
-
 // Get federations by type
 export const getFederationsByType = async (
   req: AuthenticatedRequest<{ type: FederationType }>,
@@ -218,11 +107,14 @@ export const getFederationsByType = async (
       type: req.params.type,
     }).populate<{
       parent: {
+        _id: string;
         name: string;
         abbreviation: string;
         type: FederationType;
       };
-    }>("parent", "name abbreviation type");
+    }>("parent", "_id name abbreviation type");
+
+    console.log(federations);
 
     res.status(200).json({
       success: true,
@@ -310,9 +202,16 @@ export const getFederationsByTypeFilter = async (
     }
 
     // Validate that all types are valid
-    const validTypes = ["international", "continental", "national", "federalState"];
-    const invalidTypes = types.filter((type: string) => !validTypes.includes(type));
-    
+    const validTypes = [
+      "international",
+      "continental",
+      "national",
+      "federalState",
+    ];
+    const invalidTypes = types.filter(
+      (type: string) => !validTypes.includes(type)
+    );
+
     if (invalidTypes.length > 0) {
       return res.status(400).json({
         success: false,
@@ -322,7 +221,16 @@ export const getFederationsByTypeFilter = async (
 
     const federations = await Federation.find({
       type: { $in: types },
-    }).sort({ name: 1 });
+    })
+      .sort({ name: 1 })
+      .populate<{
+        parent: {
+          _id: string;
+          name: string;
+          abbreviation: string;
+          type: FederationType;
+        };
+      }>("parent", "_id name abbreviation type");
 
     return res.json({
       success: true,
@@ -333,6 +241,205 @@ export const getFederationsByTypeFilter = async (
     return res.status(500).json({
       success: false,
       error: "Failed to fetch federations",
+    });
+  }
+};
+
+// --------------------------------------------------------------------------------------------------------------
+// CREATE REQUESTS
+// --------------------------------------------------------------------------------------------------------------
+
+// Create new federation
+export const createFederation = async (
+  req: AuthenticatedRequest<{}, {}, CreateFederationRequestBody>,
+  res: Response
+) => {
+  try {
+    const {
+      name,
+      abbreviation,
+      type,
+      parent,
+      adminId,
+      contactName,
+      contactEmail,
+      contactPhone,
+      website,
+      address,
+      city,
+      country,
+    } = req.body;
+
+    const federation = new Federation({
+      name,
+      abbreviation,
+      type,
+      parent,
+      adminId,
+      contactName,
+      contactEmail,
+      contactPhone,
+      website,
+      address,
+      city,
+      country,
+    });
+
+    await federation.save();
+
+    // Update parent federation's children array if parent exists
+    if (parent) {
+      await Federation.findByIdAndUpdate(
+        parent,
+        { $push: { children: federation._id } },
+        { new: true }
+      );
+    }
+
+    // Return the newly created federation
+    const populatedFederation = await Federation.findById(
+      federation._id
+    ).populate<{
+      parent: {
+        name: string;
+        abbreviation: string;
+        type: FederationType;
+      };
+    }>("parent", "name abbreviation type");
+
+    res.status(201).json({
+      success: true,
+      data: populatedFederation,
+    });
+  } catch (error) {
+    console.error("Create federation error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error while creating federation",
+    });
+  }
+};
+
+// --------------------------------------------------------------------------------------------------------------
+// UPDATE REQUESTS
+// --------------------------------------------------------------------------------------------------------------
+
+// Update federation
+export const updateFederation = async (
+  req: AuthenticatedRequest<{ id: string }, {}, UpdateFederationRequestBody>,
+  res: Response
+) => {
+  try {
+    const federation = await Federation.findById(req.params.id);
+
+    if (!federation) {
+      return res.status(404).json({
+        success: false,
+        error: "Federation not found",
+      });
+    }
+
+    const { parent } = req.body;
+
+    // Handle parent changes
+    if (parent !== undefined && !federation.parent?.equals(parent)) {
+      // Remove from old parent's children array if old parent exists
+      if (federation.parent) {
+        await Federation.findByIdAndUpdate(
+          federation.parent,
+          { $pull: { children: federation._id } },
+          { new: true }
+        );
+      }
+
+      // Add to new parent's children array if new parent exists
+      if (parent) {
+        await Federation.findByIdAndUpdate(
+          parent,
+          { $push: { children: federation._id } },
+          { new: true }
+        );
+      }
+    }
+
+    const updatedFederation = await Federation.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    ).populate<{
+      parent: {
+        name: string;
+        abbreviation: string;
+        type: FederationType;
+      };
+    }>("parent", "name abbreviation type");
+
+    res.status(200).json({
+      success: true,
+      data: updatedFederation,
+    });
+  } catch (error) {
+    console.error("Update federation error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error while updating federation",
+    });
+  }
+};
+
+// --------------------------------------------------------------------------------------------------------------
+// DELETE REQUESTS
+// --------------------------------------------------------------------------------------------------------------
+
+// Delete federation
+export const deleteFederation = async (
+  req: AuthenticatedRequest<{ id: string }>,
+  res: Response
+) => {
+  try {
+    const federation = await Federation.findById(req.params.id);
+
+    if (!federation) {
+      return res.status(404).json({
+        success: false,
+        error: "Federation not found",
+      });
+    }
+
+    // Remove this federation ID from parent's children array if parent exists
+    if (federation.parent) {
+      await Federation.findByIdAndUpdate(
+        federation.parent,
+        { $pull: { children: federation._id } },
+        { new: true }
+      );
+    }
+
+    // If this federation has children, handle those relationships
+    // Option 1: Prevent deletion if federation has children
+    const childCount = await Federation.countDocuments({
+      parent: federation._id,
+    });
+    if (childCount > 0) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Cannot delete federation with child federations. Remove child federations first.",
+      });
+    }
+
+    // If no children, proceed with deletion
+    await federation.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Federation deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete federation error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error while deleting federation",
     });
   }
 };

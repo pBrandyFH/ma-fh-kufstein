@@ -35,10 +35,8 @@ declare global {
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   // Get token from header
   const authHeader = req.header("Authorization");
-  console.log("Auth header:", authHeader); // Debug log
-
+  
   if (!authHeader) {
-    console.log("No Authorization header found"); // Debug log
     return res.status(401).json({
       success: false,
       error: "No token, authorization denied",
@@ -47,13 +45,10 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
 
   // Extract token from Bearer string
   const token = authHeader.replace("Bearer ", "");
-  console.log("Extracted token:", token); // Debug log
-
+  
   try {
     // Verify token
-    console.log("Verifying token with secret:", JWT_SECRET); // Debug log
     const decoded = verify(token, JWT_SECRET) as DecodedToken;
-    console.log("Decoded token:", decoded); // Debug log
 
     // Fetch user to get federationId
     const user = await User.findById(decoded.id);

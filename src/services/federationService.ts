@@ -178,6 +178,7 @@ export function getAllChildFederationIds(federationId: string, federationMap: Ma
 export async function getFederationsByTypeFilter(types: FederationType[]): Promise<ApiResponse<Federation[]>> {
   try {
     const response = await api.post<ApiResponse<Federation[]>>("/federations/type-filter", { types });
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error("Error fetching federations by type filter:", error);

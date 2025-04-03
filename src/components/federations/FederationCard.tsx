@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 
 interface FederationCardProps {
   federation: Federation;
-  onEdit: () => void;
+  onEdit: (e: React.MouseEvent) => void;
   onDelete: () => void;
   onClick: () => void;
 }
@@ -24,6 +24,16 @@ export function FederationCard({
   onClick,
 }: FederationCardProps) {
   const { t } = useTranslation();
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit(e);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete();
+  };
 
   return (
     <Card withBorder onClick={onClick}>
@@ -53,6 +63,7 @@ export function FederationCard({
               href={`mailto:${federation.contactEmail}`}
               variant="light"
               color="blue"
+              onClick={(e) => e.stopPropagation()} // Prevent card click event
             >
               <IconMail size={16} />
             </ActionIcon>
@@ -63,6 +74,7 @@ export function FederationCard({
               href={`tel:${federation.contactPhone}`}
               variant="light"
               color="blue"
+              onClick={(e) => e.stopPropagation()} // Prevent card click event
             >
               <IconPhone size={16} />
             </ActionIcon>
@@ -75,6 +87,7 @@ export function FederationCard({
               rel="noopener noreferrer"
               variant="light"
               color="blue"
+              onClick={(e) => e.stopPropagation()} // Prevent card click event
             >
               <IconWorld size={16} />
             </ActionIcon>
@@ -82,10 +95,10 @@ export function FederationCard({
         </Group>
 
         <Group position="right" mt="md">
-          <ActionIcon variant="light" onClick={onEdit}>
+          <ActionIcon variant="light" onClick={handleEditClick}>
             <IconEdit size={16} />
           </ActionIcon>
-          <ActionIcon color="red" variant="light" onClick={onDelete}>
+          <ActionIcon color="red" variant="light" onClick={handleDeleteClick}>
             <IconTrash size={16} />
           </ActionIcon>
         </Group>
