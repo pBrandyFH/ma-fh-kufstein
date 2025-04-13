@@ -1,19 +1,21 @@
-import mongoose, { type Document, Schema } from "mongoose"
-import bcrypt from "bcryptjs"
-import { UserRole } from "../types"
+import mongoose, { type Document, Schema } from "mongoose";
+import bcrypt from "bcryptjs";
+import { UserFederationRole } from "../permissions/types";
 
 export interface IUser extends Document {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
-  role: UserRole
-  federationId?: mongoose.Types.ObjectId
-  clubId?: mongoose.Types.ObjectId
-  athleteId?: mongoose.Types.ObjectId
-  createdAt: Date
-  updatedAt: Date
-  comparePassword(candidatePassword: string): Promise<boolean>
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  federationRoles: UserFederationRole[];
+  // Old fields for migration
+  role?: string;
+  federationId?: string;
+  clubId?: string;
+  athleteId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -39,57 +41,57 @@ const UserSchema = new Schema<IUser>(
       required: true,
       trim: true,
     },
-    role: {
-      type: String,
-      enum: [
-        "athlete",
-        "coach",
-        "official",
-        "clubAdmin",
-        "federalStateAdmin",
-        "stateAdmin",
-        "continentalAdmin",
-        "internationalAdmin"
+    federationRoles: {
+      type: [
+        {
+          federationId: {
+            type: String,
+            required: true,
+          },
+          role: {
+            type: String,
+            required: true,
+          },
+          overridePermissions: {
+            type: [String],
+            required: false,
+          },
+        },
       ],
+      default: [],
       required: true,
     },
-    federationId: {
-      type: Schema.Types.ObjectId,
-      ref: "Federation",
-    },
-    clubId: {
-      type: Schema.Types.ObjectId,
-      ref: "Club",
-    },
-    athleteId: {
-      type: Schema.Types.ObjectId,
-      ref: "Athlete",
-    },
+    // Old fields for migration
+    role: String,
+    federationId: String,
+    clubId: String,
+    athleteId: String
   },
   {
     timestamps: true,
   }
-)
+);
 
 // Hash password before saving
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next()
-  
+  if (!this.isModified("password")) return next();
+
   try {
-    const salt = await bcrypt.genSalt(10)
-    this.password = await bcrypt.hash(this.password, salt)
-    next()
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
   } catch (error) {
-    next(error as Error)
+    next(error as Error);
   }
-})
+});
 
 // Method to compare password
-UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password)
-}
+UserSchema.methods.comparePassword = async function (
+  candidatePassword: string
+): Promise<boolean> {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
-const User = mongoose.model<IUser>("User", UserSchema)
+const User = mongoose.model<IUser>("User", UserSchema);
 
-export default User
-
+export default User;

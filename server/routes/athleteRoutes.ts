@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import {
   getAllAthletes,
   getAthleteById,
@@ -8,10 +8,11 @@ import {
   getAthletesByFederation,
   getAthletesByClub,
   getAthletesByCoach,
-} from "../controllers/athleteController"
-import { auth, authorize } from "../middleware/auth"
+} from "../controllers/athleteController";
+import { auth, authorize } from "../middleware/auth";
+import { UserFederationRole } from "../permissions/types";
 
-const router = express.Router()
+const router = express.Router();
 
 /**
  * @swagger
@@ -55,7 +56,7 @@ const router = express.Router()
  *                       coachId:
  *                         type: string
  */
-router.get("/", getAllAthletes)
+router.get("/", getAllAthletes);
 
 /**
  * @swagger
@@ -106,7 +107,7 @@ router.get("/", getAllAthletes)
  *       404:
  *         description: Athlete not found
  */
-router.get("/:id", getAthleteById)
+router.get("/:id", getAthleteById);
 
 /**
  * @swagger
@@ -162,9 +163,13 @@ router.get("/:id", getAthleteById)
 router.post(
   "/",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  createAthlete,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  createAthlete
+);
 
 /**
  * @swagger
@@ -221,9 +226,13 @@ router.post(
 router.put(
   "/:id",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  updateAthlete,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  updateAthlete
+);
 
 /**
  * @swagger
@@ -253,9 +262,13 @@ router.put(
 router.delete(
   "/:id",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  deleteAthlete,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  deleteAthlete
+);
 
 /**
  * @swagger
@@ -283,9 +296,13 @@ router.delete(
 router.get(
   "/federation/:federationId",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  getAthletesByFederation,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  getAthletesByFederation
+);
 
 /**
  * @swagger
@@ -313,9 +330,13 @@ router.get(
 router.get(
   "/club/:clubId",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  getAthletesByClub,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  getAthletesByClub
+);
 
 /**
  * @swagger
@@ -340,7 +361,15 @@ router.get(
  *       403:
  *         description: Forbidden - Insufficient permissions
  */
-router.get("/coach/:coachId", auth, authorize(["coach"]), getAthletesByCoach)
+router.get(
+  "/coach/:coachId",
+  auth,
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  getAthletesByCoach
+);
 
-export default router
-
+export default router;

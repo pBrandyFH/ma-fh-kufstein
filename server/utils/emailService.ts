@@ -1,5 +1,5 @@
 import { createTransport } from "nodemailer";
-import { UserRole } from "../types";
+import { RoleType } from "../permissions/types";
 
 // Configure nodemailer
 const transporter = createTransport({
@@ -18,30 +18,22 @@ export const sendInviteEmail = async (
   firstName: string,
   lastName: string,
   inviteCode: string,
-  role: UserRole
+  role: RoleType
 ) => {
   const registrationUrl = `${
     process.env.FRONTEND_URL || "http://localhost:3000"
   }/register?inviteCode=${inviteCode}&email=${encodeURIComponent(email)}`;
 
-  const getRoleName = (role: UserRole): string => {
+  const getRoleName = (role: RoleType): string => {
     switch (role) {
-      case "athlete":
+      case "ATHLETE":
         return "Athlete";
-      case "coach":
-        return "Coach";
-      case "official":
-        return "Official";
-      case "clubAdmin":
+      case "CLUB_ADMIN":
         return "Club Administrator";
-      case "federalStateAdmin":
-        return "Federal State Federation Administrator";
-      case "stateAdmin":
-        return "National Federation Administrator";
-      case "continentalAdmin":
-        return "Continental Federation Administrator";
-      case "internationalAdmin":
-        return "International Federation Administrator";
+      case "FEDERATION_ADMIN":
+        return "Federation Administrator";
+      case "SUPERADMIN":
+        return "Super Administrator";
       default:
         return role;
     }

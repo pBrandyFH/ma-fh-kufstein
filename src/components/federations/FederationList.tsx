@@ -1,84 +1,113 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, Title, Text, Group, Button, Loader, ActionIcon, Menu, Badge, Accordion, Box } from "@mantine/core"
-import { useTranslation } from "react-i18next"
-import { Plus, MoreVertical, Edit, Trash, Mail } from "lucide-react"
-import { Link, Outlet } from "react-router-dom"
-import type { Federation } from "../../types"
-import { getAllFederations } from "../../services/federationService"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  Title,
+  Text,
+  Group,
+  Button,
+  Loader,
+  ActionIcon,
+  Menu,
+  Badge,
+  Accordion,
+  Box,
+} from "@mantine/core";
+import { useTranslation } from "react-i18next";
+import { Plus, MoreVertical, Edit, Trash, Mail } from "lucide-react";
+import { Link, Outlet } from "react-router-dom";
+import type { Federation } from "../../types";
+import { getAllFederations } from "../../services/federationService";
 
 interface FederationListProps {
-  onEdit?: (federation: Federation) => void
-  onDelete?: (federation: Federation) => void
-  onContact?: (federation: Federation) => void
+  onEdit?: (federation: Federation) => void;
+  onDelete?: (federation: Federation) => void;
+  onContact?: (federation: Federation) => void;
 }
 
-export function FederationList({ onEdit, onDelete, onContact }: FederationListProps) {
-  const { t } = useTranslation()
-  const [loading, setLoading] = useState(true)
-  const [federations, setFederations] = useState<Federation[]>([])
-  const [internationalFederations, setInternationalFederations] = useState<Federation[]>([])
+export function FederationList({
+  onEdit,
+  onDelete,
+  onContact,
+}: FederationListProps) {
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [federations, setFederations] = useState<Federation[]>([]);
+  const [internationalFederations, setInternationalFederations] = useState<
+    Federation[]
+  >([]);
 
   useEffect(() => {
     const fetchFederations = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await getAllFederations()
+        const response = await getAllFederations();
         if (response.success && response.data) {
-          setFederations(response.data)
+          setFederations(response.data);
 
           // Filter international federations
-          const international = response.data.filter((fed) => fed.type === "international")
-          setInternationalFederations(international)
+          const international = response.data.filter(
+            (fed) => fed.type === "international"
+          );
+          setInternationalFederations(international);
         }
       } catch (error) {
-        console.error("Error fetching federations:", error)
+        console.error("Error fetching federations:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchFederations()
-  }, [])
+    fetchFederations();
+  }, []);
 
   const getFederationTypeLabel = (type: string): string => {
     switch (type) {
       case "international":
-        return t("federations.types.international")
+        return t("federations.types.international");
       case "continental":
-        return t("federations.types.continental")
+      case "regional":
+        return t("federations.types.continental");
       case "national":
-        return t("federations.types.national")
+        return t("federations.types.national");
       case "federalState":
-        return t("federations.types.federalState")
+        return t("federations.types.federalState");
       default:
-        return type
+        return type;
     }
-  }
+  };
 
   const getFederationTypeColor = (type: string): string => {
     switch (type) {
       case "international":
-        return "blue"
+        return "blue";
       case "continental":
-        return "green"
+        return "green";
       case "national":
-        return "orange"
+        return "orange";
       case "federalState":
-        return "grape"
+        return "grape";
       default:
-        return "gray"
+        return "gray";
     }
-  }
+  };
 
   const handleMenuClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-  }
+    e.preventDefault();
+    e.stopPropagation();
+  };
 
   const renderFederationItem = (federation: Federation) => (
-    <Card key={federation._id} withBorder p="md" mb="md" component={Link} to={`/federations/${federation._id}`} sx={{ textDecoration: 'none' }}>
+    <Card
+      key={federation._id}
+      withBorder
+      p="md"
+      mb="md"
+      component={Link}
+      to={`/federations/${federation._id}`}
+      sx={{ textDecoration: "none" }}
+    >
       <Group position="apart">
         <div>
           <Group>
@@ -93,7 +122,9 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
           </Text>
         </div>
         <Group>
-          <Badge color={getFederationTypeColor(federation.type)}>{getFederationTypeLabel(federation.type)}</Badge>
+          <Badge color={getFederationTypeColor(federation.type)}>
+            {getFederationTypeLabel(federation.type)}
+          </Badge>
           <Box onClick={handleMenuClick}>
             <Menu position="bottom-end">
               <Menu.Target>
@@ -103,17 +134,27 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
               </Menu.Target>
               <Menu.Dropdown>
                 {onEdit && (
-                  <Menu.Item icon={<Edit size={14} />} onClick={() => onEdit(federation)}>
+                  <Menu.Item
+                    icon={<Edit size={14} />}
+                    onClick={() => onEdit(federation)}
+                  >
                     {t("common.edit")}
                   </Menu.Item>
                 )}
                 {onContact && (
-                  <Menu.Item icon={<Mail size={14} />} onClick={() => onContact(federation)}>
+                  <Menu.Item
+                    icon={<Mail size={14} />}
+                    onClick={() => onContact(federation)}
+                  >
                     {t("common.contact")}
                   </Menu.Item>
                 )}
                 {onDelete && (
-                  <Menu.Item icon={<Trash size={14} />} color="red" onClick={() => onDelete(federation)}>
+                  <Menu.Item
+                    icon={<Trash size={14} />}
+                    color="red"
+                    onClick={() => onDelete(federation)}
+                  >
                     {t("common.delete")}
                   </Menu.Item>
                 )}
@@ -123,10 +164,12 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
         </Group>
       </Group>
     </Card>
-  )
+  );
 
   const renderFederationHierarchy = (federation: Federation) => {
-    const childFederations = federations.filter((fed) => fed.parentFederation === federation._id)
+    const childFederations = federations.filter(
+      (fed) => fed.parentFederation === federation._id
+    );
 
     return (
       <Accordion.Item key={federation._id} value={federation._id}>
@@ -136,7 +179,9 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
             <Text size="sm" color="dimmed">
               ({federation.abbreviation})
             </Text>
-            <Badge color={getFederationTypeColor(federation.type)}>{getFederationTypeLabel(federation.type)}</Badge>
+            <Badge color={getFederationTypeColor(federation.type)}>
+              {getFederationTypeLabel(federation.type)}
+            </Badge>
           </Group>
         </Accordion.Control>
         <Accordion.Panel>
@@ -144,13 +189,17 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
             {renderFederationItem(federation)}
 
             {childFederations.length > 0 && (
-              <Accordion multiple>{childFederations.map((childFed) => renderFederationHierarchy(childFed))}</Accordion>
+              <Accordion multiple>
+                {childFederations.map((childFed) =>
+                  renderFederationHierarchy(childFed)
+                )}
+              </Accordion>
             )}
           </Box>
         </Accordion.Panel>
       </Accordion.Item>
-    )
-  }
+    );
+  };
 
   if (loading) {
     return (
@@ -159,22 +208,27 @@ export function FederationList({ onEdit, onDelete, onContact }: FederationListPr
           <Loader />
         </Group>
       </Card>
-    )
+    );
   }
 
   return (
     <Card withBorder p="xl">
       <Group position="apart" mb="xl">
         <Title order={2}>{t("federations.title")}</Title>
-        <Button leftIcon={<Plus size={16} />} component={Link} to="/federations/create">
+        <Button
+          leftIcon={<Plus size={16} />}
+          component={Link}
+          to="/federations/create"
+        >
           {t("federations.create")}
         </Button>
       </Group>
 
       <Accordion multiple>
-        {internationalFederations.map((federation) => renderFederationHierarchy(federation))}
+        {internationalFederations.map((federation) =>
+          renderFederationHierarchy(federation)
+        )}
       </Accordion>
     </Card>
-  )
+  );
 }
-

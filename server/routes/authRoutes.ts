@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import {
   register,
   login,
@@ -8,11 +8,11 @@ import {
   resendInvitation,
   deleteInvitation,
   validateInviteCode,
-} from "../controllers/authController"
-import { auth, authorize } from "../middleware/auth"
-import { UserRole } from "../types"
+} from "../controllers/authController";
+import { auth, authorize } from "../middleware/auth";
+import { RoleType } from "../permissions/types";
 
-const router = express.Router()
+const router = express.Router();
 
 /**
  * @swagger
@@ -51,7 +51,7 @@ const router = express.Router()
  *       400:
  *         description: Invalid input or user already exists
  */
-router.post("/register", register)
+router.post("/register", register);
 
 /**
  * @swagger
@@ -81,7 +81,7 @@ router.post("/register", register)
  *       401:
  *         description: Invalid credentials
  */
-router.post("/login", login)
+router.post("/login", login);
 
 /**
  * @swagger
@@ -110,7 +110,7 @@ router.post("/login", login)
  *       400:
  *         description: Invalid or expired invite code
  */
-router.post("/validate-invite", validateInviteCode)
+router.post("/validate-invite", validateInviteCode);
 
 /**
  * @swagger
@@ -129,20 +129,19 @@ router.post("/validate-invite", validateInviteCode)
  *             required:
  *               - email
  *               - role
+ *               - federationId
  *             properties:
  *               email:
  *                 type: string
  *                 format: email
  *               role:
  *                 type: string
- *                 enum: [athlete, coach, official, clubAdmin, federalStateAdmin, stateAdmin, continentalAdmin, internationalAdmin]
+ *                 enum: [ATHLETE, CLUB_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
  *               firstName:
  *                 type: string
  *               lastName:
  *                 type: string
  *               federationId:
- *                 type: string
- *               clubId:
  *                 type: string
  *     responses:
  *       200:
@@ -155,9 +154,14 @@ router.post("/validate-invite", validateInviteCode)
 router.post(
   "/invite",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  sendInvite,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  sendInvite
+);
 
 /**
  * @swagger
@@ -173,7 +177,12 @@ router.post(
  *       401:
  *         description: Unauthorized
  */
-router.get("/invitations", auth, authorize(["internationalAdmin"]), getAllInvitations)
+router.get(
+  "/invitations",
+  auth,
+  authorize([{ role: "SUPERADMIN", federationId: "*" }]),
+  getAllInvitations
+);
 
 /**
  * @swagger
@@ -192,9 +201,14 @@ router.get("/invitations", auth, authorize(["internationalAdmin"]), getAllInvita
 router.get(
   "/my-invitations",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  getMyInvitations,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  getMyInvitations
+);
 
 /**
  * @swagger
@@ -221,9 +235,13 @@ router.get(
 router.post(
   "/invitations/:id/resend",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  resendInvitation,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  resendInvitation
+);
 
 /**
  * @swagger
@@ -250,9 +268,12 @@ router.post(
 router.delete(
   "/invitations/:id",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  deleteInvitation,
-)
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  deleteInvitation
+);
 
-export default router
-
+export default router;

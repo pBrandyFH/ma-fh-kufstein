@@ -1,6 +1,6 @@
 import express from "express"
 import { auth, authorize } from "../middleware/auth"
-import type { UserRole } from "../types"
+import { UserFederationRole } from "../permissions/types"
 
 const router = express.Router()
 
@@ -196,13 +196,19 @@ router.get("/:id", (req, res) => {
 router.post(
   "/",
   auth,
-  authorize(["official", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   (req, res) => {
     res.status(201).json({
       success: true,
       message: "Create result endpoint",
     })
-  },
+  }
 )
 
 /**
@@ -262,13 +268,19 @@ router.post(
 router.put(
   "/:id",
   auth,
-  authorize(["official", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   (req, res) => {
     res.status(200).json({
       success: true,
       message: "Update result endpoint",
     })
-  },
+  }
 )
 
 /**
@@ -299,13 +311,18 @@ router.put(
 router.delete(
   "/:id",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   (req, res) => {
     res.status(200).json({
       success: true,
       message: "Delete result endpoint",
     })
-  },
+  }
 )
 
 /**
@@ -325,12 +342,23 @@ router.delete(
  *       200:
  *         description: List of results for the competition
  */
-router.get("/competition/:competitionId", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Get results by competition endpoint",
-  })
-})
+router.get(
+  "/competition/:competitionId",
+  auth,
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "Get results by competition endpoint",
+    })
+  }
+)
 
 /**
  * @swagger
@@ -349,12 +377,23 @@ router.get("/competition/:competitionId", (req, res) => {
  *       200:
  *         description: List of results for the athlete
  */
-router.get("/athlete/:athleteId", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Get results by athlete endpoint",
-  })
-})
+router.get(
+  "/athlete/:athleteId",
+  auth,
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "Get results by athlete endpoint",
+    })
+  }
+)
 
 /**
  * @swagger
@@ -408,13 +447,19 @@ router.get("/athlete/:athleteId", (req, res) => {
 router.put(
   "/:id/attempt",
   auth,
-  authorize(["official", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   (req, res) => {
     res.status(200).json({
       success: true,
       message: "Update attempt endpoint",
     })
-  },
+  }
 )
 
 /**
@@ -468,6 +513,74 @@ router.get("/rankings/competition/:competitionId", (req, res) => {
     message: "Calculate rankings endpoint",
   })
 })
+
+/**
+ * @swagger
+ * /api/results/federation/{federationId}:
+ *   get:
+ *     summary: Get results by federation
+ *     tags: [Results]
+ *     parameters:
+ *       - in: path
+ *         name: federationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Federation ID
+ *     responses:
+ *       200:
+ *         description: List of results for the federation
+ */
+router.get(
+  "/federation/:federationId",
+  auth,
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "Get results by federation endpoint",
+    })
+  }
+)
+
+/**
+ * @swagger
+ * /api/results/club/{clubId}:
+ *   get:
+ *     summary: Get results by club
+ *     tags: [Results]
+ *     parameters:
+ *       - in: path
+ *         name: clubId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Club ID
+ *     responses:
+ *       200:
+ *         description: List of results for the club
+ */
+router.get(
+  "/club/:clubId",
+  auth,
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "Get results by club endpoint",
+    })
+  }
+)
 
 export default router
 

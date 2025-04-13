@@ -12,6 +12,7 @@ import federationRoutes from "./routes/federationRoutes"
 import clubRoutes from "./routes/clubRoutes"
 import nominationRoutes from "./routes/nominationRoutes"
 import resultRoutes from "./routes/resultRoutes"
+import permissionRoutes from "./routes/permissionRoutes"
 import { initializeAuth } from "./controllers/authController"
 import { initializeAuth as initializeAuthMiddleware } from "./middleware/auth"
 
@@ -58,6 +59,7 @@ app.use("/api/federations", federationRoutes)
 app.use("/api/clubs", clubRoutes)
 app.use("/api/nominations", nominationRoutes)
 app.use("/api/results", resultRoutes)
+app.use("/api/permissions", permissionRoutes)
 
 // Start server
 app.listen(PORT, () => {

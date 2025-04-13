@@ -1,10 +1,10 @@
-import express from "express"
-import { auth, authorize } from "../middleware/auth"
-import type { UserRole } from "../types"
-import Competition from "../models/Competition"
-import Nomination from "../models/Nomination"
+import express from "express";
+import { auth, authorize } from "../middleware/auth";
+import { UserFederationRole } from "../permissions/types";
+import Competition from "../models/Competition";
+import Nomination from "../models/Nomination";
 
-const router = express.Router()
+const router = express.Router();
 
 /**
  * @swagger
@@ -63,25 +63,25 @@ router.get("/", async (req, res) => {
       competitions.map(async (competition) => {
         const athleteCount = await Nomination.countDocuments({
           competitionId: competition._id,
-          status: "approved"
+          status: "approved",
         });
 
         return {
           ...competition.toObject(),
-          athleteCount
+          athleteCount,
         };
       })
     );
 
     res.status(200).json({
       success: true,
-      data: competitionsWithCounts
+      data: competitionsWithCounts,
     });
   } catch (error) {
     console.error("Error fetching competitions:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to fetch competitions"
+      error: "Failed to fetch competitions",
     });
   }
 });
@@ -115,30 +115,30 @@ router.get("/eligible", auth, async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: "Unauthorized"
+        error: "Unauthorized",
       });
     }
 
-    // Get the user's federation ID
-    const userFederationId = user.federationId;
+    // Get the user's federation ID from their federation roles
+    const userFederationId = user.federationRoles?.[0]?.federationId;
 
     // Find competitions where the user's federation is eligible
     const competitions = await Competition.find({
-      eligibleFederationIds: { $in: [userFederationId] }
+      eligibleFederationIds: { $in: [userFederationId] },
     })
-    .populate("hostFederationId", "name type")
-    .populate("hostClubId", "name")
-    .sort({ startDate: -1 });
+      .populate("hostFederationId", "name type")
+      .populate("hostClubId", "name")
+      .sort({ startDate: -1 });
 
     res.status(200).json({
       success: true,
-      data: competitions
+      data: competitions,
     });
   } catch (error) {
     console.error("Error fetching eligible competitions:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to fetch eligible competitions"
+      error: "Failed to fetch eligible competitions",
     });
   }
 });
@@ -197,8 +197,8 @@ router.get("/:id", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Get competition by ID endpoint",
-  })
-})
+  });
+});
 
 /**
  * @swagger
@@ -253,14 +253,19 @@ router.get("/:id", (req, res) => {
 router.post(
   "/",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
   (req, res) => {
     res.status(201).json({
       success: true,
       message: "Create competition endpoint",
-    })
-  },
-)
+    });
+  }
+);
 
 /**
  * @swagger
@@ -318,14 +323,19 @@ router.post(
 router.put(
   "/:id",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
   (req, res) => {
     res.status(200).json({
       success: true,
       message: "Update competition endpoint",
-    })
-  },
-)
+    });
+  }
+);
 
 /**
  * @swagger
@@ -355,14 +365,19 @@ router.put(
 router.delete(
   "/:id",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
   (req, res) => {
     res.status(200).json({
       success: true,
       message: "Delete competition endpoint",
-    })
-  },
-)
+    });
+  }
+);
 
 /**
  * @swagger
@@ -385,8 +400,8 @@ router.get("/federation/:federationId", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Get competitions by federation endpoint",
-  })
-})
+  });
+});
 
 /**
  * @swagger
@@ -402,8 +417,8 @@ router.get("/international", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Get international competitions endpoint",
-  })
-})
+  });
+});
 
 /**
  * @swagger
@@ -419,8 +434,8 @@ router.get("/upcoming", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Get upcoming competitions endpoint",
-  })
-})
+  });
+});
 
 /**
  * @swagger
@@ -445,12 +460,30 @@ router.get("/upcoming", (req, res) => {
  *       403:
  *         description: Forbidden - User is not an official
  */
-router.get("/assigned/:userId", auth, authorize(["official"] as UserRole[]), (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Get assigned competitions endpoint",
-  })
-})
+router.get(
+  "/assigned/:userId",
+  auth,
+  authorize([{ role: "ATHLETE", federationId: "*" }]),
+  (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "Get assigned competitions endpoint",
+    });
+  }
+);
 
-export default router
+router.post(
+  "/:id/officials",
+  auth,
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  async (req, res) => {
+    // ... existing code ...
+  }
+);
 
+export default router;

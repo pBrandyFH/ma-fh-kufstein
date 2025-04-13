@@ -1,15 +1,13 @@
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import Federation from "../models/Federation";
-import User from "../models/User";
-import { sendInviteEmail } from "../utils/emailService";
 import { AuthenticatedRequest } from "./authController";
-import { FederationType } from "../types";
+import { FederationLevel } from "../permissions/types";
 
 interface CreateFederationRequestBody {
   name: string;
   abbreviation: string;
-  type: FederationType;
+  type: FederationLevel;
   parent?: mongoose.Types.ObjectId;
   adminId?: mongoose.Types.ObjectId;
   contactName?: string;
@@ -36,13 +34,13 @@ export const getAllFederations = async (
   try {
     const federations = await Federation.find()
       .populate<{
-        parent: { name: string; abbreviation: string; type: FederationType };
+        parent: { name: string; abbreviation: string; type: FederationLevel };
       }>("parent", "name abbreviation type")
       .populate<{
         children: {
           name: string;
           abbreviation: string;
-          type: FederationType;
+          type: FederationLevel;
         }[];
       }>("children", "name abbreviation type");
 
@@ -70,7 +68,7 @@ export const getFederationById = async (
         parent: {
           name: string;
           abbreviation: string;
-          type: FederationType;
+          type: FederationLevel;
         };
       }>("parent", "name abbreviation type")
       .populate<{
@@ -99,7 +97,7 @@ export const getFederationById = async (
 
 // Get federations by type
 export const getFederationsByType = async (
-  req: AuthenticatedRequest<{ type: FederationType }>,
+  req: AuthenticatedRequest<{ type: FederationLevel }>,
   res: Response
 ) => {
   try {
@@ -110,7 +108,7 @@ export const getFederationsByType = async (
         _id: string;
         name: string;
         abbreviation: string;
-        type: FederationType;
+        type: FederationLevel;
       };
     }>("parent", "_id name abbreviation type");
 
@@ -141,7 +139,7 @@ export const getFederationsByParent = async (
       parent: {
         name: string;
         abbreviation: string;
-        type: FederationType;
+        type: FederationLevel;
       };
     }>("parent", "name abbreviation type");
 
@@ -170,7 +168,7 @@ export const getChildFederations = async (
       parent: {
         name: string;
         abbreviation: string;
-        type: FederationType;
+        type: FederationLevel;
       };
     }>("parent", "name abbreviation type");
 
@@ -228,7 +226,7 @@ export const getFederationsByTypeFilter = async (
           _id: string;
           name: string;
           abbreviation: string;
-          type: FederationType;
+          type: FederationLevel;
         };
       }>("parent", "_id name abbreviation type");
 
@@ -303,7 +301,7 @@ export const createFederation = async (
       parent: {
         name: string;
         abbreviation: string;
-        type: FederationType;
+        type: FederationLevel;
       };
     }>("parent", "name abbreviation type");
 
@@ -370,7 +368,7 @@ export const updateFederation = async (
       parent: {
         name: string;
         abbreviation: string;
-        type: FederationType;
+        type: FederationLevel;
       };
     }>("parent", "name abbreviation type");
 

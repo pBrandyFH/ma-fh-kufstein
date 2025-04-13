@@ -1,23 +1,14 @@
+import { UserFederationRole, RoleType, Permission } from "./permissions";
+
 // User and Authentication Types
-export type UserRole =
-  | "athlete"
-  | "coach"
-  | "official"
-  | "clubAdmin"
-  | "federalStateAdmin"
-  | "stateAdmin"
-  | "continentalAdmin"
-  | "internationalAdmin";
+export type UserRole = RoleType;
 
 export interface User {
   _id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: UserRole;
-  federationId?: string;
-  clubId?: string;
-  athleteId?: string;
+  federationRoles: UserFederationRole[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -192,7 +183,7 @@ export interface Invitation {
   _id: string;
   email: string;
   inviteCode: string;
-  role: UserRole;
+  role: UserFederationRole;
   federationId?: string | Federation;
   clubId?: string | Club;
   invitedBy: string | User;
@@ -294,7 +285,7 @@ export interface NominationFormValues {
 
 export interface InvitationFormValues {
   email: string;
-  role: UserRole | "";
+  role: UserFederationRole | null;
   firstName?: string;
   lastName?: string;
   federationId?: string;
@@ -313,7 +304,7 @@ export interface InviteValidationResponse {
   email: string;
   firstName?: string;
   lastName?: string;
-  role: UserRole;
+  role: UserFederationRole;
   federation?: Federation;
   club?: Club;
   expiresAt: Date;

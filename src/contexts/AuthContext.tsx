@@ -6,17 +6,19 @@ import {
   ReactNode,
 } from "react";
 import * as authService from "../services/authService";
-import type { User, LoginFormValues } from "../types";
+import type { User, LoginFormValues, Federation } from "../types";
 import {
   getCurrentUser,
   isAuthenticated,
   logout,
 } from "../services/authService";
+import { getFederationById } from "@/services/federationService";
 
 interface AuthContextType {
   authenticated: boolean;
   user: User | null;
-  isAuthLoading: boolean; 
+  federation: Federation | null;
+  isAuthLoading: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -25,6 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [federation, setFederation] = useState<Federation>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
@@ -58,6 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isAuth) {
         const currentUser = getCurrentUser();
         if (currentUser) {
+          console.log("CurrentUser: ", currentUser);
+          const { data: federation } = await getFederationById(
+            currentUser?.federationRoles[0].federationId ?? ""
+          );
+          if (federation) {
+            setFederation(federation);
+          }
           setUser(currentUser);
         }
       }
@@ -82,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         authenticated,
         user,
+        federation,
         isAuthLoading, // Add this to the context value
         login: handleLogin,
         logout: handleLogout,

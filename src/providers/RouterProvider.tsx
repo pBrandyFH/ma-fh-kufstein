@@ -30,6 +30,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, Group, Loader } from "@mantine/core";
 import { LoginForm } from "@/components/auth/LoginForm";
 import FederationDetailsPage from "@/pages/FederationDetailsPage";
+import OverviewPage from "@/pages/admin/OverviewPage";
 
 export function RouterProvider() {
   const { authenticated, isAuthLoading, logout, login } = useAuth();
@@ -67,14 +68,16 @@ export function RouterProvider() {
             }
           />
 
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/dashboard">
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <OverviewPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
           <Route path="/athletes">
             <Route

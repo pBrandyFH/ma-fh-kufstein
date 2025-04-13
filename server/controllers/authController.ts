@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 import User from "../models/User";
 import Invitation from "../models/Invitation";
 import { sendInviteEmail } from "../utils/emailService";
-import { DecodedToken, InviteValidationResponse, UserRole } from "../types";
+import { DecodedToken, InviteValidationResponse } from "../types";
+import { UserFederationRole, RoleType } from "../permissions/types";
 
 let JWT_SECRET: string;
 const INVITE_EXPIRY_DAYS: number = 7; // Invites expire after 7 days
@@ -33,11 +34,10 @@ interface LoginRequestBody {
 
 interface InviteRequestBody {
   email: string;
-  role: UserRole;
+  role: RoleType;
   firstName?: string;
   lastName?: string;
-  federationId?: mongoose.Types.ObjectId;
-  clubId?: mongoose.Types.ObjectId;
+  federationId: mongoose.Types.ObjectId;
 }
 
 interface ValidateInviteRequestBody {
@@ -46,7 +46,8 @@ interface ValidateInviteRequestBody {
 }
 
 // Extend Express Request type to include user
-export interface AuthenticatedRequest<P = {}, ResBody = {}, ReqBody = {}> extends Request<P, ResBody, ReqBody> {
+export interface AuthenticatedRequest<P = {}, ResBody = {}, ReqBody = {}>
+  extends Request<P, ResBody, ReqBody> {
   user?: DecodedToken;
 }
 
@@ -89,15 +90,17 @@ export const register = async (
       });
     }
 
-    // Create new user with role from invitation
+    // Create new user with federation role from invitation
     const user = new User({
       email,
       password,
       firstName: firstName || invitation.firstName,
       lastName: lastName || invitation.lastName,
-      role: invitation.role,
-      federationId: invitation.federationId,
-      clubId: invitation.clubId,
+      federationRoles: [{
+        federationId: invitation.federationId,
+        role: invitation.role as RoleType,
+        overridePermissions: []
+      }]
     });
 
     await user.save();
@@ -108,7 +111,7 @@ export const register = async (
 
     // Generate JWT token
     const token = sign(
-      { id: user._id, email: user.email, role: user.role },
+      { id: user._id, email: user.email, federationRoles: user.federationRoles },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -119,9 +122,7 @@ export const register = async (
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role,
-      federationId: user.federationId,
-      clubId: user.clubId,
+      federationRoles: user.federationRoles,
     };
 
     res.status(201).json({
@@ -168,7 +169,7 @@ export const login = async (
 
     // Generate JWT token
     const token = sign(
-      { id: user._id, email: user.email, role: user.role },
+      { id: user._id, email: user.email, role: user.federationRoles },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -179,10 +180,7 @@ export const login = async (
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role,
-      federationId: user.federationId,
-      clubId: user.clubId,
-      athleteId: user.athleteId,
+      federationRoles: user.federationRoles,
     };
 
     res.status(200).json({
@@ -207,7 +205,7 @@ export const sendInvite = async (
   res: Response
 ) => {
   try {
-    const { email, role, firstName, lastName, federationId, clubId } = req.body;
+    const { email, role, firstName, lastName, federationId } = req.body;
     const invitedBy = req.user?.id;
 
     if (!invitedBy) {
@@ -253,7 +251,6 @@ export const sendInvite = async (
       inviteCode,
       role,
       federationId,
-      clubId,
       invitedBy,
       firstName,
       lastName,
@@ -311,7 +308,10 @@ export const getAllInvitations = async (req: Request, res: Response) => {
 };
 
 // Get invitations by user
-export const getMyInvitations = async (req: AuthenticatedRequest, res: Response) => {
+export const getMyInvitations = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const userId = req.user?.id;
 
@@ -386,7 +386,7 @@ export const resendInvitation = async (
       invitation.firstName || "",
       invitation.lastName || "",
       invitation.inviteCode,
-      invitation.role as UserRole
+      invitation.role as RoleType
     );
 
     res.status(200).json({
@@ -472,8 +472,20 @@ export const validateInviteCode = async (
       used: false,
       expiresAt: { $gt: new Date() },
     })
-      .populate<{ federationId: { _id: mongoose.Types.ObjectId; name: string; abbreviation: string } }>("federationId", "name abbreviation")
-      .populate<{ clubId: { _id: mongoose.Types.ObjectId; name: string; abbreviation: string } }>("clubId", "name abbreviation");
+      .populate<{
+        federationId: {
+          _id: mongoose.Types.ObjectId;
+          name: string;
+          abbreviation: string;
+        };
+      }>("federationId", "name abbreviation")
+      .populate<{
+        clubId: {
+          _id: mongoose.Types.ObjectId;
+          name: string;
+          abbreviation: string;
+        };
+      }>("clubId", "name abbreviation");
 
     if (!invitation) {
       return res.status(400).json({
@@ -483,28 +495,18 @@ export const validateInviteCode = async (
     }
 
     const response: InviteValidationResponse = {
-      email: invitation.email,
+      valid: true,
+      role: invitation.role as RoleType,
+      federation: invitation.federationId
+        ? {
+            id: invitation.federationId._id.toString(),
+            name: invitation.federationId.name,
+            abbreviation: invitation.federationId.abbreviation,
+          }
+        : undefined,
       firstName: invitation.firstName,
       lastName: invitation.lastName,
-      role: invitation.role,
-      expiresAt: invitation.expiresAt,
     };
-
-    if (invitation.federationId) {
-      response.federation = {
-        _id: invitation.federationId._id.toString(),
-        name: invitation.federationId.name,
-        abbreviation: invitation.federationId.abbreviation,
-      };
-    }
-
-    if (invitation.clubId) {
-      response.club = {
-        _id: invitation.clubId._id.toString(),
-        name: invitation.clubId.name,
-        abbreviation: invitation.clubId.abbreviation,
-      };
-    }
 
     res.status(200).json({
       success: true,

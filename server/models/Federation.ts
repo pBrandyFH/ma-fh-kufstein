@@ -1,22 +1,23 @@
-import mongoose, { type Document, Schema } from "mongoose"
-import { FederationType } from "../types"
+import mongoose, { type Document, Schema } from "mongoose";
+
+import { FederationLevel } from "../permissions/types";
 
 export interface IFederation extends Document {
-  name: string
-  abbreviation: string
-  type: FederationType
-  parent?: mongoose.Types.ObjectId
-  children: mongoose.Types.ObjectId[]
-  adminId?: mongoose.Types.ObjectId
-  contactName?: string
-  contactEmail?: string
-  contactPhone?: string
-  website?: string
-  address?: string
-  city?: string
-  country?: string
-  createdAt: Date
-  updatedAt: Date
+  name: string;
+  abbreviation: string;
+  type: FederationLevel;
+  parent?: mongoose.Types.ObjectId;
+  children: mongoose.Types.ObjectId[];
+  adminId?: mongoose.Types.ObjectId;
+  contactName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  website?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const FederationSchema = new Schema<IFederation>(
@@ -40,10 +41,12 @@ const FederationSchema = new Schema<IFederation>(
       type: Schema.Types.ObjectId,
       ref: "Federation",
     },
-    children: [{
-      type: Schema.Types.ObjectId,
-      ref: "Federation",
-    }],
+    children: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Federation",
+      },
+    ],
     adminId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -80,8 +83,7 @@ const FederationSchema = new Schema<IFederation>(
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
-export default mongoose.model<IFederation>("Federation", FederationSchema)
-
+export default mongoose.model<IFederation>("Federation", FederationSchema);

@@ -1,6 +1,6 @@
 import express from "express"
 import { auth, authorize } from "../middleware/auth"
-import type { UserRole } from "../types"
+import { UserFederationRole } from "../permissions/types"
 
 const router = express.Router()
 
@@ -54,13 +54,18 @@ const router = express.Router()
 router.get(
   "/",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   (req, res) => {
     res.status(200).json({
       success: true,
       message: "Get all nominations endpoint",
     })
-  },
+  }
 )
 
 /**
@@ -160,13 +165,18 @@ router.get("/:id", auth, (req, res) => {
 router.post(
   "/",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   (req, res) => {
     res.status(201).json({
       success: true,
       message: "Create nomination endpoint",
     })
-  },
+  }
 )
 
 /**
@@ -211,13 +221,17 @@ router.post(
 router.put(
   "/:id/status",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   (req, res) => {
     res.status(200).json({
       success: true,
       message: "Update nomination status endpoint",
     })
-  },
+  }
 )
 
 /**
@@ -248,13 +262,18 @@ router.put(
 router.delete(
   "/:id",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"] as UserRole[]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   (req, res) => {
     res.status(200).json({
       success: true,
       message: "Delete nomination endpoint",
     })
-  },
+  }
 )
 
 /**

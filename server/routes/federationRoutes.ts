@@ -11,6 +11,7 @@ import {
   getFederationsByTypeFilter,
 } from "../controllers/federationController"
 import { auth, authorize } from "../middleware/auth"
+import { UserFederationRole } from "../permissions/types"
 
 const router = express.Router()
 
@@ -193,7 +194,16 @@ router.get("/:id/children", getChildFederations)
  *       400:
  *         description: Invalid input data
  */
-router.post("/", auth, authorize(["stateAdmin", "continentalAdmin", "internationalAdmin"]), createFederation)
+router.post(
+  "/",
+  auth,
+  authorize([
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  createFederation
+)
 
 /**
  * @swagger
@@ -243,8 +253,13 @@ router.post("/", auth, authorize(["stateAdmin", "continentalAdmin", "internation
 router.put(
   "/:id",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
-  updateFederation,
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  updateFederation
 )
 
 /**
@@ -272,7 +287,16 @@ router.put(
  *       404:
  *         description: Federation not found
  */
-router.delete("/:id", auth, authorize(["stateAdmin", "continentalAdmin", "internationalAdmin"]), deleteFederation)
+router.delete(
+  "/:id",
+  auth,
+  authorize([
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  deleteFederation
+)
 
 router.post(
   "/type-filter",

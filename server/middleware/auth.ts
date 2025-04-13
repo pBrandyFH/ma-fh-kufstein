@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import type { UserRole } from "../types";
+import type { DecodedToken } from "../types";
 import User from "../models/User";
+import { UserFederationRole } from "../permissions/types";
 
 let JWT_SECRET: string;
 
@@ -12,15 +13,6 @@ export const initializeAuth = () => {
   }
   JWT_SECRET = process.env.JWT_SECRET;
 };
-
-interface DecodedToken {
-  id: string;
-  email: string;
-  role: UserRole;
-  federationId?: string;
-  iat: number;
-  exp: number;
-}
 
 // Extend Express Request interface to include user
 declare global {
@@ -35,7 +27,7 @@ declare global {
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   // Get token from header
   const authHeader = req.header("Authorization");
-  
+
   if (!authHeader) {
     return res.status(401).json({
       success: false,
@@ -45,12 +37,12 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
 
   // Extract token from Bearer string
   const token = authHeader.replace("Bearer ", "");
-  
+
   try {
     // Verify token
     const decoded = verify(token, JWT_SECRET) as DecodedToken;
 
-    // Fetch user to get federationId
+    // Fetch user to get federationRoles
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
@@ -59,10 +51,10 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    // Add user from payload to request with federationId
+    // Add user from payload to request with federationRoles
     req.user = {
       ...decoded,
-      federationId: user.federationId?.toString(),
+      federationRoles: user.federationRoles
     };
     next();
   } catch (error) {
@@ -75,7 +67,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // Middleware to check user role
-export const authorize = (roles: UserRole[]) => {
+export const authorize = (roles: UserFederationRole[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       console.log("No user found in request"); // Debug log
@@ -85,10 +77,26 @@ export const authorize = (roles: UserRole[]) => {
       });
     }
 
-    console.log("User role:", req.user.role); // Debug log
+    console.log("User federation roles:", req.user.federationRoles); // Debug log
     console.log("Required roles:", roles); // Debug log
 
-    if (!roles.includes(req.user.role)) {
+    // Check if user has any of the required roles
+    const hasRequiredRole = roles.some((requiredRole) => {
+      // If required role has wildcard federationId, check role only
+      if (requiredRole.federationId === "*") {
+        return req.user?.federationRoles.some(
+          (userRole) => userRole.role === requiredRole.role
+        );
+      }
+      // Otherwise check both role and federationId
+      return req.user?.federationRoles.some(
+        (userRole) =>
+          userRole.role === requiredRole.role &&
+          userRole.federationId === requiredRole.federationId
+      );
+    });
+
+    if (!hasRequiredRole) {
       console.log("User role not authorized"); // Debug log
       return res.status(403).json({
         success: false,

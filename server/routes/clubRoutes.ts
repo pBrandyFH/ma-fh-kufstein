@@ -8,6 +8,7 @@ import {
   getClubsByFederation,
 } from "../controllers/clubController"
 import { auth, authorize } from "../middleware/auth"
+import { UserFederationRole } from "../permissions/types"
 
 const router = express.Router()
 
@@ -174,7 +175,12 @@ router.get("/federation/:federationId", getClubsByFederation)
 router.post(
   "/",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   createClub,
 )
 
@@ -232,7 +238,12 @@ router.post(
 router.put(
   "/:id",
   auth,
-  authorize(["clubAdmin", "federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   updateClub,
 )
 
@@ -264,7 +275,12 @@ router.put(
 router.delete(
   "/:id",
   auth,
-  authorize(["federalStateAdmin", "stateAdmin", "continentalAdmin", "internationalAdmin"]),
+  authorize([
+    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
   deleteClub,
 )
 

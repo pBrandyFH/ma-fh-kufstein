@@ -1,10 +1,11 @@
 import mongoose, { type Document, Schema } from "mongoose"
 import type { UserRole } from "../types"
+import { RoleType } from "../permissions/types"
 
 export interface IInvitation extends Document {
   email: string
   inviteCode: string
-  role: UserRole
+  role: RoleType
   federationId?: mongoose.Types.ObjectId
   clubId?: mongoose.Types.ObjectId
   invitedBy: mongoose.Types.ObjectId
@@ -31,16 +32,6 @@ const InvitationSchema = new Schema<IInvitation>(
     },
     role: {
       type: String,
-      enum: [
-        "athlete",
-        "coach",
-        "official",
-        "clubAdmin",
-        "federalStateAdmin",
-        "stateAdmin",
-        "continentalAdmin",
-        "internationalAdmin",
-      ],
       required: true,
     },
     federationId: {
