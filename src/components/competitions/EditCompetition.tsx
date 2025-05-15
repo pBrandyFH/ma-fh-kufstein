@@ -10,7 +10,7 @@ const mockCompetition = {
   name: "German Nationals 2024",
   date: "2024-06-15",
   location: "Berlin, Germany",
-  type: "national",
+  type: "NATIONAL",
   status: "upcoming",
   registrationDeadline: "2024-05-15",
   organizer: "German Powerlifting Federation",
@@ -119,7 +119,7 @@ export function EditCompetition() {
                   value={formData.type}
                   onChange={(value) => handleChange("type", value)}
                   data={[
-                    { value: "national", label: t("competitions.types.national") },
+                    { value: "NATIONAL", label: t("competitions.types.NATIONAL") },
                     { value: "regional", label: t("competitions.types.regional") },
                     { value: "local", label: t("competitions.types.local") },
                   ]}

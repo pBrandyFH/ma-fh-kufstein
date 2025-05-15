@@ -43,7 +43,7 @@ const router = express.Router();
  *                             type: string
  *                           role:
  *                             type: string
- *                             enum: [ATHLETE, CLUB_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
+ *                             enum: [ATHLETE, MEMBER_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
  *                           overridePermissions:
  *                             type: array
  *                             items:
@@ -117,7 +117,7 @@ router.get("/me", auth, async (req, res) => {
  *                             type: string
  *                           role:
  *                             type: string
- *                             enum: [ATHLETE, CLUB_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
+ *                             enum: [ATHLETE, MEMBER_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
  *                           overridePermissions:
  *                             type: array
  *                             items:
@@ -220,7 +220,7 @@ router.get(
  *                             type: string
  *                           role:
  *                             type: string
- *                             enum: [ATHLETE, CLUB_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
+ *                             enum: [ATHLETE, MEMBER_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
  *                           overridePermissions:
  *                             type: array
  *                             items:

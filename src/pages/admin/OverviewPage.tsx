@@ -1,30 +1,67 @@
 import { Page } from "@/components/common/Page";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUrlParams } from "@/hooks/useUrlParams";
-import { Card, Grid } from "@mantine/core";
+import { Card, Grid, Title, Text } from "@mantine/core";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function OverviewPage() {
   const { t } = useTranslation();
   const { user, federation } = useAuth();
   const { getParam, setParam } = useUrlParams();
+  const navigate = useNavigate();
 
   console.log(user);
-  console.log(federation);
+  console.log("Federation:", federation);
   return (
     <Page title={t("dashboard.title")}>
-      <Grid>
-        <Grid.Col md={6}>
-          <Card withBorder> test</Card>
+      <Grid gutter="md">
+        <Grid.Col xs={12} md={6}>
+          <Card
+            withBorder
+            onClick={() => navigate(`/federations/${federation?._id}`)}
+          >
+            <Title order={4}>Federation</Title>
+            <Text size="sm" color="dimmed">
+              some info
+            </Text>
+            <Text size="sm" color="dimmed">
+              some info
+            </Text>
+          </Card>
         </Grid.Col>
-        <Grid.Col md={6}>
-          <Card withBorder> test</Card>
+        <Grid.Col xs={12} md={6}>
+          <Card withBorder onClick={() => navigate("/competitions")}>
+            <Title order={4}>Competitions</Title>
+            <Text size="sm" color="dimmed">
+              some info
+            </Text>
+            <Text size="sm" color="dimmed">
+              some info
+            </Text>
+          </Card>
         </Grid.Col>
-        <Grid.Col md={6}>
-          <Card withBorder> test</Card>
+        <Grid.Col xs={12} md={6}>
+          <Card withBorder onClick={() => navigate("/members")}>
+            <Title order={4}>Members</Title>
+            <Text size="sm" color="dimmed">
+              some info
+            </Text>
+            <Text size="sm" color="dimmed">
+              some info
+            </Text>
+          </Card>
         </Grid.Col>
-        <Grid.Col md={6}>
-          <Card withBorder> test</Card>
+        <Grid.Col xs={12} md={6}>
+          <Card withBorder onClick={() => navigate("/athletes")}>
+            <Title order={4}>Athletes</Title>
+            <Text size="sm" color="dimmed">
+              some info
+            </Text>
+            <Text size="sm" color="dimmed">
+              some info
+            </Text>
+          </Card>
         </Grid.Col>
       </Grid>
     </Page>

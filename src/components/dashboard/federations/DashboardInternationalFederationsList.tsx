@@ -27,7 +27,7 @@ import { useDataFetching } from "@/hooks/useDataFetching";
 import { FederationCard } from "@/components/federations/FederationCard";
 import { DashboardFederationDrawer } from "./DashboardFederationDrawer";
 import { useNavigate } from "react-router-dom";
-import { FederationFormModal } from "@/components/federations/FederationFormModal";
+import { FederationFormModal } from "@/components/federations/legacy/FederationFormModal";
 
 export function DashboardInternationalFederationsList() {
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ export function DashboardInternationalFederationsList() {
     error: federationsError,
     refetch: refetchFederations,
   } = useDataFetching<Federation[]>(() =>
-    getFederationsByTypeFilter(["international", "continental"])
+    getFederationsByTypeFilter(["INTERNATIONAL", "REGIONAL"])
   );
 
   const loading = federationsLoading;
@@ -91,14 +91,14 @@ export function DashboardInternationalFederationsList() {
   }
 
   const sortedFederations = federations?.sort((a, b) => {
-    if (a.type === "international" && b.type !== "international") return -1;
-    if (a.type !== "international" && b.type === "international") return 1;
+    if (a.type === "INTERNATIONAL" && b.type !== "INTERNATIONAL") return -1;
+    if (a.type !== "INTERNATIONAL" && b.type === "INTERNATIONAL") return 1;
     return 0; // Keep the original order for the same type
   });
 
-  // Find the international federation to use as default parent
+  // Find the INTERNATIONAL federation to use as default parent
   const internationalFederation = federations?.find(
-    (fed) => fed.type === "international"
+    (fed) => fed.type === "INTERNATIONAL"
   );
   const hasInternational = !!internationalFederation;
   const defaultParentId = internationalFederation?._id || "";
@@ -106,7 +106,7 @@ export function DashboardInternationalFederationsList() {
   return (
     <Stack spacing="xl">
       <Group position="apart">
-        <Title order={2}>{t("federations.international.title")}</Title>
+        <Title order={2}>{t("federations.INTERNATIONAL.title")}</Title>
         <Button
           leftIcon={<IconPlus size={16} />}
           onClick={() => setCreateModalOpened(true)}
@@ -136,9 +136,9 @@ export function DashboardInternationalFederationsList() {
         federations={federations || []}
         modalTitle={t("federations.create")}
         allowedTypes={
-          hasInternational ? ["continental"] : ["international", "continental"]
+          hasInternational ? ["REGIONAL"] : ["INTERNATIONAL", "REGIONAL"]
         }
-        defaultType={hasInternational ? "continental" : "international"}
+        defaultType={hasInternational ? "REGIONAL" : "INTERNATIONAL"}
         defaultParentId={hasInternational ? defaultParentId : ""}
       />
 
@@ -153,7 +153,7 @@ export function DashboardInternationalFederationsList() {
           onSuccess={handleEditSuccess}
           federations={federations || []}
           modalTitle={t("federations.edit")}
-          allowedTypes={["international", "continental"]}
+          allowedTypes={["INTERNATIONAL", "REGIONAL"]}
           federationToEdit={selectedFederation}
           isEditMode={true}
         />

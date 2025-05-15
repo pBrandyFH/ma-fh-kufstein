@@ -47,6 +47,7 @@ api.interceptors.response.use(
         "/api/clubs",
         "/api/federations",
         "/api/users",
+        "/api/members"
       ]
       
       const isProtectedRoute = protectedRoutes.some(route => 

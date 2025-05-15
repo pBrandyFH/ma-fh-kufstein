@@ -16,7 +16,7 @@ const mockAthlete = {
   category: "open",
   weightClass: "93kg",
   status: "active",
-  notes: "Experienced powerlifter with multiple national records",
+  notes: "Experienced powerlifter with multiple NATIONAL records",
   weight: 92.5,
   height: 180,
 }

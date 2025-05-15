@@ -42,19 +42,19 @@ export function StateAdminDashboard({ federationId }: StateAdminDashboardProps) 
           setFederation(fedResponse.data)
         }
 
-        // Fetch national competitions
+        // Fetch NATIONAL competitions
         const nationalCompsResponse = await getCompetitionsByFederation(federationId)
         if (nationalCompsResponse.success && nationalCompsResponse.data) {
           setNationalCompetitions(nationalCompsResponse.data)
         }
 
-        // Fetch international competitions
+        // Fetch INTERNATIONAL competitions
         const intlCompsResponse = await getInternationalCompetitions()
         if (intlCompsResponse.success && intlCompsResponse.data) {
           setInternationalCompetitions(intlCompsResponse.data)
         }
 
-        // Fetch national team athletes
+        // Fetch NATIONAL team athletes
         const athletesResponse = await getAthletesByFederation(federationId)
         if (athletesResponse.success && athletesResponse.data) {
           setNationalTeam(athletesResponse.data)
@@ -109,13 +109,13 @@ export function StateAdminDashboard({ federationId }: StateAdminDashboardProps) 
       </Grid.Col>
 
       <Grid.Col span={12}>
-        <Tabs defaultValue="international">
+        <Tabs defaultValue="INTERNATIONAL">
           <Tabs.List mb="md">
-            <Tabs.Tab value="international">{t("competitions.international")}</Tabs.Tab>
-            <Tabs.Tab value="national">{t("competitions.national")}</Tabs.Tab>
+            <Tabs.Tab value="INTERNATIONAL">{t("competitions.INTERNATIONAL")}</Tabs.Tab>
+            <Tabs.Tab value="NATIONAL">{t("competitions.NATIONAL")}</Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="international">
+          <Tabs.Panel value="INTERNATIONAL">
             <Card withBorder p="xl">
               <Title order={3} mb="md">
                 {t("dashboard.internationalCompetitions")}
@@ -153,7 +153,7 @@ export function StateAdminDashboard({ federationId }: StateAdminDashboardProps) 
             </Card>
           </Tabs.Panel>
 
-          <Tabs.Panel value="national">
+          <Tabs.Panel value="NATIONAL">
             <Card withBorder p="xl">
               <Title order={3} mb="md">
                 {t("dashboard.nationalCompetitions")}

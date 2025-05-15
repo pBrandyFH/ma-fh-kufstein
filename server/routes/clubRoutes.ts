@@ -176,7 +176,7 @@ router.post(
   "/",
   auth,
   authorize([
-    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
     
     { role: "SUPERADMIN", federationId: "*" }
@@ -239,7 +239,7 @@ router.put(
   "/:id",
   auth,
   authorize([
-    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
     
     { role: "SUPERADMIN", federationId: "*" }
@@ -276,7 +276,7 @@ router.delete(
   "/:id",
   auth,
   authorize([
-    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
     
     { role: "SUPERADMIN", federationId: "*" }

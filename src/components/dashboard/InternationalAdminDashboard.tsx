@@ -37,8 +37,8 @@ export function InternationalAdminDashboard({ federationId }: InternationalAdmin
         setCompetitions(compsResponse.data)
       }
 
-      // Fetch continental federations
-      const contFedsResponse = await getFederationsByType("continental")
+      // Fetch REGIONAL federations
+      const contFedsResponse = await getFederationsByType("REGIONAL")
       if (contFedsResponse.success && contFedsResponse.data) {
         setContinentalFederations(contFedsResponse.data)
       }

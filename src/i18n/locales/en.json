@@ -509,6 +509,7 @@
   "federations": {
     "title": "Federations",
     "create": "Create Federation",
+    "add": "Add Federation to {{parentFederation}}",
     "edit": "Edit Federation",
     "details": "Federation Details",
     "name": "Federation Name",
@@ -579,6 +580,11 @@
       "updateSuccess": "Federation updated successfully",
       "deleteSuccess": "Federation deleted successfully",
       "deleteConfirm": "Are you sure you want to delete this federation?"
+    },
+    "tabs": {
+      "info": "Info",
+      "children":"Children",
+      "members": "Members"
     }
   },
   "clubs": {

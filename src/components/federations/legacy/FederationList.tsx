@@ -17,8 +17,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { Plus, MoreVertical, Edit, Trash, Mail } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
-import type { Federation } from "../../types";
-import { getAllFederations } from "../../services/federationService";
+import type { Federation } from "../../../types";
+import { getAllFederations } from "../../../services/federationService";
 
 interface FederationListProps {
   onEdit?: (federation: Federation) => void;
@@ -46,11 +46,11 @@ export function FederationList({
         if (response.success && response.data) {
           setFederations(response.data);
 
-          // Filter international federations
-          const international = response.data.filter(
-            (fed) => fed.type === "international"
+          // Filter INTERNATIONAL federations
+          const INTERNATIONAL = response.data.filter(
+            (fed) => fed.type === "INTERNATIONAL"
           );
-          setInternationalFederations(international);
+          setInternationalFederations(INTERNATIONAL);
         }
       } catch (error) {
         console.error("Error fetching federations:", error);
@@ -64,15 +64,15 @@ export function FederationList({
 
   const getFederationTypeLabel = (type: string): string => {
     switch (type) {
-      case "international":
-        return t("federations.types.international");
-      case "continental":
+      case "INTERNATIONAL":
+        return t("federations.types.INTERNATIONAL");
+      case "REGIONAL":
       case "regional":
-        return t("federations.types.continental");
-      case "national":
-        return t("federations.types.national");
-      case "federalState":
-        return t("federations.types.federalState");
+        return t("federations.types.REGIONAL");
+      case "NATIONAL":
+        return t("federations.types.NATIONAL");
+      case "STATE":
+        return t("federations.types.STATE");
       default:
         return type;
     }
@@ -80,13 +80,13 @@ export function FederationList({
 
   const getFederationTypeColor = (type: string): string => {
     switch (type) {
-      case "international":
+      case "INTERNATIONAL":
         return "blue";
-      case "continental":
+      case "REGIONAL":
         return "green";
-      case "national":
+      case "NATIONAL":
         return "orange";
-      case "federalState":
+      case "STATE":
         return "grape";
       default:
         return "gray";

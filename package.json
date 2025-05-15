@@ -13,6 +13,7 @@
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "seed:competitions": "ts-node server/scripts/seedCompetitions.ts",
     "seed:clubs": "ts-node server/scripts/seedClubs.ts",
+    "seed:members": "ts-node server/scripts/seedMembers.ts",
     "seed:federations": "ts-node server/scripts/seedFederations.ts",
     "migrate:federations": "ts-node server/scripts/migrateFederations.ts",
     "migrate:permissions": "ts-node server/scripts/migratePermissions.ts"

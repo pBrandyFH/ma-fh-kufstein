@@ -104,30 +104,30 @@ export const getChildFederations = async (federationId: string): Promise<ApiResp
 
 // Helper function to determine federation type based on parent
 export const determineFederationType = (parentType: FederationType | null): FederationType => {
-  if (!parentType) return "international"
+  if (!parentType) return "INTERNATIONAL"
 
   switch (parentType) {
-    case "international":
-      return "continental"
-    case "continental":
-      return "national"
-    case "national":
-      return "federalState"
+    case "INTERNATIONAL":
+      return "REGIONAL"
+    case "REGIONAL":
+      return "NATIONAL"
+    case "NATIONAL":
+      return "STATE"
     default:
-      return "federalState"
+      return "STATE"
   }
 }
 
 // Helper function to get user role based on federation type
 export const getFederationAdminRole = (federationType: FederationType): string => {
   switch (federationType) {
-    case "international":
+    case "INTERNATIONAL":
       return "internationalAdmin"
-    case "continental":
+    case "REGIONAL":
       return "continentalAdmin"
-    case "national":
+    case "NATIONAL":
       return "stateAdmin"
-    case "federalState":
+    case "STATE":
       return "federalStateAdmin"
     default:
       return "federalStateAdmin"

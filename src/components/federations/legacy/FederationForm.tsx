@@ -1,31 +1,52 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useForm } from "@mantine/form"
-import { TextInput, Button, Box, Select, Grid, Divider, Title, Switch } from "@mantine/core"
-import { notifications } from "@mantine/notifications"
-import { useTranslation } from "react-i18next"
-import type { FederationFormValues, FederationType } from "../../types"
-import { getFederationById, determineFederationType } from "../../services/federationService"
+import { useState, useEffect } from "react";
+import { useForm } from "@mantine/form";
+import {
+  TextInput,
+  Button,
+  Box,
+  Select,
+  Grid,
+  Divider,
+  Title,
+  Switch,
+} from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
+import type {
+  Federation,
+  FederationFormValues,
+  FederationType,
+} from "../../../types";
+import {
+  getFederationById,
+  determineFederationType,
+} from "../../../services/federationService";
 
 interface FederationFormProps {
-  initialValues?: Partial<FederationFormValues>
-  onSubmit: (values: FederationFormValues) => Promise<void>
-  parentFederations: { value: string; label: string }[]
+  initialValues?: FederationFormValues;
+  onSubmit: (values: FederationFormValues) => Promise<void>;
+  parentFederation: Federation;
 }
 
-export function FederationForm({ initialValues, onSubmit, parentFederations }: FederationFormProps) {
-  const [loading, setLoading] = useState(false)
-  const [parentFederationType, setParentFederationType] = useState<FederationType | null>(null)
-  const [federationType, setFederationType] = useState<FederationType | "">("")
-  const { t } = useTranslation()
+export function FederationForm({
+  initialValues,
+  onSubmit,
+  parentFederation,
+}: FederationFormProps) {
+  const [loading, setLoading] = useState(false);
+  const [parentFederationType, setParentFederationType] =
+    useState<FederationType | null>(null);
+  const [federationType, setFederationType] = useState<FederationType | "">("");
+  const { t } = useTranslation();
 
   const form = useForm<FederationFormValues>({
     initialValues: initialValues || {
       name: "",
       abbreviation: "",
       type: "",
-      parentFederationId: "",
+      parentFederationId: parentFederation._id,
       adminEmail: "",
       contactName: "",
       contactEmail: "",
@@ -40,82 +61,101 @@ export function FederationForm({ initialValues, onSubmit, parentFederations }: F
       name: (value) => (value ? null : t("auth.required")),
       abbreviation: (value) => (value ? null : t("auth.required")),
       type: (value) => (value ? null : t("auth.required")),
-      adminEmail: (value) => (/^\S+@\S+$/.test(value) ? null : t("auth.invalidEmail")),
+      adminEmail: (value) =>
+        /^\S+@\S+$/.test(value) ? null : t("auth.invalidEmail"),
     },
-  })
+  });
 
   useEffect(() => {
     // Set federation type based on parent federation
     if (form.values.parentFederationId) {
       const fetchParentType = async () => {
         try {
-          const response = await getFederationById(form.values.parentFederationId)
+          const response = await getFederationById(
+            form.values.parentFederationId
+          );
           if (response.success && response.data) {
-            const parentType = response.data.type as FederationType
-            setParentFederationType(parentType)
+            const parentType = response.data.type as FederationType;
+            setParentFederationType(parentType);
 
             // Determine federation type based on parent
-            const type = determineFederationType(parentType)
-            setFederationType(type)
-            form.setFieldValue("type", type)
+            const type = determineFederationType(parentType);
+            setFederationType(type);
+            form.setFieldValue("type", type);
           }
         } catch (error) {
-          console.error("Error fetching parent federation:", error)
+          console.error("Error fetching parent federation:", error);
         }
-      }
+      };
 
-      fetchParentType()
+      fetchParentType();
     } else {
-      // If no parent, it's an international federation
-      setParentFederationType(null)
-      setFederationType("international")
-      form.setFieldValue("type", "international")
+      // If no parent, it's an INTERNATIONAL federation
+      setParentFederationType(null);
+      setFederationType("INTERNATIONAL");
+      form.setFieldValue("type", "INTERNATIONAL");
     }
-  }, [form.values.parentFederationId])
+  }, [form.values.parentFederationId]);
 
   const handleSubmit = async (values: FederationFormValues) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      await onSubmit(values)
+      await onSubmit(values);
 
       notifications.show({
-        title: initialValues ? t("federations.updateSuccess") : t("federations.createSuccess"),
-        message: initialValues ? t("federations.federationUpdated") : t("federations.federationCreated"),
+        title: initialValues
+          ? t("federations.updateSuccess")
+          : t("federations.createSuccess"),
+        message: initialValues
+          ? t("federations.federationUpdated")
+          : t("federations.federationCreated"),
         color: "green",
-      })
+      });
     } catch (error) {
       notifications.show({
-        title: initialValues ? t("federations.updateFailed") : t("federations.createFailed"),
-        message: error instanceof Error ? error.message : t("auth.errorOccurred"),
+        title: initialValues
+          ? t("federations.updateFailed")
+          : t("federations.createFailed"),
+        message:
+          error instanceof Error ? error.message : t("auth.errorOccurred"),
         color: "red",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Get federation type options based on parent federation
   const getFederationTypeOptions = () => {
     if (!form.values.parentFederationId) {
-      return [{ value: "international", label: t("federations.types.international") }]
+      return [
+        { value: "INTERNATIONAL", label: t("federations.types.INTERNATIONAL") },
+      ];
     }
 
     switch (parentFederationType) {
-      case "international":
-        return [{ value: "continental", label: t("federations.types.continental") }]
-      case "continental":
-        return [{ value: "national", label: t("federations.types.national") }]
-      case "national":
-        return [{ value: "federalState", label: t("federations.types.federalState") }]
+      case "INTERNATIONAL":
+        return [
+          { value: "REGIONAL", label: t("federations.types.REGIONAL") },
+        ];
+      case "REGIONAL":
+        return [{ value: "NATIONAL", label: t("federations.types.NATIONAL") }];
+      case "NATIONAL":
+        return [
+          { value: "STATE", label: t("federations.types.STATE") },
+        ];
       default:
         return [
-          { value: "international", label: t("federations.types.international") },
-          { value: "continental", label: t("federations.types.continental") },
-          { value: "national", label: t("federations.types.national") },
-          { value: "federalState", label: t("federations.types.federalState") },
-        ]
+          {
+            value: "INTERNATIONAL",
+            label: t("federations.types.INTERNATIONAL"),
+          },
+          { value: "REGIONAL", label: t("federations.types.REGIONAL") },
+          { value: "NATIONAL", label: t("federations.types.NATIONAL") },
+          { value: "STATE", label: t("federations.types.STATE") },
+        ];
     }
-  }
+  };
 
   return (
     <Box>
@@ -145,7 +185,7 @@ export function FederationForm({ initialValues, onSubmit, parentFederations }: F
             />
           </Grid.Col>
         </Grid>
-
+        {/* 
         <Grid>
           <Grid.Col span={6}>
             <Select
@@ -169,7 +209,7 @@ export function FederationForm({ initialValues, onSubmit, parentFederations }: F
               disabled={!!form.values.parentFederationId} // Disable if parent is selected
             />
           </Grid.Col>
-        </Grid>
+        </Grid> */}
 
         <Divider my="md" label={t("federations.admin")} />
 
@@ -251,6 +291,5 @@ export function FederationForm({ initialValues, onSubmit, parentFederations }: F
         </Button>
       </form>
     </Box>
-  )
+  );
 }
-

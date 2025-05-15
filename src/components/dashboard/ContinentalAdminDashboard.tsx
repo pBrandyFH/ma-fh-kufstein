@@ -37,7 +37,7 @@ export function ContinentalAdminDashboard({ federationId }: ContinentalAdminDash
         setCompetitions(compsResponse.data)
       }
 
-      // Fetch national federations
+      // Fetch NATIONAL federations
       const natlFedsResponse = await getFederationsByParent(federationId)
       if (natlFedsResponse.success && natlFedsResponse.data) {
         setNationalFederations(natlFedsResponse.data)

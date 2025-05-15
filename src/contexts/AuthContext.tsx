@@ -27,22 +27,33 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [federation, setFederation] = useState<Federation>(null);
+  const [federation, setFederation] = useState<Federation | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  const setData = async () => {
+    const isAuth = await isAuthenticated();
+    setAuthenticated(isAuth);
+    if (isAuth) {
+      const currentUser = getCurrentUser();
+      if (currentUser) {
+        console.log("CurrentUser: ", currentUser);
+        const { data: federation } = await getFederationById(
+          currentUser?.federationRoles[0].federationId ?? ""
+        );
+        if (federation) {
+          setFederation(federation);
+        }
+        setUser(currentUser);
+      }
+    }
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
       setIsAuthLoading(true); // Set loading to true when checking
       try {
-        const isAuth = await isAuthenticated();
-        setAuthenticated(isAuth);
-        if (isAuth) {
-          const currentUser = getCurrentUser();
-          if (currentUser) {
-            setUser(currentUser);
-          }
-        }
+        await setData();
       } catch (error) {
         console.error("Authentication check failed:", error);
       } finally {
@@ -56,21 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleLogin = async () => {
     setIsAuthLoading(true); // Set loading to true when checking
     try {
-      const isAuth = await isAuthenticated();
-      setAuthenticated(isAuth);
-      if (isAuth) {
-        const currentUser = getCurrentUser();
-        if (currentUser) {
-          console.log("CurrentUser: ", currentUser);
-          const { data: federation } = await getFederationById(
-            currentUser?.federationRoles[0].federationId ?? ""
-          );
-          if (federation) {
-            setFederation(federation);
-          }
-          setUser(currentUser);
-        }
-      }
+      await setData();
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
@@ -84,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setAuthenticated(false);
       setUser(null);
+      setFederation(null);
     }
   };
 

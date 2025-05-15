@@ -6,8 +6,8 @@ import { Card, Title, Loader, Group } from "@mantine/core"
 import { useTranslation } from "react-i18next"
 import { notifications } from "@mantine/notifications"
 import { FederationForm } from "./FederationForm"
-import { getFederationById, updateFederation, getAllFederations } from "../../services/federationService"
-import type { Federation, FederationFormValues, SelectOption } from "../../types"
+import { getFederationById, updateFederation, getAllFederations } from "../../../services/federationService"
+import type { Federation, FederationFormValues, SelectOption } from "../../../types"
 
 export function FederationEditPage() {
   const { id } = useParams<{ id: string }>()

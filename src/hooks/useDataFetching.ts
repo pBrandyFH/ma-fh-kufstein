@@ -8,10 +8,17 @@ interface UseDataFetchingResult<T> {
   refetch: () => Promise<void>;
 }
 
-export function useDataFetching<T>(
-  fetchFunction: () => Promise<ApiResponse<T>>,
-  dependencies: any[] = []
-): UseDataFetchingResult<T> {
+interface UseDataFetchingProps<T> {
+  fetchFunction: () => Promise<ApiResponse<T>>;
+  dependencies?: any[];
+  skip?: boolean;
+}
+
+export function useDataFetching<T>({
+  fetchFunction,
+  skip = false,
+  dependencies = [],
+}: UseDataFetchingProps<T>): UseDataFetchingResult<T> {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +41,15 @@ export function useDataFetching<T>(
   };
 
   useEffect(() => {
-    fetchData();
-  }, dependencies);
+    if (!skip) {
+      fetchData();
+    } else {
+      setData(null);
+      setError(null);
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...dependencies, skip]);
 
   return {
     data,
@@ -43,4 +57,4 @@ export function useDataFetching<T>(
     error,
     refetch: fetchData,
   };
-} 
+}

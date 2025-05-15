@@ -28,7 +28,7 @@ export const sendInviteEmail = async (
     switch (role) {
       case "ATHLETE":
         return "Athlete";
-      case "CLUB_ADMIN":
+      case "MEMBER_ADMIN":
         return "Club Administrator";
       case "FEDERATION_ADMIN":
         return "Federation Administrator";

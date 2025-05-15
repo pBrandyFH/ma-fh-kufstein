@@ -42,7 +42,7 @@ const router = express.Router()
  *                         type: string
  *                       type:
  *                         type: string
- *                         enum: [federalState, state, continental, international]
+ *                         enum: [STATE, state, REGIONAL, INTERNATIONAL]
  *                       parentId:
  *                         type: string
  *                       country:
@@ -84,7 +84,7 @@ router.get("/", getAllFederations)
  *                       type: string
  *                     type:
  *                       type: string
- *                       enum: [federalState, state, continental, international]
+ *                       enum: [STATE, state, REGIONAL, INTERNATIONAL]
  *                     parentId:
  *                       type: string
  *                     country:
@@ -108,7 +108,7 @@ router.get("/:id", getFederationById)
  *         required: true
  *         schema:
  *           type: string
- *           enum: [federalState, state, continental, international]
+ *           enum: [STATE, state, REGIONAL, INTERNATIONAL]
  *         description: Federation type
  *     responses:
  *       200:
@@ -177,7 +177,7 @@ router.get("/:id/children", getChildFederations)
  *                 type: string
  *               type:
  *                 type: string
- *                 enum: [federalState, state, continental, international]
+ *                 enum: [STATE, state, REGIONAL, INTERNATIONAL]
  *               parentId:
  *                 type: string
  *               country:
@@ -231,7 +231,7 @@ router.post(
  *                 type: string
  *               type:
  *                 type: string
- *                 enum: [federalState, state, continental, international]
+ *                 enum: [STATE, state, REGIONAL, INTERNATIONAL]
  *               parentId:
  *                 type: string
  *               country:
@@ -254,9 +254,8 @@ router.put(
   "/:id",
   auth,
   authorize([
-    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
-    
     { role: "SUPERADMIN", federationId: "*" }
   ]),
   updateFederation

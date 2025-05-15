@@ -136,7 +136,7 @@ router.post("/validate-invite", validateInviteCode);
  *                 format: email
  *               role:
  *                 type: string
- *                 enum: [ATHLETE, CLUB_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
+ *                 enum: [ATHLETE, MEMBER_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPERADMIN]
  *               firstName:
  *                 type: string
  *               lastName:
@@ -155,7 +155,7 @@ router.post(
   "/invite",
   auth,
   authorize([
-    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
 
     { role: "SUPERADMIN", federationId: "*" },
@@ -202,7 +202,7 @@ router.get(
   "/my-invitations",
   auth,
   authorize([
-    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
 
     { role: "SUPERADMIN", federationId: "*" },
@@ -236,7 +236,7 @@ router.post(
   "/invitations/:id/resend",
   auth,
   authorize([
-    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
     { role: "SUPERADMIN", federationId: "*" },
   ]),
@@ -269,7 +269,7 @@ router.delete(
   "/invitations/:id",
   auth,
   authorize([
-    { role: "CLUB_ADMIN", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
     { role: "SUPERADMIN", federationId: "*" },
   ]),

@@ -94,7 +94,7 @@ const seedFederations = async () => {
     const ipf = new Federation({
       name: "International Powerlifting Federation",
       abbreviation: "IPF",
-      type: "international",
+      type: "INTERNATIONAL",
       adminId: ipfAdmin._id,
       contactEmail: "ipf.admin@example.com",
       country: "International",
@@ -108,7 +108,7 @@ const seedFederations = async () => {
     const epf = new Federation({
       name: "European Powerlifting Federation",
       abbreviation: "EPF",
-      type: "continental",
+      type: "REGIONAL",
       parentFederation: ipf._id,
       adminId: epfAdmin._id,
       contactEmail: "epf.admin@example.com",
@@ -122,7 +122,7 @@ const seedFederations = async () => {
     const napf = new Federation({
       name: "North American Powerlifting Federation",
       abbreviation: "NAPF",
-      type: "continental",
+      type: "REGIONAL",
       parentFederation: ipf._id,
       adminId: napfAdmin._id,
       contactEmail: "napf.admin@example.com",
@@ -136,7 +136,7 @@ const seedFederations = async () => {
     const ovk = new Federation({
       name: "Österreichischer Verband für Kraftdreikampf",
       abbreviation: "ÖVK",
-      type: "national",
+      type: "NATIONAL",
       parentFederation: epf._id,
       adminId: ovkAdmin._id,
       contactEmail: "ovk.admin@example.com",
@@ -150,7 +150,7 @@ const seedFederations = async () => {
     const bvdk = new Federation({
       name: "Bundesverband Deutscher Kraftdreikämpfer",
       abbreviation: "BVDK",
-      type: "national",
+      type: "NATIONAL",
       parentFederation: epf._id,
       adminId: bvdkAdmin._id,
       contactEmail: "bvdk.admin@example.com",
@@ -164,7 +164,7 @@ const seedFederations = async () => {
     const pa = new Federation({
       name: "Powerlifting America",
       abbreviation: "PA",
-      type: "national",
+      type: "NATIONAL",
       parentFederation: napf._id,
       adminId: paAdmin._id,
       contactEmail: "pa.admin@example.com",
@@ -178,7 +178,7 @@ const seedFederations = async () => {
     const slv = new Federation({
       name: "Salzburger Landesverband",
       abbreviation: "SLV",
-      type: "federalState",
+      type: "STATE",
       parentFederation: ovk._id,
       adminId: slvAdmin._id,
       contactEmail: "slv.admin@example.com",
@@ -193,7 +193,7 @@ const seedFederations = async () => {
     const kdb = new Federation({
       name: "Kraftdreikampf Bayern",
       abbreviation: "KDB",
-      type: "federalState",
+      type: "STATE",
       parentFederation: bvdk._id,
       adminId: kdbAdmin._id,
       contactEmail: "kdb.admin@example.com",

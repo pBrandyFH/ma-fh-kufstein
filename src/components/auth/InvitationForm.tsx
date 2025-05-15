@@ -96,12 +96,12 @@ export function InvitationForm({ onSuccess }: InvitationFormProps) {
     // National admins can invite federal state admins
     roles.push({ value: "federalStateAdmin", label: t("roles.federalStateAdmin") })
 
-    // Continental admins can invite national admins
+    // Continental admins can invite NATIONAL admins
     if (currentUser.role === "continentalAdmin" || currentUser.role === "internationalAdmin") {
       roles.push({ value: "stateAdmin", label: t("roles.stateAdmin") })
     }
 
-    // International admins can invite continental admins
+    // International admins can invite REGIONAL admins
     if (currentUser.role === "internationalAdmin") {
       roles.push({ value: "continentalAdmin", label: t("roles.continentalAdmin") })
     }

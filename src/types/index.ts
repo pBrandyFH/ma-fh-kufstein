@@ -15,10 +15,11 @@ export interface User {
 
 // Federation Types
 export type FederationType =
-  | "international"
-  | "continental"
-  | "national"
-  | "federalState";
+  | "INTERNATIONAL"
+  | "REGIONAL"
+  | "NATIONAL"
+  | "STATE"
+  | "LOCAL";
 
 export interface Federation {
   _id: string;
@@ -55,6 +56,13 @@ export interface Club {
   country?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface Member {
+  _id: string;
+  name: string;
+  federation: Federation;
+  athletes: Athlete[];
 }
 
 // Athlete Types

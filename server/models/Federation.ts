@@ -34,7 +34,7 @@ const FederationSchema = new Schema<IFederation>(
     },
     type: {
       type: String,
-      enum: ["international", "continental", "national", "federalState"],
+      enum: ["INTERNATIONAL", "REGIONAL", "NATIONAL", "STATE", "LOCAL"],
       required: true,
     },
     parent: {

@@ -5,11 +5,11 @@ import { Grid, Card, Title, Text, Group, Button, Badge, SimpleGrid, ActionIcon, 
 import { useTranslation } from "react-i18next"
 import { Plus, MoreVertical, Edit, Trash, Mail, Users, Trophy, Building2 } from "lucide-react"
 import { notifications } from "@mantine/notifications"
-import type { Federation, Competition, User, Club, FederationType } from "../../types"
-import { getFederationById, getFederationsByParent, getChildFederations } from "../../services/federationService"
-import { getCompetitionsByFederation } from "../../services/competitionService"
-import { getUsersByFederation } from "../../services/userService"
-import { getClubsByFederation } from "../../services/clubService"
+import type { Federation, Competition, User, Club, FederationType } from "../../../types"
+import { getFederationById, getFederationsByParent, getChildFederations } from "../../../services/federationService"
+import { getCompetitionsByFederation } from "../../../services/competitionService"
+import { getUsersByFederation } from "../../../services/userService"
+import { getClubsByFederation } from "../../../services/clubService"
 
 interface FederationDetailsProps {
   federationId: string
@@ -47,8 +47,8 @@ export function FederationDetails({ federationId }: FederationDetailsProps) {
         setUsers(usersResponse.data)
       }
 
-      // Fetch clubs (only for national or federal state federations)
-      if (federation?.type === "national" || federation?.type === "federalState") {
+      // Fetch clubs (only for NATIONAL or federal state federations)
+      if (federation?.type === "NATIONAL" || federation?.type === "STATE") {
         const clubsResponse = await getClubsByFederation(federationId)
         if (clubsResponse.success && clubsResponse.data) {
           setClubs(clubsResponse.data)
@@ -148,7 +148,7 @@ export function FederationDetails({ federationId }: FederationDetailsProps) {
                 <Tabs.Tab value="competitions" icon={<Trophy size={14} />}>
                   {t("common.competitions")}
                 </Tabs.Tab>
-                {(federation.type === "national" || federation.type === "federalState") && (
+                {(federation.type === "NATIONAL" || federation.type === "STATE") && (
                   <Tabs.Tab value="clubs" icon={<Building2 size={14} />}>
                     {t("common.clubs")}
                   </Tabs.Tab>
@@ -305,7 +305,7 @@ export function FederationDetails({ federationId }: FederationDetailsProps) {
                 </SimpleGrid>
               </Tabs.Panel>
 
-              {(federation.type === "national" || federation.type === "federalState") && (
+              {(federation.type === "NATIONAL" || federation.type === "STATE") && (
                 <Tabs.Panel value="clubs" pt="md">
                   <Group position="apart" mb="md">
                     <Title order={4}>{t("common.clubs")}</Title>

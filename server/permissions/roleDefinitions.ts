@@ -12,8 +12,8 @@ export const roleDefinitions: Record<string, RoleDefinition> = {
     ],
     permissions: ["VIEW_STRUCTURE", "NOMINATE_SELF"],
   },
-  CLUB_ADMIN: {
-    name: "CLUB_ADMIN",
+  MEMBER_ADMIN: {
+    name: "MEMBER_ADMIN",
     allowedNominationLevels: ["STATE", "NATIONAL"],
     permissions: [
       "VIEW_STRUCTURE",

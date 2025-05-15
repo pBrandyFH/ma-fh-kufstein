@@ -1,5 +1,5 @@
 import { ClubList } from "@/components/clubs/ClubList";
-import { ChildFederationList } from "@/components/federations/ChildFederationList";
+import { ChildFederationList } from "@/components/federations/legacy/ChildFederationList";
 import { useDataFetching } from "@/hooks/useDataFetching";
 import {
   getFederationById,
@@ -24,7 +24,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { IconEdit } from "@tabler/icons-react";
 import { Page } from "@/components/common/Page";
 
-export default function FederationDetailsPage() {
+export default function FederationDetailsPageLegacy() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -63,14 +63,14 @@ export default function FederationDetailsPage() {
 
   const getFederationTypeLabel = (type: string): string => {
     switch (type) {
-      case "international":
-        return t("federations.types.international");
-      case "continental":
-        return t("federations.types.continental");
-      case "national":
-        return t("federations.types.national");
-      case "federalState":
-        return t("federations.types.federalState");
+      case "INTERNATIONAL":
+        return t("federations.types.INTERNATIONAL");
+      case "REGIONAL":
+        return t("federations.types.REGIONAL");
+      case "NATIONAL":
+        return t("federations.types.NATIONAL");
+      case "STATE":
+        return t("federations.types.STATE");
       default:
         return type;
     }
@@ -78,13 +78,13 @@ export default function FederationDetailsPage() {
 
   const getFederationTypeColor = (type: string): string => {
     switch (type) {
-      case "international":
+      case "INTERNATIONAL":
         return "blue";
-      case "continental":
+      case "REGIONAL":
         return "green";
-      case "national":
+      case "NATIONAL":
         return "orange";
-      case "federalState":
+      case "STATE":
         return "grape";
       default:
         return "gray";
@@ -131,9 +131,9 @@ export default function FederationDetailsPage() {
             <Tabs.Tab value="clubs" icon={<Users size={14} />}>
               {t("clubs.title")}
             </Tabs.Tab>
-            {(federation.type === "international" ||
-              federation.type === "continental" ||
-              federation.type === "national") && (
+            {(federation.type === "INTERNATIONAL" ||
+              federation.type === "REGIONAL" ||
+              federation.type === "NATIONAL") && (
               <Tabs.Tab value="federations" icon={<Building size={14} />}>
                 {t("federations.childFederations")}
               </Tabs.Tab>
@@ -217,9 +217,9 @@ export default function FederationDetailsPage() {
             <ClubList federationId={federation._id} />
           </Tabs.Panel>
 
-          {(federation.type === "international" ||
-            federation.type === "continental" ||
-            federation.type === "national") && (
+          {(federation.type === "INTERNATIONAL" ||
+            federation.type === "REGIONAL" ||
+            federation.type === "NATIONAL") && (
             <Tabs.Panel value="federations">
               <ChildFederationList parentFederationId={federation._id} />
             </Tabs.Panel>

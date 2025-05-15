@@ -9,7 +9,7 @@ const mockCompetition = {
   name: "German Nationals 2024",
   date: "2024-06-15",
   location: "Berlin, Germany",
-  type: "national",
+  type: "NATIONAL",
   status: "upcoming",
   registrationDeadline: "2024-05-15",
   organizer: "German Powerlifting Federation",

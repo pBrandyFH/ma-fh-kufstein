@@ -83,7 +83,7 @@ export function DashboardCompetitionsList() {
     switch (user.role) {
       case "internationalAdmin":
         return federations
-          .filter((fed) => fed.type === "national")
+          .filter((fed) => fed.type === "NATIONAL")
           .map((fed) => ({
             value: fed._id,
             label: fed.name,
@@ -93,7 +93,7 @@ export function DashboardCompetitionsList() {
         return federations
           .filter(
             (fed) =>
-              fed.type === "national" &&
+              fed.type === "NATIONAL" &&
               fed.parent?._id === user.federationId
           )
           .map((fed) => ({
@@ -105,8 +105,8 @@ export function DashboardCompetitionsList() {
         return federations
           .filter(
             (fed) =>
-              (fed.type === "national" && fed._id === user.federationId) ||
-              (fed.type === "federalState" &&
+              (fed.type === "NATIONAL" && fed._id === user.federationId) ||
+              (fed.type === "STATE" &&
                 fed.parent?._id === user.federationId)
           )
           .map((fed) => ({
@@ -118,8 +118,8 @@ export function DashboardCompetitionsList() {
         return federations
           .filter(
             (fed) =>
-              (fed.type === "national" && fed._id === user.federationId) ||
-              (fed.type === "federalState" && fed._id === user.federationId)
+              (fed.type === "NATIONAL" && fed._id === user.federationId) ||
+              (fed.type === "STATE" && fed._id === user.federationId)
           )
           .map((fed) => ({
             value: fed._id,

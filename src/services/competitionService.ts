@@ -82,7 +82,7 @@ export const getCompetitionsByFederation = async (federationId: string): Promise
 
 export const getInternationalCompetitions = async (): Promise<ApiResponse<Competition[]>> => {
   try {
-    const response = await api.get<ApiResponse<Competition[]>>("/competitions/international")
+    const response = await api.get<ApiResponse<Competition[]>>("/competitions/INTERNATIONAL")
     return response.data
   } catch (error) {
     if (error instanceof Error) {

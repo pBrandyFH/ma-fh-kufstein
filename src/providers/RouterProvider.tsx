@@ -7,8 +7,8 @@ import {
 import { MainLayout } from "../components/layout/MainLayout";
 import { ResultsRouter } from "../components/results/ResultsRouter";
 import { AthleteProfile } from "../components/athletes/AthleteProfile";
-import { FederationList } from "../components/federations/FederationList";
-import { FederationEditPage } from "../components/federations/FederationEditPage";
+import { FederationList } from "../components/federations/legacy/FederationList";
+import { FederationEditPage } from "../components/federations/legacy/FederationEditPage";
 import { ClubList } from "../components/clubs/ClubList";
 import { ClubDetail } from "../components/clubs/ClubDetail";
 import { ClubEditPage } from "../components/clubs/ClubEditPage";
@@ -29,8 +29,9 @@ import { CustomNavigate } from "../components/common/CustomNavigate";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, Group, Loader } from "@mantine/core";
 import { LoginForm } from "@/components/auth/LoginForm";
-import FederationDetailsPage from "@/pages/FederationDetailsPage";
+import FederationDetailsPageLegacy from "@/pages/FederationDetailsPageLegacy";
 import OverviewPage from "@/pages/admin/OverviewPage";
+import FederationDetailsPage from "@/pages/admin/FederationDetailsPage";
 
 export function RouterProvider() {
   const { authenticated, isAuthLoading, logout, login } = useAuth();
@@ -164,7 +165,7 @@ export function RouterProvider() {
               index
               element={
                 <ProtectedRoute>
-                  <FederationList />
+                  <FederationDetailsPage />
                 </ProtectedRoute>
               }
             />

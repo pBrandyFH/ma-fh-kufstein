@@ -1,142 +1,127 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Card, Title, Text, Group, Button, Loader, ActionIcon, Menu, Badge, Box, Stack, Portal } from "@mantine/core"
-import { useTranslation } from "react-i18next"
-import { Plus, MoreVertical, Edit, Trash, Mail } from "lucide-react"
-import { Link } from "react-router-dom"
-import type { Federation } from "../../types"
-import { getChildFederations } from "../../services/federationService"
+import { useDataFetching } from "@/hooks/useDataFetching";
+import { getChildFederations } from "@/services/federationService";
+import { Federation, FederationType } from "@/types";
+import { Box, Button, Container, Flex, Loader } from "@mantine/core";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FederationCard } from "./FederationCard";
+import { IconPlus } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
+import { FederationFormModal } from "./legacy/FederationFormModal";
 
 interface ChildFederationListProps {
-  parentFederationId: string
+  federation: Federation | null;
+  federationLoading: boolean;
 }
 
-export function ChildFederationList({ parentFederationId }: ChildFederationListProps) {
-  const { t } = useTranslation()
-  const [loading, setLoading] = useState(true)
-  const [federations, setFederations] = useState<Federation[]>([])
+export default function ChildFederationList({
+  federation,
+  federationLoading,
+}: ChildFederationListProps) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [createModalOpened, setCreateModalOpened] = useState(false);
+  const [editModalOpened, setEditModalOpened] = useState(false);
+  const [selectedFederation, setSelectedFederation] =
+    useState<Federation | null>(null);
+  const {
+    data: childFeds,
+    loading: childFedsLoading,
+    error: childFedsError,
+    refetch: refetchFederations,
+  } = useDataFetching<Federation[]>({
+    fetchFunction: () => getChildFederations(federation?._id ?? ""),
+    skip: federationLoading,
+  });
 
-  useEffect(() => {
-    const fetchChildFederations = async () => {
-      try {
-        const response = await getChildFederations(parentFederationId)
-        if (response.success && response.data) {
-          setFederations(response.data)
-        }
-      } catch (error) {
-        console.error("Error fetching child federations:", error)
-      } finally {
-        setLoading(false)
-      }
+  const handleCreateSuccess = () => {
+    setCreateModalOpened(false);
+    refetchFederations();
+  };
+
+  const handleEditSuccess = () => {
+    setEditModalOpened(false);
+    refetchFederations();
+  };
+  const handleCardClick = (federation: Federation) => {
+    navigate(`/federations/${federation._id}`, {});
+  };
+
+  const handleEditClick = (e: React.MouseEvent, federation: Federation) => {
+    e.stopPropagation(); // Prevent navigation to federation details
+    setSelectedFederation(federation);
+    setEditModalOpened(true);
+  };
+
+  const getTypeToAdd = () => {
+    switch (federation?.type) {
+      case "INTERNATIONAL":
+        return "REGIONAL" as FederationType;
+      case "REGIONAL":
+        return "NATIONAL" as FederationType;
+      case "NATIONAL":
+        return "STATE" as FederationType;
+      case "STATE":
+        return "LOCAL" as FederationType;
+      case "LOCAL":
+        return "LOCAL" as FederationType;
     }
+  };
 
-    fetchChildFederations()
-  }, [parentFederationId])
-
-  const getFederationTypeColor = (type: string): string => {
-    switch (type) {
-      case "international":
-        return "blue"
-      case "continental":
-        return "green"
-      case "national":
-        return "orange"
-      case "federalState":
-        return "grape"
-      default:
-        return "gray"
-    }
-  }
-
-  const getFederationTypeLabel = (type: string): string => {
-    switch (type) {
-      case "international":
-        return t("federations.types.international")
-      case "continental":
-        return t("federations.types.continental")
-      case "national":
-        return t("federations.types.national")
-      case "federalState":
-        return t("federations.types.federalState")
-      default:
-        return type
-    }
-  }
-
-  const handleMenuClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-
-  if (loading) {
-    return (
-      <Card withBorder p="xl">
-        <Group position="center">
-          <Loader />
-        </Group>
-      </Card>
-    )
+  if (federationLoading) {
+    return <Loader />;
   }
 
   return (
-    <Card withBorder p="xl">
-      <Group position="apart" mb="xl">
-        <Title order={2}>{t("federations.childFederations")}</Title>
-        <Button leftIcon={<Plus size={16} />} component={Link} to={`/federations/create?parent=${parentFederationId}`}>
+    <Flex direction="column" gap="sm">
+      <Box>
+        <Button
+          leftIcon={<IconPlus size={16} />}
+          onClick={() => setCreateModalOpened(true)}
+        >
           {t("federations.create")}
         </Button>
-      </Group>
+      </Box>
 
-      {federations.length === 0 ? (
-        <Text color="dimmed" align="center">{t("federations.noChildFederations")}</Text>
-      ) : (
-        <Stack spacing="md">
-          {federations.map((federation) => (
-            <Card key={federation._id} withBorder p="md" component={Link} to={`/federations/${federation._id}`} sx={{ textDecoration: 'none' }}>
-              <Group position="apart">
-                <div>
-                  <Group>
-                    <Text weight={500}>{federation.name}</Text>
-                    <Text size="sm" color="dimmed">
-                      ({federation.abbreviation})
-                    </Text>
-                  </Group>
-                  <Text size="sm" color="dimmed">
-                    {federation.city && `${federation.city}, `}
-                    {federation.country}
-                  </Text>
-                </div>
-                <Group>
-                  <Badge color={getFederationTypeColor(federation.type)}>{getFederationTypeLabel(federation.type)}</Badge>
-                  <Box onClick={handleMenuClick}>
-                    <Menu position="bottom-end">
-                      <Menu.Target>
-                        <ActionIcon>
-                          <MoreVertical size={16} />
-                        </ActionIcon>
-                      </Menu.Target>
-                      <Portal>
-                        <Menu.Dropdown>
-                          <Menu.Item icon={<Edit size={14} />} component={Link} to={`/federations/${federation._id}/edit`}>
-                            {t("common.edit")}
-                          </Menu.Item>
-                          <Menu.Item icon={<Mail size={14} />} component="a" href={`mailto:${federation.contactEmail}`}>
-                            {t("common.contact")}
-                          </Menu.Item>
-                          <Menu.Item icon={<Trash size={14} />} color="red">
-                            {t("common.delete")}
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Portal>
-                    </Menu>
-                  </Box>
-                </Group>
-              </Group>
-            </Card>
-          ))}
-        </Stack>
+      {childFeds?.map((fed) => {
+        return (
+          <FederationCard
+            key={fed._id}
+            federation={fed}
+            onEdit={(e) => handleEditClick(e, fed)}
+            onDelete={() => {
+              // TODO: Implement delete functionality
+            }}
+            onClick={() => handleCardClick(fed)}
+          />
+        );
+      })}
+
+      <FederationFormModal
+        opened={createModalOpened}
+        onClose={() => setCreateModalOpened(false)}
+        onSuccess={handleCreateSuccess}
+        modalTitle={t("federations.add", {
+          parentFederation: federation?.name,
+        })}
+        defaultType={getTypeToAdd()}
+        parentId={federation?._id ?? ""}
+      />
+
+      {selectedFederation && (
+        <FederationFormModal
+          opened={editModalOpened}
+          onClose={() => {
+            setEditModalOpened(false);
+            setSelectedFederation(null);
+          }}
+          onSuccess={handleEditSuccess}
+          modalTitle={t("federations.edit")}
+          federationToEdit={selectedFederation}
+          parentId={federation?._id ?? ""}
+          isEditMode={true}
+        />
       )}
-    </Card>
-  )
-} 
+    </Flex>
+  );
+}

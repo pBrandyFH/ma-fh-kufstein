@@ -12,13 +12,13 @@ export const getCompetitionType = (
   if (!hostFederation) return "";
 
   switch (hostFederation.type) {
-    case "international":
+    case "INTERNATIONAL":
       return "International";
-    case "continental":
+    case "REGIONAL":
       return "Continental";
-    case "national":
+    case "NATIONAL":
       return "National";
-    case "federalState":
+    case "STATE":
       return "Federal State";
     default:
       return "";

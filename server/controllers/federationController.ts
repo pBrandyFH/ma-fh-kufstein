@@ -201,10 +201,11 @@ export const getFederationsByTypeFilter = async (
 
     // Validate that all types are valid
     const validTypes = [
-      "international",
-      "continental",
-      "national",
-      "federalState",
+      "INTERNATIONAL",
+      "REGIONAL",
+      "NATIONAL",
+      "STATE",
+      "LOCAL",
     ];
     const invalidTypes = types.filter(
       (type: string) => !validTypes.includes(type)

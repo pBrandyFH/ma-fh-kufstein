@@ -9,7 +9,7 @@ export type FederationStructure = "CLUB_BASED" | "MEMBER_BASED";
 
 export type RoleType =
   | "ATHLETE"
-  | "CLUB_ADMIN"
+  | "MEMBER_ADMIN"
   | "FEDERATION_ADMIN"
   | "SUPERADMIN";
 
