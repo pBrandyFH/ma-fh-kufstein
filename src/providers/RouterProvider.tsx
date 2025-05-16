@@ -16,15 +16,15 @@ import { ClubAthletes } from "../components/clubs/ClubAthletes";
 import { InvitationList } from "../components/invitations/InvitationList";
 import { InvitationForm } from "../components/invitations/InvitationForm";
 import { NominationsView } from "../components/nominations/NominationsView";
-import { CompetitionDetails } from "../components/competitions/CompetitionDetails";
-import { EditCompetition } from "../components/competitions/EditCompetition";
+import { CompetitionDetails } from "../components/competitions/legacy/CompetitionDetails";
+import { EditCompetition } from "../components/competitions/legacy/EditCompetition";
 import { RankingsView } from "../components/rankings/RankingsView";
 import { RecordsView } from "../components/records/RecordsView";
 import { AthletesView } from "../components/athletes/AthletesView";
 import { EditAthlete } from "../components/athletes/EditAthlete";
 import { MyAccount } from "../components/account/MyAccount";
 import { DashboardPage } from "../pages/DashboardPage";
-import { CompetitionsView } from "../components/competitions/CompetitionsView";
+import { CompetitionsView } from "../components/competitions/legacy/CompetitionsView";
 import { CustomNavigate } from "../components/common/CustomNavigate";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, Group, Loader } from "@mantine/core";
@@ -32,6 +32,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import FederationDetailsPageLegacy from "@/pages/FederationDetailsPageLegacy";
 import OverviewPage from "@/pages/admin/OverviewPage";
 import FederationDetailsPage from "@/pages/admin/FederationDetailsPage";
+import { MyCompetitionsPage } from "@/pages/admin/MyCompetitionsPage";
 
 export function RouterProvider() {
   const { authenticated, isAuthLoading, logout, login } = useAuth();
@@ -125,7 +126,7 @@ export function RouterProvider() {
               index
               element={
                 <ProtectedRoute>
-                  <CompetitionsView />
+                  <MyCompetitionsPage />
                 </ProtectedRoute>
               }
             />

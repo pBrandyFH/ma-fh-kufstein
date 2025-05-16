@@ -820,5 +820,14 @@
       "passwordChangeSuccess": "Password changed successfully",
       "passwordMismatch": "Passwords do not match"
     }
+  },
+  "competition": {
+    "title": "Competitions",
+    "create": "Create Competition",
+    "tabs": {
+      "my": "My Competitions",
+      "national": "National Competitions",
+      "international": "International Competitions"
+    }
   }
 }

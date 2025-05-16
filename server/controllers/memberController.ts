@@ -56,7 +56,7 @@ export const getMembersByFederationId = async (
       }>("federationId", "name abbreviation type")
       .populate<{
         adminId: { firstName: string; lastName: string; email: string };
-      }>("adminId", "firstName lastName email")
+      }>("adminId", "firstName lastName email");
     //   .populate("athletes");
 
     if (!members) {
@@ -173,6 +173,14 @@ export const deleteMember = async (
         error: "Cannot delete member with athletes. Remove athletes first.",
       });
     }
+
+    // If no athletes, proceed with deletion
+    await member.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Member deleted successfully",
+    });
   } catch (error) {
     console.error("Delete member error:", error);
     res.status(500).json({

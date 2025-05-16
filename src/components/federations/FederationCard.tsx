@@ -9,6 +9,7 @@ import {
   IconWorld,
 } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
+import { getFedTypeColor } from "./utils";
 
 interface FederationCardProps {
   federation: Federation;
@@ -36,14 +37,28 @@ export function FederationCard({
   };
 
   return (
-    <Card withBorder onClick={onClick}>
+    <Card 
+      withBorder 
+      onClick={onClick} 
+      sx={(theme) => ({
+        cursor: 'pointer',
+        transition: 'background-color 0.2s ease',
+        '&:hover': {
+          backgroundColor: theme.colorScheme === 'dark' 
+            ? theme.colors.dark[5] 
+            : theme.colors.gray[0],
+        }
+      })}
+    >
       <Stack spacing="md">
         <Group position="apart">
           <Group>
             <IconBuilding size={24} />
             <Text weight={500}>{federation.name}</Text>
           </Group>
-          <Badge>{federation.type}</Badge>
+          <Badge size="lg" color={getFedTypeColor(federation.type)}>
+            {federation.type}
+          </Badge>
         </Group>
 
         <Text size="sm" color="dimmed">

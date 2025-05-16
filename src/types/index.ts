@@ -107,20 +107,15 @@ export interface Athlete {
 }
 
 // Competition Types
-export type EquipmentType =
-  | "equipped"
-  | "classic"
-  | "equippedBench"
-  | "classicBench";
+export type EquipmentType = "CLASSIC" | "SINGLE" | "BP_CLASSIC" | "BP_SINGLE";
 export type AgeCategory =
-  | "subJuniors"
-  | "juniors"
-  | "open"
-  | "masters1"
-  | "masters2"
-  | "masters3"
-  | "masters4"
-  | "masters";
+  | "SUB_JUNIORS"
+  | "JUNIORS"
+  | "OPEN"
+  | "MASTERS_1"
+  | "MASTERS_2"
+  | "MASTERS_3"
+  | "MASTERS_4";
 export type CompetitionStatus = "upcoming" | "ongoing" | "completed";
 
 export interface Competition {
@@ -132,9 +127,9 @@ export interface Competition {
   address?: string;
   city: string;
   country: string;
-  hostFederationId: string | Federation;
-  hostClubId?: string | Club;
-  eligibleFederationIds: string[] | Federation[];
+  hostFederation: string | Federation;
+  hostMember?: string | Club;
+  eligibleFederations: string[] | Federation[];
   equipmentType: EquipmentType;
   ageCategories: AgeCategory[];
   description?: string;

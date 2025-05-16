@@ -21,6 +21,8 @@ import { useEffect, useState } from "react";
 import { FederationCard } from "@/components/federations/FederationCard";
 import ChildFederationList from "@/components/federations/ChildFederationList";
 import { getMembersByFederationId } from "@/services/memberService";
+import FederationMemberList from "@/components/federations/FederationMemberList";
+import FederationInfo from "@/components/federations/FederationInfo";
 
 async function fetchFederationHierarchy(fedId: string): Promise<Federation[]> {
   const chain: Federation[] = [];
@@ -59,15 +61,6 @@ export default function FederationDetailsPage() {
     error: fedError,
   } = useDataFetching<Federation>({
     fetchFunction: () => getFederationById(id ?? ""),
-    dependencies: [id],
-  });
-
-  const {
-    data: members,
-    loading: membersLoading,
-    error: membersError,
-  } = useDataFetching<Member[]>({
-    fetchFunction: () => getMembersByFederationId(id ?? ""),
     dependencies: [id],
   });
 
@@ -112,7 +105,7 @@ export default function FederationDetailsPage() {
         </Tabs.List>
 
         <Tabs.Panel value="info" pt="xl">
-          <div>info</div>
+          <FederationInfo federation={federation} />
         </Tabs.Panel>
         <Tabs.Panel value="children" pt="xl">
           <ChildFederationList
@@ -121,7 +114,10 @@ export default function FederationDetailsPage() {
           />
         </Tabs.Panel>
         <Tabs.Panel value="members" pt="xl">
-          <div>{members?.map((c) => c.name)}</div>
+          <FederationMemberList
+            federation={federation}
+            federationLoading={fedLoading}
+          />
         </Tabs.Panel>
       </Tabs>
     </Page>

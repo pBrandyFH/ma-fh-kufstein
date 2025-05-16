@@ -22,7 +22,7 @@ import { DashboardCompetitionDrawer } from "./DashboardCompetitionDrawer";
 import { getCompetitionType } from "@/utils/competitions/competitionUtils";
 import { useDataFetching } from "../../../hooks/useDataFetching"; // Import the custom hook
 import { getAllFederations } from "@/services/federationService";
-import { CompetitionCard } from "@/components/competitions/CompetitionCard";
+import { CompetitionCard } from "@/components/competitions/legacy/CompetitionCard";
 
 export function DashboardCompetitionsList() {
   const { t } = useTranslation();

@@ -3,6 +3,12 @@ import { auth, authorize } from "../middleware/auth";
 import { UserFederationRole } from "../permissions/types";
 import Competition from "../models/Competition";
 import Nomination from "../models/Nomination";
+import {
+  getCompetitionById,
+  getCompetitionsByHostFederation,
+  getInternationalCompetitions,
+  getNationalCompetitions,
+} from "../controllers/competitionController";
 
 const router = express.Router();
 
@@ -193,12 +199,13 @@ router.get("/eligible", auth, async (req, res) => {
  *       404:
  *         description: Competition not found
  */
-router.get("/:id", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Get competition by ID endpoint",
-  });
-});
+router.get("/:id", getCompetitionById);
+
+router.get("/federation/:federationId", getCompetitionsByHostFederation);
+
+router.get("/international/:federationId", getInternationalCompetitions);
+
+router.get("/national/:federationId", getNationalCompetitions);
 
 /**
  * @swagger
@@ -256,7 +263,7 @@ router.post(
   authorize([
     { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
-    
+
     { role: "SUPERADMIN", federationId: "*" },
   ]),
   (req, res) => {
@@ -326,7 +333,7 @@ router.put(
   authorize([
     { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
-    
+
     { role: "SUPERADMIN", federationId: "*" },
   ]),
   (req, res) => {
@@ -368,7 +375,7 @@ router.delete(
   authorize([
     { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
-    
+
     { role: "SUPERADMIN", federationId: "*" },
   ]),
   (req, res) => {
@@ -478,7 +485,7 @@ router.post(
   authorize([
     { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
-    
+
     { role: "SUPERADMIN", federationId: "*" },
   ]),
   async (req, res) => {

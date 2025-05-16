@@ -1,24 +1,35 @@
-import mongoose, { type Document, Schema } from "mongoose"
+import mongoose, { type Document, Schema } from "mongoose";
+
+export type EquipmentType = "CLASSIC" | "SINGLE" | "BP_CLASSIC" | "BP_SINGLE";
+export type AgeCategory =
+  | "SUB_JUNIORS"
+  | "JUNIORS"
+  | "OPEN"
+  | "MASTERS_1"
+  | "MASTERS_2"
+  | "MASTERS_3"
+  | "MASTERS_4";
+export type CompetitionStatus = "upcoming" | "ongoing" | "completed";
 
 export interface ICompetition extends Document {
-  name: string
-  startDate: Date
-  endDate?: Date
-  location: string
-  address?: string
-  city: string
-  country: string
-  hostFederationId: mongoose.Types.ObjectId
-  hostClubId?: mongoose.Types.ObjectId
-  eligibleFederationIds: mongoose.Types.ObjectId[]
-  equipmentType: string
-  ageCategories: string[]
-  description?: string
-  status: string
-  nominationDeadline: Date
-  officialIds?: mongoose.Types.ObjectId[]
-  createdAt: Date
-  updatedAt: Date
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  location: string;
+  address?: string;
+  city: string;
+  country: string;
+  hostFederation: mongoose.Types.ObjectId;
+  hostMember?: mongoose.Types.ObjectId;
+  eligibleFederations: mongoose.Types.ObjectId[];
+  equipmentType: EquipmentType;
+  ageCategories: AgeCategory[];
+  description?: string;
+  status: CompetitionStatus;
+  nominationDeadline: Date;
+  officials?: mongoose.Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const CompetitionSchema = new Schema<ICompetition>(
@@ -34,6 +45,7 @@ const CompetitionSchema = new Schema<ICompetition>(
     },
     endDate: {
       type: Date,
+      required: true,
     },
     location: {
       type: String,
@@ -54,16 +66,16 @@ const CompetitionSchema = new Schema<ICompetition>(
       required: true,
       trim: true,
     },
-    hostFederationId: {
+    hostFederation: {
       type: Schema.Types.ObjectId,
       ref: "Federation",
       required: true,
     },
-    hostClubId: {
+    hostMember: {
       type: Schema.Types.ObjectId,
       ref: "Club",
     },
-    eligibleFederationIds: [
+    eligibleFederations: [
       {
         type: Schema.Types.ObjectId,
         ref: "Federation",
@@ -71,13 +83,21 @@ const CompetitionSchema = new Schema<ICompetition>(
     ],
     equipmentType: {
       type: String,
-      enum: ["equipped", "classic", "equippedBench", "classicBench"],
+      enum: ["CLASSIC", "SINGLE", "BP_CLASSIC", "BP_SINGLE"],
       required: true,
     },
     ageCategories: [
       {
         type: String,
-        enum: ["subJuniors", "juniors", "open", "masters1", "masters2", "masters3", "masters4", "masters"],
+        enum: [
+          "SUB_JUNIORS",
+          "JUNIORS",
+          "OPEN",
+          "MASTERS_1",
+          "MASTERS_2",
+          "MASTERS_3",
+          "MASTERS_4",
+        ],
         required: true,
       },
     ],
@@ -95,7 +115,7 @@ const CompetitionSchema = new Schema<ICompetition>(
       type: Date,
       required: true,
     },
-    officialIds: [
+    officials: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
@@ -104,8 +124,7 @@ const CompetitionSchema = new Schema<ICompetition>(
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
-export default mongoose.model<ICompetition>("Competition", CompetitionSchema)
-
+export default mongoose.model<ICompetition>("Competition", CompetitionSchema);
