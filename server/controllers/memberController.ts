@@ -17,7 +17,7 @@ export const getMemberById = async (
   res: Response
 ) => {
   try {
-    const member = await Member.findById(req.params.id)
+    const member = await Member.findById(new mongoose.Types.ObjectId(req.params.id))
       .populate<{
         adminId: { firstName: string; lastName: string; email: string };
       }>("adminId", "firstName lastName email")

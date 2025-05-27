@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import {
   Modal,
   TextInput,
-  Select,
+  MultiSelect,
   Button,
   Group,
   Stack,
-  Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useTranslation } from "react-i18next";
@@ -15,17 +14,18 @@ import {
   updateFederation,
 } from "../../../services/federationService";
 import { Federation, FederationType } from "../../../types";
+import { getChildFederations } from "@/services/federationService"; // to load potential parents
 
 interface FederationFormModalProps {
   opened: boolean;
   onClose: () => void;
   onSuccess: () => void;
   modalTitle: string;
-  allowedTypes?: FederationType[]; // Allow specifying which federation types to show
-  defaultType?: FederationType; // Default selected type
-  parentId: string; // Default selected parent federation ID
-  federationToEdit?: Federation; // Federation to edit (if editing mode)
-  isEditMode?: boolean; // Whether we're editing or creating
+  allowedTypes?: FederationType[];
+  defaultType?: FederationType;
+  parentId: string;
+  federationToEdit?: Federation;
+  isEditMode?: boolean;
 }
 
 export function FederationFormModal({
@@ -41,12 +41,19 @@ export function FederationFormModal({
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
+  // TODO add option for REGIONAL admins to create nations which have multiple parent feds
+  const allFederations = [] as Federation[];
+
+  const initialParentIds =
+    federationToEdit?.parents?.map((p) => p._id) ||
+    (parentId ? [parentId] : []);
+
   const form = useForm({
     initialValues: {
       name: federationToEdit?.name || "",
       abbreviation: federationToEdit?.abbreviation || "",
       type: federationToEdit?.type || defaultType,
-      parentId: federationToEdit?.parent?._id || parentId,
+      parentIds: initialParentIds,
       contactName: federationToEdit?.contactName || "",
       contactEmail: federationToEdit?.contactEmail || "",
       contactPhone: federationToEdit?.contactPhone || "",
@@ -58,8 +65,8 @@ export function FederationFormModal({
       name: (value) => (value ? null : t("validation.required")),
       abbreviation: (value) => (value ? null : t("validation.required")),
       type: (value) => (value ? null : t("validation.required")),
-      parentId: (value, values) =>
-        values.type !== "INTERNATIONAL" && !value
+      parentIds: (value, values) =>
+        values.type !== "INTERNATIONAL" && (!value || value.length === 0)
           ? t("validation.required")
           : null,
       contactEmail: (value) =>
@@ -72,36 +79,24 @@ export function FederationFormModal({
     const isValid = form.isValid();
     if (isValid) {
       try {
-        if (!values.type) {
-          console.error("Federation type is undefined");
-          setLoading(false);
-          return;
-        }
-
-        // Prepare federation data - remove parentId from the data we send to API
-        const { parentId, ...restValues } = values;
-
-        // Create federation data with proper parent format
+        const { parentIds, ...restValues } = values;
         const federationData: any = {
           ...restValues,
           type: values.type,
         };
 
-        // Only add parent if it's specified
-        if (parentId) {
-          federationData.parent = parentId;
+        if (parentIds && parentIds.length > 0) {
+          federationData.parents = parentIds;
         }
 
         let response;
 
         if (isEditMode && federationToEdit) {
-          // Update existing federation
           response = await updateFederation(
             federationToEdit._id,
             federationData
           );
         } else {
-          // Create new federation
           response = await createFederation(federationData);
         }
 
@@ -109,7 +104,6 @@ export function FederationFormModal({
           form.reset();
           onSuccess();
         } else {
-          // Handle error
           console.error(
             `Failed to ${isEditMode ? "update" : "create"} federation:`,
             response.error
@@ -142,6 +136,20 @@ export function FederationFormModal({
             required
             {...form.getInputProps("abbreviation")}
           />
+
+          <MultiSelect
+            label={t("federations.parent")}
+            placeholder={t("federations.selectParent")}
+            data={allFederations.map((f) => ({
+              label: f.name,
+              value: f._id,
+            }))}
+            searchable
+            clearable
+            disabled={form.values.type === "INTERNATIONAL"}
+            {...form.getInputProps("parentIds")}
+          />
+
           <TextInput
             label={t("federations.contactName")}
             placeholder={t("federations.contactNamePlaceholder")}

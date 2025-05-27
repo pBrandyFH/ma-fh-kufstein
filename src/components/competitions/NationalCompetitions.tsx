@@ -1,6 +1,6 @@
 import { useDataFetching } from "@/hooks/useDataFetching";
-import { getInternationalCompetitions } from "@/services/competitionService";
 import { Competition, Federation } from "@/types";
+import { getNationalCompetitions } from "@/services/competitionService";
 import {
   Card,
   Title,
@@ -20,19 +20,19 @@ import { IconCalendar, IconTrophy } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { getFedTypeColor } from "../federations/utils";
 
-interface InternationalCompetitionsProps {
+interface NationalCompetitionsProps {
   federation: Federation | null;
 }
 
-export default function InternationalCompetitions({
+export default function NationalCompetitions({
   federation,
-}: InternationalCompetitionsProps) {
+}: NationalCompetitionsProps) {
   const {
     data: competitions,
     loading: competitionsLoading,
     error: competitionsError,
   } = useDataFetching<Competition[]>({
-    fetchFunction: () => getInternationalCompetitions(federation?._id ?? ""),
+    fetchFunction: () => getNationalCompetitions(federation?._id ?? ""),
   });
 
   return (
@@ -76,7 +76,9 @@ export default function InternationalCompetitions({
                 <Divider />
 
                 <Group spacing="xs">
-                  <Text size="sm" weight={500}>Host Federation:</Text>
+                  <Text size="sm" weight={500}>
+                    Host Federation:
+                  </Text>
                   <Text size="sm">
                     {hostFederation?.name} ({hostFederation?.abbreviation})
                   </Text>

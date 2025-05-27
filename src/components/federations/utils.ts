@@ -8,3 +8,5 @@ export const getFedTypeColor = (type: string) => {
     };
     return colors[type] || "gray";
   };
+
+  

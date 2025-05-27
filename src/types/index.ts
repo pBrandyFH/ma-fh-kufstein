@@ -26,8 +26,7 @@ export interface Federation {
   name: string;
   abbreviation: string;
   type: FederationType;
-  parent?: Federation;
-  children: Federation[];
+  parents?: Federation[];
   adminId?: string;
   contactName?: string;
   contactEmail?: string;
@@ -127,13 +126,14 @@ export interface Competition {
   address?: string;
   city: string;
   country: string;
-  hostFederation: string | Federation;
-  hostMember?: string | Club;
+  hostFederation: Federation;
+  hostMember?: Member;
   eligibleFederations: string[] | Federation[];
   equipmentType: EquipmentType;
   ageCategories: AgeCategory[];
   description?: string;
   status: CompetitionStatus;
+  nominationStart: Date;
   nominationDeadline: Date;
   officialIds?: string[];
   createdAt: Date;
@@ -232,7 +232,6 @@ export interface AthleteFormValues {
   federationId: string | "";
   sendInvite: boolean;
 }
-
 export interface CompetitionFormValues {
   name: string;
   startDate: Date | null;
@@ -241,12 +240,13 @@ export interface CompetitionFormValues {
   address: string;
   city: string;
   country: string;
-  hostFederationId: string;
-  hostClubId: string;
-  eligibleFederationIds: string[];
-  equipmentType: EquipmentType | "";
+  hostFederation: string | Federation;
+  hostMember: string | Member | null;
+  eligibleFederations: (string | Federation)[];
+  equipmentType: EquipmentType | null;
   ageCategories: AgeCategory[];
   description: string;
+  nominationStart: Date | null;
   nominationDeadline: Date | null;
 }
 

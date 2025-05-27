@@ -37,17 +37,18 @@ export function FederationCard({
   };
 
   return (
-    <Card 
-      withBorder 
-      onClick={onClick} 
+    <Card
+      withBorder
+      onClick={onClick}
       sx={(theme) => ({
-        cursor: 'pointer',
-        transition: 'background-color 0.2s ease',
-        '&:hover': {
-          backgroundColor: theme.colorScheme === 'dark' 
-            ? theme.colors.dark[5] 
-            : theme.colors.gray[0],
-        }
+        cursor: "pointer",
+        transition: "background-color 0.2s ease",
+        "&:hover": {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[5]
+              : theme.colors.gray[0],
+        },
       })}
     >
       <Stack spacing="md">

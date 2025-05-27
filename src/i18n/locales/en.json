@@ -285,6 +285,7 @@
     "host": "Host",
     "category": "Category",
     "ageCategory": "Age Category",
+    "ageCategoriesPlaceholder": "Enter age categories",
     "nominations": "Nominations",
     "results": "Results",
     "international": "International",
@@ -296,7 +297,7 @@
     "organization": "Organization",
     "hostFederation": "Host Federation",
     "hostClub": "Host Club",
-    "eligibleFederations": "Eligible Federations",
+    "eligibleFederations": "Additional eligible Federations",
     "selectFederation": "Select Federation",
     "selectFederations": "Select Federations",
     "selectClub": "Select Club",
@@ -323,10 +324,10 @@
     "createFailed": "Creation Failed",
     "noCompetitions": "No competitions found",
     "equipmentTypes": {
-      "equipped": "Equipped",
+      "single": "Single-ply",
       "classic": "Classic",
-      "equippedBench": "Equipped Bench",
-      "classicBench": "Classic Bench"
+      "bpSingle": "Single-ply Bench",
+      "bpClassic": "Classic Bench"
     },
     "ageCategories": {
       "subJuniors": "Sub-Juniors",
@@ -583,7 +584,7 @@
     },
     "tabs": {
       "info": "Info",
-      "children":"Children",
+      "children": "Children",
       "members": "Members"
     }
   },

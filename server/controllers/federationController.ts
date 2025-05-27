@@ -8,7 +8,7 @@ interface CreateFederationRequestBody {
   name: string;
   abbreviation: string;
   type: FederationLevel;
-  parent?: mongoose.Types.ObjectId;
+  parents?: mongoose.Types.ObjectId[];
   adminId?: mongoose.Types.ObjectId;
   contactName?: string;
   contactEmail?: string;
@@ -26,28 +26,16 @@ interface UpdateFederationRequestBody
 // READ REQUESTS
 // --------------------------------------------------------------------------------------------------------------
 
-// Get all federations
 export const getAllFederations = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
   try {
     const federations = await Federation.find()
-      .populate<{
-        parent: { name: string; abbreviation: string; type: FederationLevel };
-      }>("parent", "name abbreviation type")
-      .populate<{
-        children: {
-          name: string;
-          abbreviation: string;
-          type: FederationLevel;
-        }[];
-      }>("children", "name abbreviation type");
+      .populate("parents", "name abbreviation type")
+      .populate("adminId", "firstName lastName email");
 
-    res.status(200).json({
-      success: true,
-      data: federations,
-    });
+    res.status(200).json({ success: true, data: federations });
   } catch (error) {
     console.error("Get all federations error:", error);
     res.status(500).json({
@@ -57,23 +45,14 @@ export const getAllFederations = async (
   }
 };
 
-// Get federation by ID
 export const getFederationById = async (
   req: AuthenticatedRequest<{ id: string }>,
   res: Response
 ) => {
   try {
     const federation = await Federation.findById(req.params.id)
-      .populate<{
-        parent: {
-          name: string;
-          abbreviation: string;
-          type: FederationLevel;
-        };
-      }>("parent", "name abbreviation type")
-      .populate<{
-        adminId: { firstName: string; lastName: string; email: string };
-      }>("adminId", "firstName lastName email");
+      .populate("parents", "name abbreviation type")
+      .populate("adminId", "firstName lastName email");
 
     if (!federation) {
       return res.status(404).json({
@@ -82,10 +61,7 @@ export const getFederationById = async (
       });
     }
 
-    res.status(200).json({
-      success: true,
-      data: federation,
-    });
+    res.status(200).json({ success: true, data: federation });
   } catch (error) {
     console.error("Get federation by ID error:", error);
     res.status(500).json({
@@ -95,7 +71,6 @@ export const getFederationById = async (
   }
 };
 
-// Get federations by type
 export const getFederationsByType = async (
   req: AuthenticatedRequest<{ type: FederationLevel }>,
   res: Response
@@ -103,21 +78,9 @@ export const getFederationsByType = async (
   try {
     const federations = await Federation.find({
       type: req.params.type,
-    }).populate<{
-      parent: {
-        _id: string;
-        name: string;
-        abbreviation: string;
-        type: FederationLevel;
-      };
-    }>("parent", "_id name abbreviation type");
+    }).populate("parents", "name abbreviation type");
 
-    console.log(federations);
-
-    res.status(200).json({
-      success: true,
-      data: federations,
-    });
+    res.status(200).json({ success: true, data: federations });
   } catch (error) {
     console.error("Get federations by type error:", error);
     res.status(500).json({
@@ -127,26 +90,16 @@ export const getFederationsByType = async (
   }
 };
 
-// Get federations by parent
 export const getFederationsByParent = async (
   req: AuthenticatedRequest<{ parentId: string }>,
   res: Response
 ) => {
   try {
     const federations = await Federation.find({
-      parent: req.params.parentId,
-    }).populate<{
-      parent: {
-        name: string;
-        abbreviation: string;
-        type: FederationLevel;
-      };
-    }>("parent", "name abbreviation type");
+      parents: req.params.parentId,
+    }).populate("parents", "name abbreviation type");
 
-    res.status(200).json({
-      success: true,
-      data: federations,
-    });
+    res.status(200).json({ success: true, data: federations });
   } catch (error) {
     console.error("Get federations by parent error:", error);
     res.status(500).json({
@@ -163,14 +116,8 @@ export const getChildFederations = async (
 ) => {
   try {
     const childFederations = await Federation.find({
-      parent: req.params.id,
-    }).populate<{
-      parent: {
-        name: string;
-        abbreviation: string;
-        type: FederationLevel;
-      };
-    }>("parent", "name abbreviation type");
+      parents: req.params.id,
+    }).populate("parents");
 
     res.status(200).json({
       success: true,
@@ -199,7 +146,6 @@ export const getFederationsByTypeFilter = async (
       });
     }
 
-    // Validate that all types are valid
     const validTypes = [
       "INTERNATIONAL",
       "REGIONAL",
@@ -207,9 +153,7 @@ export const getFederationsByTypeFilter = async (
       "STATE",
       "LOCAL",
     ];
-    const invalidTypes = types.filter(
-      (type: string) => !validTypes.includes(type)
-    );
+    const invalidTypes = types.filter((type) => !validTypes.includes(type));
 
     if (invalidTypes.length > 0) {
       return res.status(400).json({
@@ -218,23 +162,11 @@ export const getFederationsByTypeFilter = async (
       });
     }
 
-    const federations = await Federation.find({
-      type: { $in: types },
-    })
+    const federations = await Federation.find({ type: { $in: types } })
       .sort({ name: 1 })
-      .populate<{
-        parent: {
-          _id: string;
-          name: string;
-          abbreviation: string;
-          type: FederationLevel;
-        };
-      }>("parent", "_id name abbreviation type");
+      .populate("parents", "name abbreviation type");
 
-    return res.json({
-      success: true,
-      data: federations,
-    });
+    return res.json({ success: true, data: federations });
   } catch (error) {
     console.error("Error fetching federations by type filter:", error);
     return res.status(500).json({
@@ -248,7 +180,6 @@ export const getFederationsByTypeFilter = async (
 // CREATE REQUESTS
 // --------------------------------------------------------------------------------------------------------------
 
-// Create new federation
 export const createFederation = async (
   req: AuthenticatedRequest<{}, {}, CreateFederationRequestBody>,
   res: Response
@@ -258,7 +189,7 @@ export const createFederation = async (
       name,
       abbreviation,
       type,
-      parent,
+      parents,
       adminId,
       contactName,
       contactEmail,
@@ -273,7 +204,7 @@ export const createFederation = async (
       name,
       abbreviation,
       type,
-      parent,
+      parents,
       adminId,
       contactName,
       contactEmail,
@@ -286,25 +217,9 @@ export const createFederation = async (
 
     await federation.save();
 
-    // Update parent federation's children array if parent exists
-    if (parent) {
-      await Federation.findByIdAndUpdate(
-        parent,
-        { $push: { children: federation._id } },
-        { new: true }
-      );
-    }
-
-    // Return the newly created federation
     const populatedFederation = await Federation.findById(
       federation._id
-    ).populate<{
-      parent: {
-        name: string;
-        abbreviation: string;
-        type: FederationLevel;
-      };
-    }>("parent", "name abbreviation type");
+    ).populate("parents", "name abbreviation type");
 
     res.status(201).json({
       success: true,
@@ -323,7 +238,6 @@ export const createFederation = async (
 // UPDATE REQUESTS
 // --------------------------------------------------------------------------------------------------------------
 
-// Update federation
 export const updateFederation = async (
   req: AuthenticatedRequest<{ id: string }, {}, UpdateFederationRequestBody>,
   res: Response
@@ -338,45 +252,13 @@ export const updateFederation = async (
       });
     }
 
-    const { parent } = req.body;
-
-    // Handle parent changes
-    if (parent !== undefined && !federation.parent?.equals(parent)) {
-      // Remove from old parent's children array if old parent exists
-      if (federation.parent) {
-        await Federation.findByIdAndUpdate(
-          federation.parent,
-          { $pull: { children: federation._id } },
-          { new: true }
-        );
-      }
-
-      // Add to new parent's children array if new parent exists
-      if (parent) {
-        await Federation.findByIdAndUpdate(
-          parent,
-          { $push: { children: federation._id } },
-          { new: true }
-        );
-      }
-    }
-
     const updatedFederation = await Federation.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    ).populate<{
-      parent: {
-        name: string;
-        abbreviation: string;
-        type: FederationLevel;
-      };
-    }>("parent", "name abbreviation type");
+    ).populate("parents", "name abbreviation type");
 
-    res.status(200).json({
-      success: true,
-      data: updatedFederation,
-    });
+    res.status(200).json({ success: true, data: updatedFederation });
   } catch (error) {
     console.error("Update federation error:", error);
     res.status(500).json({
@@ -390,7 +272,6 @@ export const updateFederation = async (
 // DELETE REQUESTS
 // --------------------------------------------------------------------------------------------------------------
 
-// Delete federation
 export const deleteFederation = async (
   req: AuthenticatedRequest<{ id: string }>,
   res: Response
@@ -405,29 +286,18 @@ export const deleteFederation = async (
       });
     }
 
-    // Remove this federation ID from parent's children array if parent exists
-    if (federation.parent) {
-      await Federation.findByIdAndUpdate(
-        federation.parent,
-        { $pull: { children: federation._id } },
-        { new: true }
-      );
-    }
-
-    // If this federation has children, handle those relationships
-    // Option 1: Prevent deletion if federation has children
-    const childCount = await Federation.countDocuments({
-      parent: federation._id,
+    const referencingFederations = await Federation.find({
+      parents: federation._id,
     });
-    if (childCount > 0) {
+
+    if (referencingFederations.length > 0) {
       return res.status(400).json({
         success: false,
         error:
-          "Cannot delete federation with child federations. Remove child federations first.",
+          "Cannot delete federation that is a parent of others. Remove references first.",
       });
     }
 
-    // If no children, proceed with deletion
     await federation.deleteOne();
 
     res.status(200).json({

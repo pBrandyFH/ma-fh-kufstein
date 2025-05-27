@@ -88,15 +88,12 @@ export const getCompetitionsByHostFederation = async (
     });
   }
 };
-
 export const getInternationalCompetitions = async (
   req: AuthenticatedRequest<{ federationId: string }>,
   res: Response
 ) => {
   try {
     const { federationId } = req.params;
-
-    // First, get the federation to determine its level
     const federation = await Federation.findById(federationId);
 
     if (!federation) {
@@ -106,21 +103,41 @@ export const getInternationalCompetitions = async (
       });
     }
 
-    // Get all parent federations by traversing up the hierarchy
-    const federationIds = [federationId]; // Include the current federation
-    let currentFederation: IFederation | null = federation;
+    const federationIds = [federationId];
+    const visited = new Set<string>();
+    let stack = [federation];
 
-    // Traverse up the hierarchy by following parent references
-    while (currentFederation.parent) {
-      federationIds.push(currentFederation.parent.toString());
-      currentFederation = await Federation.findById(currentFederation.parent);
-      if (!currentFederation) break;
+    while (stack.length > 0) {
+      const current = stack.pop();
+      if (!current || visited.has(current._id.toString())) continue;
+
+      visited.add(current._id.toString());
+
+      if (current.type === "NATIONAL" || current.type === "REGIONAL") {
+        const parents = await Federation.find({
+          _id: { $in: current.parents },
+        });
+
+        for (const parent of parents) {
+          federationIds.push(parent._id.toString());
+          stack.push(parent);
+        }
+      }
     }
 
-    // Find all regional or international competitions hosted by any federation in the hierarchy
+    // For INTERNATIONAL federations, add all INTL and REGIONAL federations
+    if (federation.type === "INTERNATIONAL") {
+      const internationalFederations = await Federation.find({
+        type: { $in: ["INTERNATIONAL", "REGIONAL"] },
+      });
+
+      for (const f of internationalFederations) {
+        federationIds.push(f._id.toString());
+      }
+    }
+
     const competitions = await Competition.find({
       hostFederation: { $in: federationIds },
-      level: { $in: ["REGIONAL", "INTERNATIONAL"] },
     })
       .populate("hostFederation")
       .populate("eligibleFederations")
@@ -147,8 +164,6 @@ export const getNationalCompetitions = async (
 ) => {
   try {
     const { federationId } = req.params;
-
-    // First, get the federation to determine its level
     const federation = await Federation.findById(federationId);
 
     if (!federation) {
@@ -158,24 +173,24 @@ export const getNationalCompetitions = async (
       });
     }
 
-    // Get all child federations by traversing down the hierarchy
-    const federationIds = [federationId]; // Include the current federation
+    const federationIds: string[] = [];
+    if (federation.type !== "INTERNATIONAL" && federation.type !== "REGIONAL") {
+      federationIds.push(federationId);
+    }
 
-    // Find all child federations that have this federation as parent
     const findChildFederations = async (parentId: string) => {
-      const childFederations = await Federation.find({ parent: parentId });
+      const children = await Federation.find({ parents: parentId });
 
-      for (const childFederation of childFederations) {
-        federationIds.push(childFederation._id.toString());
-        // Recursively find children of this child
-        await findChildFederations(childFederation._id);
+      for (const child of children) {
+        if (child.type !== "INTERNATIONAL" && child.type !== "REGIONAL") {
+          federationIds.push(child._id.toString());
+        }
+        await findChildFederations(child._id.toString());
       }
     };
 
-    // Start the recursive search from the current federation
     await findChildFederations(federationId);
 
-    // Find all competitions hosted by any federation in the hierarchy
     const competitions = await Competition.find({
       hostFederation: { $in: federationIds },
     })
@@ -198,7 +213,6 @@ export const getNationalCompetitions = async (
     });
   }
 };
-
 // --------------------------------------------------------------------------------------------------------------
 // CREATE REQUESTS
 // --------------------------------------------------------------------------------------------------------------

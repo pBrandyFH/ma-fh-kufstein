@@ -16,6 +16,7 @@
     "seed:members": "ts-node server/scripts/seedMembers.ts",
     "seed:federations": "ts-node server/scripts/seedFederations.ts",
     "migrate:federations": "ts-node server/scripts/migrateFederations.ts",
+    "migrate:comps": "ts-node server/scripts/migrateComps.ts",
     "migrate:permissions": "ts-node server/scripts/migratePermissions.ts"
   },
   "dependencies": {

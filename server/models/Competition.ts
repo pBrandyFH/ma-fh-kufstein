@@ -27,6 +27,7 @@ export interface ICompetition extends Document {
   description?: string;
   status: CompetitionStatus;
   nominationDeadline: Date;
+  nominationStart: Date;
   officials?: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
@@ -112,6 +113,10 @@ const CompetitionSchema = new Schema<ICompetition>(
       required: true,
     },
     nominationDeadline: {
+      type: Date,
+      required: true,
+    },
+    nominationStart: {
       type: Date,
       required: true,
     },

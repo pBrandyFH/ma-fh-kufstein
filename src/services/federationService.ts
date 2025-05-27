@@ -66,7 +66,7 @@ export async function deleteFederation(id: string): Promise<ApiResponse<void>> {
   }
 }
 
-export const getFederationsByType = async (type: FederationType): Promise<ApiResponse<Federation[]>> => {
+export const getFederationsByType = async (type: FederationType[]): Promise<ApiResponse<Federation[]>> => {
   try {
     const response = await api.get<ApiResponse<Federation[]>>(`/federations/type/${type}`)
     return response.data

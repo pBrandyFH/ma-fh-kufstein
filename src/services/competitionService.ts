@@ -37,41 +37,6 @@ export const getCompetitionById = async (
   }
 };
 
-export const createCompetition = async (
-  data: CompetitionFormValues
-): Promise<ApiResponse<Competition>> => {
-  try {
-    const response = await api.post<ApiResponse<Competition>>(
-      "/competitions",
-      data
-    );
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Unknown error occurred" };
-  }
-};
-
-export const updateCompetition = async (
-  id: string,
-  data: Partial<CompetitionFormValues>
-): Promise<ApiResponse<Competition>> => {
-  try {
-    const response = await api.put<ApiResponse<Competition>>(
-      `/competitions/${id}`,
-      data
-    );
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Unknown error occurred" };
-  }
-};
-
 export const deleteCompetition = async (
   id: string
 ): Promise<ApiResponse<null>> => {
@@ -270,3 +235,38 @@ export async function getCompetitionByHostFederationId(
     return { success: false, error: "Unknown error occurred" };
   }
 }
+
+export const createCompetition = async (
+  data: CompetitionFormValues
+): Promise<ApiResponse<Competition>> => {
+  try {
+    const response = await api.post<ApiResponse<Competition>>(
+      "/competitions",
+      data
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Unknown error occurred" };
+  }
+};
+
+export const updateCompetition = async (
+  id: string,
+  data: Partial<CompetitionFormValues>
+): Promise<ApiResponse<Competition>> => {
+  try {
+    const response = await api.put<ApiResponse<Competition>>(
+      `/competitions/${id}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Unknown error occurred" };
+  }
+};

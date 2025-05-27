@@ -18,10 +18,12 @@ import {
   Flex,
   Box,
 } from "@mantine/core";
-import { IconCalendar, IconPlus, IconTrophy } from "@tabler/icons-react";
+import { IconCalendar, IconEdit, IconPlus, IconTrophy } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getFedTypeColor } from "../federations/utils";
+import CompetitionFormModal from "./CompetitionFormModal";
 
 interface MyCompetitionsProps {
   federation: Federation | null;
@@ -33,14 +35,30 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [selectedCompetition, setSelectedCompetition] =
     useState<Competition | null>(null);
+
   const {
     data: competitions,
     loading: competitionsLoading,
     error: competitionsError,
+    refetch: refetchComps,
   } = useDataFetching<Competition[]>({
     fetchFunction: () =>
       getCompetitionByHostFederationId(federation?._id ?? ""),
   });
+
+  const handleEditSuccess = () => {
+    setEditModalOpened(false);
+    refetchComps();
+  };
+
+  const handleCreateSuccess = () => {
+    setCreateModalOpened(false);
+    refetchComps();
+  };
+
+  if (!federation) {
+    return <div>no fed</div>;
+  }
 
   return (
     <Flex direction="column" gap="sm">
@@ -53,18 +71,34 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
         </Button>
       </Box>
       {competitions?.map((competition) => {
+        const hostFederation = competition.hostFederation;
         return (
           <Card
             key={competition._id}
             withBorder
-            style={{ cursor: "pointer", marginBottom: "1rem" }}
+            style={{ marginBottom: "1rem" }}
           >
             <Stack spacing="xs">
               <Group position="apart">
-                <Text size="lg" weight={500}>
-                  {competition.name}
-                </Text>
-                <Badge color="blue">International</Badge>
+                <Group>
+                  <Text size="lg" weight={500}>
+                    {competition.name}
+                  </Text>
+                  <ActionIcon
+                    variant="subtle"
+                    color="blue"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedCompetition(competition);
+                      setEditModalOpened(true);
+                    }}
+                  >
+                    <IconEdit size={16} />
+                  </ActionIcon>
+                </Group>
+                <Badge color={getFedTypeColor(hostFederation?.type)}>
+                  {hostFederation?.type}
+                </Badge>
               </Group>
 
               <Divider />
@@ -88,6 +122,31 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
           </Card>
         );
       })}
+
+      <CompetitionFormModal
+        opened={createModalOpened}
+        onClose={() => setCreateModalOpened(false)}
+        onSuccess={handleCreateSuccess}
+        modalTitle={t("competitions.add", {
+          parentFederation: federation?.name,
+        })}
+        hostFederation={federation}
+      />
+
+      {selectedCompetition && (
+        <CompetitionFormModal
+          opened={editModalOpened}
+          onClose={() => {
+            setEditModalOpened(false);
+            setSelectedCompetition(null);
+          }}
+          onSuccess={handleEditSuccess}
+          modalTitle={t("competitions.edit")}
+          competitionToEdit={selectedCompetition}
+          hostFederation={federation}
+          isEditMode
+        />
+      )}
     </Flex>
   );
 }

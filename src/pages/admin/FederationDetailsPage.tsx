@@ -7,7 +7,7 @@ import {
   IconBuilding,
   IconChartBar,
 } from "@tabler/icons-react";
-import { Anchor, Breadcrumbs, Card, Flex, Stack, Tabs } from "@mantine/core";
+import { Anchor, Breadcrumbs, Stack, Tabs } from "@mantine/core";
 import { useUrlParams } from "@/hooks/useUrlParams";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -31,9 +31,31 @@ async function fetchFederationHierarchy(fedId: string): Promise<Federation[]> {
     const res = await getFederationById(currentId);
     if (!res.success || !res.data) break;
     chain.unshift(res.data);
-    currentId = res.data.parent?._id || "";
+    currentId = res.data.parents?.[0]?._id || ""; // pick first for linear fallback
   }
   return chain;
+}
+
+async function fetchAllFederationHierarchies(
+  fedId: string
+): Promise<Federation[][]> {
+  const base = await getFederationById(fedId);
+  if (!base.success || !base.data) return [];
+
+  const federation = base.data;
+
+  if (!federation.parents || federation.parents.length === 0) {
+    return [[federation]];
+  }
+
+  const parentChains = await Promise.all(
+    federation.parents.map(async (parent: Federation) => {
+      const chain = await fetchFederationHierarchy(parent._id);
+      return [...chain, federation];
+    })
+  );
+
+  return parentChains;
 }
 
 export default function FederationDetailsPage() {
@@ -42,7 +64,7 @@ export default function FederationDetailsPage() {
   const { t } = useTranslation();
   const { getParam, setParam } = useUrlParams();
 
-  const [hierarchy, setHierarchy] = useState<Federation[]>([]);
+  const [hierarchies, setHierarchies] = useState<Federation[][]>([]);
 
   const openedTab = getParam("tab") || "info";
   const tabs = [
@@ -66,26 +88,31 @@ export default function FederationDetailsPage() {
 
   useEffect(() => {
     if (federation?._id) {
-      fetchFederationHierarchy(federation._id).then(setHierarchy);
+      fetchAllFederationHierarchies(federation._id).then(setHierarchies);
     }
   }, [federation?._id]);
 
   return (
     <Page title={federation?.name ?? ""}>
-      <Breadcrumbs mb="md">
-        {hierarchy.map((fed, idx) =>
-          idx < hierarchy.length - 1 ? (
-            <Anchor
-              key={fed._id}
-              onClick={() => navigate(`/federations/${fed._id}`)}
-            >
-              {fed.name}
-            </Anchor>
-          ) : (
-            <span key={fed._id}>{fed.name}</span>
-          )
-        )}
-      </Breadcrumbs>
+      <Stack spacing={4} mb="md">
+        {hierarchies.map((chain, index) => (
+          <Breadcrumbs key={index}>
+            {chain.map((fed, idx) =>
+              idx < chain.length - 1 ? (
+                <Anchor
+                  key={fed._id}
+                  onClick={() => navigate(`/federations/${fed._id}`)}
+                >
+                  {fed.name}
+                </Anchor>
+              ) : (
+                <span key={fed._id}>{fed.name}</span>
+              )
+            )}
+          </Breadcrumbs>
+        ))}
+      </Stack>
+
       <Tabs
         value={openedTab}
         onTabChange={(value) =>

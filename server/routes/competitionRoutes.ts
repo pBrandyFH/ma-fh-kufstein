@@ -4,10 +4,12 @@ import { UserFederationRole } from "../permissions/types";
 import Competition from "../models/Competition";
 import Nomination from "../models/Nomination";
 import {
+  createCompetition,
   getCompetitionById,
   getCompetitionsByHostFederation,
   getInternationalCompetitions,
   getNationalCompetitions,
+  updateCompetition,
 } from "../controllers/competitionController";
 
 const router = express.Router();
@@ -266,12 +268,7 @@ router.post(
 
     { role: "SUPERADMIN", federationId: "*" },
   ]),
-  (req, res) => {
-    res.status(201).json({
-      success: true,
-      message: "Create competition endpoint",
-    });
-  }
+  createCompetition
 );
 
 /**
@@ -333,15 +330,9 @@ router.put(
   authorize([
     { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
-
     { role: "SUPERADMIN", federationId: "*" },
   ]),
-  (req, res) => {
-    res.status(200).json({
-      success: true,
-      message: "Update competition endpoint",
-    });
-  }
+  updateCompetition
 );
 
 /**

@@ -7,8 +7,8 @@ import {
   deleteFederation,
   getFederationsByType,
   getFederationsByParent,
-  getChildFederations,
   getFederationsByTypeFilter,
+  getChildFederations,
 } from "../controllers/federationController"
 import { auth, authorize } from "../middleware/auth"
 import { UserFederationRole } from "../permissions/types"

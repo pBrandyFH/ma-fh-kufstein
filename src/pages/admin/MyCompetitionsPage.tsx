@@ -42,6 +42,7 @@ import { useUrlParams } from "@/hooks/useUrlParams";
 import { useDataFetching } from "@/hooks/useDataFetching";
 import InternationalCompetitions from "@/components/competitions/InternationalCompetitions";
 import MyCompetitions from "@/components/competitions/MyCompetitions";
+import NationalCompetitions from "@/components/competitions/NationalCompetitions";
 
 export function MyCompetitionsPage() {
   const navigate = useNavigate();
@@ -71,10 +72,10 @@ export function MyCompetitionsPage() {
     fetchFunction: () => getInternationalCompetitions(federation?._id ?? ""),
   });
 
-  // if (federation?.type !== "INTERNATIONAL" && federation?.type !== "REGIONAL") {
+  // if (federation?.type === "NATIONAL" ) {
   //   tabs.push({
-  //     value: "national",
-  //     label: t("federations.tabs.children"),
+  //     value: "international",
+  //     label: t("federations.tabs.international"),
   //     icon: IconBuilding,
   //   });
   // }
@@ -103,7 +104,7 @@ export function MyCompetitionsPage() {
           <MyCompetitions federation={federation} />
         </Tabs.Panel>
         <Tabs.Panel value="national" pt="xl">
-          <div>national</div>
+          <NationalCompetitions federation={federation} />
         </Tabs.Panel>
         <Tabs.Panel value="international" pt="xl">
           <InternationalCompetitions federation={federation} />
