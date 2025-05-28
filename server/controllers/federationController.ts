@@ -22,6 +22,10 @@ interface CreateFederationRequestBody {
 interface UpdateFederationRequestBody
   extends Partial<CreateFederationRequestBody> {}
 
+interface UpdateHierarchyRequestBody {
+  children: string[];
+}
+
 // --------------------------------------------------------------------------------------------------------------
 // READ REQUESTS
 // --------------------------------------------------------------------------------------------------------------
@@ -264,6 +268,71 @@ export const updateFederation = async (
     res.status(500).json({
       success: false,
       error: "Server error while updating federation",
+    });
+  }
+};
+
+export const updateFederationHierarchy = async (
+  req: AuthenticatedRequest<{ id: string }, {}, UpdateHierarchyRequestBody>,
+  res: Response
+) => {
+  try {
+    const { children } = req.body;
+    const federation = await Federation.findById(req.params.id);
+
+    if (!federation) {
+      return res.status(404).json({
+        success: false,
+        error: "Federation not found",
+      });
+    }
+
+    let updatedFeds = [];
+
+    if (!Array.isArray(children)) {
+      return res.status(400).json({
+        success: false,
+        error: "Children must be an array",
+      });
+    }
+
+    // First, get all current child federations
+    const currentChildFederations = await Federation.find({
+      parents: req.params.id
+    });
+
+    // For each current child federation, check if it should still be a child
+    for (const childFed of currentChildFederations) {
+      if (!children.includes(childFed._id.toString())) {
+        // Remove this federation as a child if it's not in the new children array
+        await Federation.findByIdAndUpdate(
+          childFed._id,
+          { $pull: { parents: req.params.id } },
+          { new: true, runValidators: true }
+        );
+      }
+    }
+
+    // For each new child federation, ensure it has this federation as a parent
+    for (const childId of children) {
+      const childFed = await Federation.findById(childId);
+      if (childFed) {
+        const updatedFederation = await Federation.findByIdAndUpdate(
+          childId,
+          { $addToSet: { parents: req.params.id } },
+          { new: true, runValidators: true }
+        ).populate("parents");
+        
+        updatedFeds.push(updatedFederation);
+      }
+    }
+
+    res.status(200).json({ success: true, data: updatedFeds });
+  } catch (error) {
+    console.error("Update hierarchy on federation error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error while updating hierarchy on federation",
     });
   }
 };

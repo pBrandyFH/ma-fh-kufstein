@@ -27,7 +27,7 @@ import { useDataFetching } from "@/hooks/useDataFetching";
 import { FederationCard } from "@/components/federations/FederationCard";
 import { DashboardFederationDrawer } from "./DashboardFederationDrawer";
 import { useNavigate } from "react-router-dom";
-import { FederationFormModal } from "@/components/federations/legacy/FederationFormModal";
+import { FederationFormModal } from "@/components/federations/FederationFormModal";
 
 export function DashboardInternationalFederationsList() {
   const { t } = useTranslation();

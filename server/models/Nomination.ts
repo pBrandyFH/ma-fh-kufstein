@@ -1,14 +1,37 @@
-import mongoose, { type Document, Schema } from "mongoose"
+import mongoose, { type Document, Schema } from "mongoose";
+import { AgeCategory } from "./Competition";
+
+type NominationStatus = "pending" | "approved" | "rejected";
+
+export type WeightCategory =
+  | "u43"
+  | "u47"
+  | "u52"
+  | "u57"
+  | "u63"
+  | "u69"
+  | "u76"
+  | "u84"
+  | "o84"
+  | "u53"
+  | "u59"
+  | "u66"
+  | "u74"
+  | "u83"
+  | "u93"
+  | "u105"
+  | "u120"
+  | "o120";
 
 export interface INomination extends Document {
-  athleteId: mongoose.Types.ObjectId
-  competitionId: mongoose.Types.ObjectId
-  weightCategory: string
-  ageCategory: string
-  status: string
-  nominatedBy: mongoose.Types.ObjectId
-  nominatedAt: Date
-  updatedAt: Date
+  athleteId: mongoose.Types.ObjectId;
+  competitionId: mongoose.Types.ObjectId;
+  weightCategory: WeightCategory;
+  ageCategory: AgeCategory;
+  status: NominationStatus;
+  nominatedBy: mongoose.Types.ObjectId;
+  nominatedAt: Date;
+  updatedAt: Date;
 }
 
 const NominationSchema = new Schema<INomination>(
@@ -49,7 +72,15 @@ const NominationSchema = new Schema<INomination>(
     },
     ageCategory: {
       type: String,
-      enum: ["subJuniors", "juniors", "open", "masters1", "masters2", "masters3", "masters4", "masters"],
+      enum: [
+        "SUB_JUNIORS",
+        "JUNIORS",
+        "OPEN",
+        "MASTERS_1",
+        "MASTERS_2",
+        "MASTERS_3",
+        "MASTERS_4",
+      ],
       required: true,
     },
     status: {
@@ -71,11 +102,10 @@ const NominationSchema = new Schema<INomination>(
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
 // Create a compound index to ensure an athlete can only be nominated once per competition
-NominationSchema.index({ athleteId: 1, competitionId: 1 }, { unique: true })
+NominationSchema.index({ athleteId: 1, competitionId: 1 }, { unique: true });
 
-export default mongoose.model<INomination>("Nomination", NominationSchema)
-
+export default mongoose.model<INomination>("Nomination", NominationSchema);

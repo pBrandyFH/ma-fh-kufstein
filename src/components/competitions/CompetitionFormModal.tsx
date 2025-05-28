@@ -295,19 +295,19 @@ export default function CompetitionFormModal({
             data={[
               {
                 value: "CLASSIC",
-                label: t("competitions.equipmentTypes.classic"),
+                label: t("competitions.equipmentTypes.CLASSIC"),
               },
               {
                 value: "SINGLE",
-                label: t("competitions.equipmentTypes.single"),
+                label: t("competitions.equipmentTypes.SINGLE"),
               },
               {
                 value: "BP_CLASSIC",
-                label: t("competitions.equipmentTypes.bpClassic"),
+                label: t("competitions.equipmentTypes.BP_CLASSIC"),
               },
               {
                 value: "BP_SINGLE",
-                label: t("competitions.equipmentTypes.bpSingle"),
+                label: t("competitions.equipmentTypes.BP_SINGLE"),
               },
             ]}
             {...form.getInputProps("equipmentType")}
@@ -320,28 +320,28 @@ export default function CompetitionFormModal({
             data={[
               {
                 value: "SUB_JUNIORS",
-                label: t("competitions.ageCategories.subJuniors"),
+                label: t("competitions.ageCategories.SUB_JUNIORS"),
               },
               {
                 value: "JUNIORS",
-                label: t("competitions.ageCategories.juniors"),
+                label: t("competitions.ageCategories.JUNIORS"),
               },
-              { value: "OPEN", label: t("competitions.ageCategories.open") },
+              { value: "OPEN", label: t("competitions.ageCategories.OPEN") },
               {
                 value: "MASTERS_1",
-                label: t("competitions.ageCategories.masters1"),
+                label: t("competitions.ageCategories.MASTERS_1"),
               },
               {
                 value: "MASTERS_2",
-                label: t("competitions.ageCategories.masters2"),
+                label: t("competitions.ageCategories.MASTERS_2"),
               },
               {
                 value: "MASTERS_3",
-                label: t("competitions.ageCategories.masters3"),
+                label: t("competitions.ageCategories.MASTERS_3"),
               },
               {
                 value: "MASTERS_4",
-                label: t("competitions.ageCategories.masters4"),
+                label: t("competitions.ageCategories.MASTERS_4"),
               },
             ]}
             {...form.getInputProps("ageCategories")}

@@ -38,7 +38,6 @@
       "viewDetails": "View Details"
     },
     "viewDetails": "View Details",
-    "status": "Status",
     "date": "Date",
     "name": "Name",
     "description": "Description",
@@ -323,26 +322,36 @@
     "competitionCreated": "Competition has been created successfully",
     "createFailed": "Creation Failed",
     "noCompetitions": "No competitions found",
+    "nominationStart": "Nomination start",
+    "basicInfo": "Info",
+    "locationInfo":"Location info",
+    "nominationInfo":"Nomination info",
     "equipmentTypes": {
-      "single": "Single-ply",
-      "classic": "Classic",
-      "bpSingle": "Single-ply Bench",
-      "bpClassic": "Classic Bench"
+      "SINGLE": "Single-ply",
+      "CLASSIC": "Classic",
+      "BP_SINGLE": "Single-ply Bench",
+      "BP_CLASSIC": "Classic Bench"
     },
     "ageCategories": {
-      "subJuniors": "Sub-Juniors",
-      "juniors": "Juniors",
-      "open": "Open",
-      "masters1": "Masters 1",
-      "masters2": "Masters 2",
-      "masters3": "Masters 3",
-      "masters4": "Masters 4",
+      "SUB_JUNIORS": "Sub-Juniors",
+      "JUNIORS": "Juniors",
+      "OPEN": "Open",
+      "MASTERS_1": "Masters 1",
+      "MASTERS_2": "Masters 2",
+      "MASTERS_3": "Masters 3",
+      "MASTERS_4": "Masters 4",
       "masters": "Masters"
     },
     "searchPlaceholder": "Search by name, location, or organizer",
     "typePlaceholder": "Filter by type",
     "statusPlaceholder": "Filter by status",
     "type": "Type",
+    "status": {
+      "label": "Status",
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "completed": "Completed"
+    },
     "types": {
       "national": "National",
       "regional": "Regional",
@@ -373,15 +382,6 @@
       "contactPhone": "Contact Phone",
       "notes": "Notes",
       "status": "Status"
-    },
-    "status": {
-      "draft": "Draft",
-      "published": "Published",
-      "registrationOpen": "Registration Open",
-      "registrationClosed": "Registration Closed",
-      "inProgress": "In Progress",
-      "completed": "Completed",
-      "cancelled": "Cancelled"
     },
     "actions": {
       "create": "Create Competition",
@@ -511,6 +511,7 @@
     "title": "Federations",
     "create": "Create Federation",
     "add": "Add Federation to {{parentFederation}}",
+    "updateHierarchy": "Update hierarchy from {{parentFederation}}",
     "edit": "Edit Federation",
     "details": "Federation Details",
     "name": "Federation Name",

@@ -18,12 +18,18 @@ import {
   Flex,
   Box,
 } from "@mantine/core";
-import { IconCalendar, IconEdit, IconPlus, IconTrophy } from "@tabler/icons-react";
-import { format } from "date-fns";
+import {
+  IconCalendar,
+  IconEdit,
+  IconPlus,
+  IconTrophy,
+} from "@tabler/icons-react";
+import { format, set } from "date-fns";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getFedTypeColor } from "../federations/utils";
 import CompetitionFormModal from "./CompetitionFormModal";
+import CompetitionDetailsDrawer from "./CompetitionDetailsDrawer";
 
 interface MyCompetitionsProps {
   federation: Federation | null;
@@ -33,8 +39,9 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
   const { t } = useTranslation();
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
-  const [selectedCompetition, setSelectedCompetition] =
-    useState<Competition | null>(null);
+  const [compToUpdate, setCompToUpdate] = useState<Competition | null>(null);
+  const [compToView, setCompToView] = useState<Competition | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const {
     data: competitions,
@@ -76,7 +83,21 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
           <Card
             key={competition._id}
             withBorder
-            style={{ marginBottom: "1rem" }}
+            sx={(theme) => ({
+              marginBottom: "1rem",
+              cursor: "pointer",
+              transition: "background-color 0.2s ease",
+              "&:hover": {
+                backgroundColor:
+                  theme.colorScheme === "dark"
+                    ? theme.colors.dark[5]
+                    : theme.colors.gray[0],
+              },
+            })}
+            onClick={() => {
+              setCompToView(competition);
+              setDrawerOpen(true);
+            }}
           >
             <Stack spacing="xs">
               <Group position="apart">
@@ -84,17 +105,6 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
                   <Text size="lg" weight={500}>
                     {competition.name}
                   </Text>
-                  <ActionIcon
-                    variant="subtle"
-                    color="blue"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedCompetition(competition);
-                      setEditModalOpened(true);
-                    }}
-                  >
-                    <IconEdit size={16} />
-                  </ActionIcon>
                 </Group>
                 <Badge color={getFedTypeColor(hostFederation?.type)}>
                   {hostFederation?.type}
@@ -103,20 +113,33 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
 
               <Divider />
 
-              <Group spacing="xl">
-                <Group spacing="xs">
-                  <IconCalendar size={16} />
-                  <Text size="sm">
-                    {format(new Date(competition.startDate), "PPP")}
-                    {competition.endDate &&
-                      ` - ${format(new Date(competition.endDate), "PPP")}`}
-                  </Text>
-                </Group>
+              <Group position="apart">
+                <Group spacing="xl">
+                  <Group spacing="xs">
+                    <IconCalendar size={16} />
+                    <Text size="sm">
+                      {format(new Date(competition.startDate), "PPP")}
+                      {competition.endDate &&
+                        ` - ${format(new Date(competition.endDate), "PPP")}`}
+                    </Text>
+                  </Group>
 
-                <Group spacing="xs">
-                  <IconTrophy size={16} />
-                  <Text size="sm">{competition.location}</Text>
+                  <Group spacing="xs">
+                    <IconTrophy size={16} />
+                    <Text size="sm">{competition.location}</Text>
+                  </Group>
                 </Group>
+                <ActionIcon
+                  variant="subtle"
+                  color="blue"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCompToUpdate(competition);
+                    setEditModalOpened(true);
+                  }}
+                >
+                  <IconEdit size={16} />
+                </ActionIcon>
               </Group>
             </Stack>
           </Card>
@@ -133,20 +156,25 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
         hostFederation={federation}
       />
 
-      {selectedCompetition && (
+      {compToUpdate && (
         <CompetitionFormModal
           opened={editModalOpened}
           onClose={() => {
             setEditModalOpened(false);
-            setSelectedCompetition(null);
+            setCompToUpdate(null);
           }}
           onSuccess={handleEditSuccess}
           modalTitle={t("competitions.edit")}
-          competitionToEdit={selectedCompetition}
+          competitionToEdit={compToUpdate}
           hostFederation={federation}
           isEditMode
         />
       )}
+      <CompetitionDetailsDrawer
+        opened={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        competition={compToView}
+      />
     </Flex>
   );
 }

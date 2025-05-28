@@ -70,7 +70,7 @@ router.get("/", async (req, res) => {
     const competitionsWithCounts = await Promise.all(
       competitions.map(async (competition) => {
         const athleteCount = await Nomination.countDocuments({
-          competitionId: competition._id,
+          competition: competition._id,
           status: "approved",
         });
 

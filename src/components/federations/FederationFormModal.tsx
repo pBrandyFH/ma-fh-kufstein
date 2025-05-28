@@ -11,10 +11,12 @@ import { useForm } from "@mantine/form";
 import { useTranslation } from "react-i18next";
 import {
   createFederation,
+  getFederationsByTypeFilter,
   updateFederation,
-} from "../../../services/federationService";
-import { Federation, FederationType } from "../../../types";
+} from "../../services/federationService";
+import { Federation, FederationType } from "../../types";
 import { getChildFederations } from "@/services/federationService"; // to load potential parents
+import { useDataFetching } from "@/hooks/useDataFetching";
 
 interface FederationFormModalProps {
   opened: boolean;
@@ -23,7 +25,7 @@ interface FederationFormModalProps {
   modalTitle: string;
   allowedTypes?: FederationType[];
   defaultType?: FederationType;
-  parentId: string;
+  parent: Federation | null;
   federationToEdit?: Federation;
   isEditMode?: boolean;
 }
@@ -34,19 +36,17 @@ export function FederationFormModal({
   onSuccess,
   modalTitle,
   defaultType,
-  parentId,
+  parent,
   federationToEdit,
   isEditMode = false,
 }: FederationFormModalProps) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
-  // TODO add option for REGIONAL admins to create nations which have multiple parent feds
-  const allFederations = [] as Federation[];
 
   const initialParentIds =
     federationToEdit?.parents?.map((p) => p._id) ||
-    (parentId ? [parentId] : []);
+    (parent ? [parent._id] : []);
 
   const form = useForm({
     initialValues: {
@@ -135,19 +135,6 @@ export function FederationFormModal({
             placeholder={t("federations.abbreviationPlaceholder")}
             required
             {...form.getInputProps("abbreviation")}
-          />
-
-          <MultiSelect
-            label={t("federations.parent")}
-            placeholder={t("federations.selectParent")}
-            data={allFederations.map((f) => ({
-              label: f.name,
-              value: f._id,
-            }))}
-            searchable
-            clearable
-            disabled={form.values.type === "INTERNATIONAL"}
-            {...form.getInputProps("parentIds")}
           />
 
           <TextInput

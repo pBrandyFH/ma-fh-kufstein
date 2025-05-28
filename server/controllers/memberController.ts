@@ -17,7 +17,9 @@ export const getMemberById = async (
   res: Response
 ) => {
   try {
-    const member = await Member.findById(new mongoose.Types.ObjectId(req.params.id))
+    const member = await Member.findById(
+      new mongoose.Types.ObjectId(req.params.id)
+    )
       .populate<{
         adminId: { firstName: string; lastName: string; email: string };
       }>("adminId", "firstName lastName email")
@@ -48,8 +50,6 @@ export const getMembersByFederationId = async (
   res: Response
 ) => {
   try {
-    console.log("FETCH MEMBERS BY FED ID");
-
     const members = await Member.find({ federationId: req.params.federationId })
       .populate<{
         federationId: { name: string; abbreviation: string; type: string };

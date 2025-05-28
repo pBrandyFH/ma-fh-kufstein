@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { FederationCard } from "./FederationCard";
 import { IconPlus } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
-import { FederationFormModal } from "./legacy/FederationFormModal";
+import { FederationFormModal } from "./FederationFormModal";
+import AddExistingFederationModal from "./AddExistingFederationModal";
 
 interface ChildFederationListProps {
   federation: Federation | null;
@@ -22,6 +23,7 @@ export default function ChildFederationList({
   const { t } = useTranslation();
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
+  const [addExistingModalOpened, setAddExistingModalOpened] = useState(false);
   const [selectedFederation, setSelectedFederation] =
     useState<Federation | null>(null);
   const {
@@ -68,20 +70,29 @@ export default function ChildFederationList({
     }
   };
 
-  if (federationLoading) {
+  if (federationLoading || childFedsLoading) {
     return <Loader />;
   }
 
   return (
     <Flex direction="column" gap="sm">
-      <Box>
+      <Flex gap="sm" mb="sm">
         <Button
           leftIcon={<IconPlus size={16} />}
           onClick={() => setCreateModalOpened(true)}
         >
           {t("federations.create")}
         </Button>
-      </Box>
+
+        <Button
+          variant="outline"
+          onClick={() => setAddExistingModalOpened(true)}
+        >
+          {t("federations.updateHierarchy", {
+            parentFederation: federation?.name,
+          })}
+        </Button>
+      </Flex>
 
       {childFeds?.map((fed) => {
         return (
@@ -105,7 +116,18 @@ export default function ChildFederationList({
           parentFederation: federation?.name,
         })}
         defaultType={getTypeToAdd()}
-        parentId={federation?._id ?? ""}
+        parent={federation}
+      />
+
+      <AddExistingFederationModal
+        opened={addExistingModalOpened}
+        onClose={() => setAddExistingModalOpened(false)}
+        onSuccess={handleCreateSuccess}
+        modalTitle={t("federations.add", {
+          parentFederation: federation?.name,
+        })}
+        parent={federation}
+        childrenIds={childFeds?.map((c) => c._id) ?? []}
       />
 
       {selectedFederation && (
@@ -118,7 +140,7 @@ export default function ChildFederationList({
           onSuccess={handleEditSuccess}
           modalTitle={t("federations.edit")}
           federationToEdit={selectedFederation}
-          parentId={federation?._id ?? ""}
+          parent={federation}
           isEditMode={true}
         />
       )}

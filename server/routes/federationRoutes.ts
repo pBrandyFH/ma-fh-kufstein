@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import {
   getAllFederations,
   getFederationById,
@@ -9,11 +9,12 @@ import {
   getFederationsByParent,
   getFederationsByTypeFilter,
   getChildFederations,
-} from "../controllers/federationController"
-import { auth, authorize } from "../middleware/auth"
-import { UserFederationRole } from "../permissions/types"
+  updateFederationHierarchy,
+} from "../controllers/federationController";
+import { auth, authorize } from "../middleware/auth";
+import { UserFederationRole } from "../permissions/types";
 
-const router = express.Router()
+const router = express.Router();
 
 /**
  * @swagger
@@ -50,7 +51,7 @@ const router = express.Router()
  *                       region:
  *                         type: string
  */
-router.get("/", getAllFederations)
+router.get("/", getAllFederations);
 
 /**
  * @swagger
@@ -94,7 +95,7 @@ router.get("/", getAllFederations)
  *       404:
  *         description: Federation not found
  */
-router.get("/:id", getFederationById)
+router.get("/:id", getFederationById);
 
 /**
  * @swagger
@@ -114,7 +115,7 @@ router.get("/:id", getFederationById)
  *       200:
  *         description: List of federations of the specified type
  */
-router.get("/type/:type", getFederationsByType)
+router.get("/type/:type", getFederationsByType);
 
 /**
  * @swagger
@@ -133,7 +134,7 @@ router.get("/type/:type", getFederationsByType)
  *       200:
  *         description: List of child federations
  */
-router.get("/parent/:parentId", getFederationsByParent)
+router.get("/parent/:parentId", getFederationsByParent);
 
 /**
  * @swagger
@@ -152,7 +153,7 @@ router.get("/parent/:parentId", getFederationsByParent)
  *       200:
  *         description: List of child federations
  */
-router.get("/:id/children", getChildFederations)
+router.get("/:id/children", getChildFederations);
 
 /**
  * @swagger
@@ -199,11 +200,11 @@ router.post(
   auth,
   authorize([
     { role: "FEDERATION_ADMIN", federationId: "*" },
-    
-    { role: "SUPERADMIN", federationId: "*" }
+
+    { role: "SUPERADMIN", federationId: "*" },
   ]),
   createFederation
-)
+);
 
 /**
  * @swagger
@@ -256,10 +257,21 @@ router.put(
   authorize([
     { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
-    { role: "SUPERADMIN", federationId: "*" }
+    { role: "SUPERADMIN", federationId: "*" },
   ]),
   updateFederation
-)
+);
+
+router.put(
+  "/:id/hierarchy",
+  auth,
+  authorize([
+    { role: "MEMBER_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  updateFederationHierarchy
+);
 
 /**
  * @swagger
@@ -291,16 +303,12 @@ router.delete(
   auth,
   authorize([
     { role: "FEDERATION_ADMIN", federationId: "*" },
-    
-    { role: "SUPERADMIN", federationId: "*" }
+
+    { role: "SUPERADMIN", federationId: "*" },
   ]),
   deleteFederation
-)
+);
 
-router.post(
-  "/type-filter",
-  getFederationsByTypeFilter
-)
+router.post("/type-filter", getFederationsByTypeFilter);
 
-export default router
-
+export default router;

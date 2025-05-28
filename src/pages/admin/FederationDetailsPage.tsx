@@ -24,39 +24,49 @@ import { getMembersByFederationId } from "@/services/memberService";
 import FederationMemberList from "@/components/federations/FederationMemberList";
 import FederationInfo from "@/components/federations/FederationInfo";
 
-async function fetchFederationHierarchy(fedId: string): Promise<Federation[]> {
-  const chain: Federation[] = [];
-  let currentId = fedId;
-  while (currentId) {
-    const res = await getFederationById(currentId);
-    if (!res.success || !res.data) break;
-    chain.unshift(res.data);
-    currentId = res.data.parents?.[0]?._id || ""; // pick first for linear fallback
+const federationCache = new Map<string, Federation>();
+
+async function getFederationWithCache(
+  fedId: string
+): Promise<Federation | null> {
+  if (federationCache.has(fedId)) {
+    return federationCache.get(fedId)!;
   }
-  return chain;
+
+  const res = await getFederationById(fedId);
+  if (res.success && res.data) {
+    federationCache.set(fedId, res.data);
+    return res.data;
+  }
+
+  return null;
 }
 
-async function fetchAllFederationHierarchies(
+export async function fetchAllFederationHierarchies(
   fedId: string
 ): Promise<Federation[][]> {
-  const base = await getFederationById(fedId);
-  if (!base.success || !base.data) return [];
+  const federation = await getFederationWithCache(fedId);
+  if (!federation) return [];
 
-  const federation = base.data;
+  const { parents } = federation;
 
-  if (!federation.parents || federation.parents.length === 0) {
+  // Base case: no parents, this is a root
+  if (!parents || parents.length === 0) {
     return [[federation]];
   }
 
-  const parentChains = await Promise.all(
-    federation.parents.map(async (parent: Federation) => {
-      const chain = await fetchFederationHierarchy(parent._id);
-      return [...chain, federation];
+  // Recursively get all parent chains
+  const parentChainsNested = await Promise.all(
+    parents.map(async (parent) => {
+      const chains = await fetchAllFederationHierarchies(parent._id);
+      return chains.map((chain) => [...chain, federation]);
     })
   );
 
-  return parentChains;
+  // Flatten the nested arrays of chains
+  return parentChainsNested.flat();
 }
+
 
 export default function FederationDetailsPage() {
   const navigate = useNavigate();
