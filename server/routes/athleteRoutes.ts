@@ -6,7 +6,7 @@ import {
   updateAthlete,
   deleteAthlete,
   getAthletesByFederation,
-  getAthletesByClub,
+  getAthletesByMember,
   getAthletesByCoach,
 } from "../controllers/athleteController";
 import { auth, authorize } from "../middleware/auth";
@@ -335,7 +335,7 @@ router.get(
     { role: "FEDERATION_ADMIN", federationId: "*" },
     { role: "SUPERADMIN", federationId: "*" },
   ]),
-  getAthletesByClub
+  getAthletesByMember
 );
 
 /**

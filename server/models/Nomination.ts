@@ -1,8 +1,6 @@
 import mongoose, { type Document, Schema } from "mongoose";
 import { AgeCategory } from "./Competition";
 
-type NominationStatus = "pending" | "approved" | "rejected";
-
 export type WeightCategory =
   | "u43"
   | "u47"
@@ -28,7 +26,6 @@ export interface INomination extends Document {
   competitionId: mongoose.Types.ObjectId;
   weightCategory: WeightCategory;
   ageCategory: AgeCategory;
-  status: NominationStatus;
   nominatedBy: mongoose.Types.ObjectId;
   nominatedAt: Date;
   updatedAt: Date;
@@ -81,12 +78,6 @@ const NominationSchema = new Schema<INomination>(
         "MASTERS_3",
         "MASTERS_4",
       ],
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
       required: true,
     },
     nominatedBy: {

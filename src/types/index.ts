@@ -62,6 +62,7 @@ export interface Member {
   name: string;
   federation: Federation;
   athletes: Athlete[];
+  type: "CLUB" | "INDIVIDUAL" | "UNIVERSITY";
 }
 
 // Athlete Types
@@ -94,12 +95,13 @@ export interface Athlete {
   userId: string;
   firstName: string;
   lastName: string;
+  email: string;
   dateOfBirth: Date;
   gender: Gender;
   weightCategory: WeightCategory;
-  clubId: string | Club;
-  federationId: string | Federation;
-  coachIds?: string[];
+  member: Member;
+  federation: Federation;
+  coaches?: User;
   isNationalTeam?: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -140,16 +142,12 @@ export interface Competition {
   updatedAt: Date;
 }
 
-// Nomination Types
-export type NominationStatus = "pending" | "approved" | "rejected";
-
 export interface Nomination {
   _id: string;
   athleteId: string | Athlete;
   competitionId: string | Competition;
   weightCategory: WeightCategory;
   ageCategory: AgeCategory;
-  status: NominationStatus;
   nominatedBy: string | User;
   nominatedAt: Date;
   updatedAt: Date;
@@ -226,11 +224,12 @@ export interface AthleteFormValues {
   lastName: string;
   email: string;
   dateOfBirth: Date | null;
-  gender: Gender | "";
-  weightCategory: WeightCategory | "";
-  clubId: string | "";
-  federationId: string | "";
+  gender: Gender | null;
+  weightCategory: WeightCategory | null;
+  member: string;
+  federation: string;
   sendInvite: boolean;
+  isNationalTeam?: boolean;
 }
 export interface CompetitionFormValues {
   name: string;

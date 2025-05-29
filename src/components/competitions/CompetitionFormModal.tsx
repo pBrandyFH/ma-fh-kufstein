@@ -380,4 +380,5 @@ export default function CompetitionFormModal({
       </form>
     </Modal>
   );
+
 }

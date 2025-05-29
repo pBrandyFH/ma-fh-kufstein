@@ -20,10 +20,8 @@ export const getMemberById = async (
     const member = await Member.findById(
       new mongoose.Types.ObjectId(req.params.id)
     )
-      .populate<{
-        adminId: { firstName: string; lastName: string; email: string };
-      }>("adminId", "firstName lastName email")
-      .populate("athletes");
+      .populate("athletes")
+      .populate("federation");
 
     if (!member) {
       return res.status(404).json({
@@ -50,13 +48,12 @@ export const getMembersByFederationId = async (
   res: Response
 ) => {
   try {
-    const members = await Member.find({ federationId: req.params.federationId })
-      .populate<{
-        federationId: { name: string; abbreviation: string; type: string };
-      }>("federationId", "name abbreviation type")
-      .populate<{
-        adminId: { firstName: string; lastName: string; email: string };
-      }>("adminId", "firstName lastName email");
+    const members = await Member.find({
+      federation: req.params.federationId,
+    }).populate<{
+      federation: { name: string; abbreviation: string; type: string };
+    }>("federation", "name abbreviation type");
+    
     //   .populate("athletes");
 
     if (!members) {

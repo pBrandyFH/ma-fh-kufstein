@@ -323,6 +323,7 @@
     "createFailed": "Creation Failed",
     "noCompetitions": "No competitions found",
     "nominationStart": "Nomination start",
+    "nominationsList": "Current Nominations",
     "basicInfo": "Info",
     "locationInfo":"Location info",
     "nominationInfo":"Nomination info",
@@ -441,7 +442,7 @@
     "bodyweight": "Bodyweight",
     "performance": "Performance",
     "weightCategories": {
-      "men": {
+      "male": {
         "u53": "-53kg",
         "u59": "-59kg",
         "u66": "-66kg",
@@ -452,7 +453,7 @@
         "u120": "-120kg",
         "o120": "+120kg"
       },
-      "women": {
+      "female": {
         "u43": "-43kg",
         "u47": "-47kg",
         "u52": "-52kg",
@@ -631,7 +632,6 @@
     "filterByFederation": "Filter by Federation",
     "noClubs": "No clubs found",
     "list": "Club List",
-    "athletes": "Club Athletes",
     "form": {
       "title": "Club Information",
       "name": "Club Name",
@@ -829,7 +829,34 @@
     "tabs": {
       "my": "My Competitions",
       "national": "National Competitions",
-      "international": "International Competitions"
+      "international": "International Competitions",
+      "info": "Info",
+      "nominations":"Nominations"
+    }
+  },
+  "members": {
+    "title": "Members",
+    "create": "Create Member",
+    "edit": "Edit Member",
+    "name": "Name",
+    "namePlaceholder": "Enter member name",
+    "type": "Type",
+    "typePlaceholder": "Select member type",
+    "types": {
+      "club": "Club",
+      "individual": "Individual",
+      "university": "University"
+    },
+    "federationInfo": "Member of {{federation}}",
+    "createSuccess": "Member created successfully",
+    "updateSuccess": "Member updated successfully",
+    "createError": "Failed to create member",
+    "updateError": "Failed to update member",
+    "empty": "No members found",
+    "athletes": "athletes",
+    "tabs": {
+      "members": "Members",
+      "requests": "Requests"
     }
   }
 }

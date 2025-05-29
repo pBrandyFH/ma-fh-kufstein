@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import { MainLayout } from "../components/layout/MainLayout";
 import { ResultsRouter } from "../components/results/ResultsRouter";
-import { AthleteProfile } from "../components/athletes/AthleteProfile";
+import { AthleteProfile } from "../components/athletes/legacy/AthleteProfile";
 import { FederationList } from "../components/federations/legacy/FederationList";
 import { FederationEditPage } from "../components/federations/legacy/FederationEditPage";
 import { ClubList } from "../components/clubs/ClubList";
@@ -20,8 +20,8 @@ import { CompetitionDetails } from "../components/competitions/legacy/Competitio
 import { EditCompetition } from "../components/competitions/legacy/EditCompetition";
 import { RankingsView } from "../components/rankings/RankingsView";
 import { RecordsView } from "../components/records/RecordsView";
-import { AthletesView } from "../components/athletes/AthletesView";
-import { EditAthlete } from "../components/athletes/EditAthlete";
+import { AthletesView } from "../components/athletes/legacy/AthletesView";
+import { EditAthlete } from "../components/athletes/legacy/EditAthlete";
 import { MyAccount } from "../components/account/MyAccount";
 import { DashboardPage } from "../pages/DashboardPage";
 import { CompetitionsView } from "../components/competitions/legacy/CompetitionsView";
@@ -33,6 +33,8 @@ import FederationDetailsPageLegacy from "@/pages/FederationDetailsPageLegacy";
 import OverviewPage from "@/pages/admin/OverviewPage";
 import FederationDetailsPage from "@/pages/admin/FederationDetailsPage";
 import { MyCompetitionsPage } from "@/pages/admin/MyCompetitionsPage";
+import MyMembersPage from "@/pages/admin/MyMembersPage";
+import FederationAthletesPage from "@/pages/admin/FederationAthletesPage";
 
 export function RouterProvider() {
   const { authenticated, isAuthLoading, logout, login } = useAuth();
@@ -81,12 +83,12 @@ export function RouterProvider() {
             />
           </Route>
 
-          <Route path="/athletes">
+          <Route path="/fed-athletes">
             <Route
               index
               element={
                 <ProtectedRoute>
-                  <AthletesView />
+                  <FederationAthletesPage />
                 </ProtectedRoute>
               }
             />
@@ -156,6 +158,17 @@ export function RouterProvider() {
               element={
                 <ProtectedRoute>
                   <EditCompetition />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
+          <Route path="/members" element={<Outlet />}>
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <MyMembersPage />
                 </ProtectedRoute>
               }
             />

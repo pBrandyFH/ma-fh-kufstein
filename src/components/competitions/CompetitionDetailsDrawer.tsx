@@ -1,8 +1,22 @@
 import { Competition } from "@/types";
-import { Drawer, Stack, Text, Group, Paper, Title, Divider, Badge, Box, Tabs } from "@mantine/core";
+import {
+  Drawer,
+  Stack,
+  Text,
+  Group,
+  Paper,
+  Title,
+  Divider,
+  Badge,
+  Box,
+  Tabs,
+  Button,
+} from "@mantine/core";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
-import { IconInfoCircle, IconUsers } from "@tabler/icons-react";
+import { IconInfoCircle, IconUsers, IconPlus } from "@tabler/icons-react";
+import { useState } from "react";
+import NominationDrawer from "./NominationDrawer";
 
 interface CompetitionDetailsDrawerProps {
   opened: boolean;
@@ -16,6 +30,7 @@ export default function CompetitionDetailsDrawer({
   competition,
 }: CompetitionDetailsDrawerProps) {
   const { t } = useTranslation();
+  const [nominationDrawerOpened, setNominationDrawerOpened] = useState(false);
 
   return (
     <Drawer
@@ -30,8 +45,19 @@ export default function CompetitionDetailsDrawer({
       {competition && (
         <Stack spacing="lg">
           <Box mb="md">
-            <Title order={1} mb="xs">{competition.name}</Title>
-            <Badge size="lg" color={competition.status === "ongoing" ? "green" : competition.status === "upcoming" ? "blue" : "gray"}>
+            <Title order={1} mb="xs">
+              {competition.name}
+            </Title>
+            <Badge
+              size="lg"
+              color={
+                competition.status === "ongoing"
+                  ? "green"
+                  : competition.status === "upcoming"
+                  ? "blue"
+                  : "gray"
+              }
+            >
               {t(`competitions.status.${competition.status}`)}
             </Badge>
           </Box>
@@ -39,10 +65,10 @@ export default function CompetitionDetailsDrawer({
           <Tabs defaultValue="info">
             <Tabs.List>
               <Tabs.Tab value="info" icon={<IconInfoCircle size={16} />}>
-                {t("competitions.tabs.info")}
+                {t("competition.tabs.info")}
               </Tabs.Tab>
               <Tabs.Tab value="nominations" icon={<IconUsers size={16} />}>
-                {t("competitions.tabs.nominations")}
+                {t("competition.tabs.nominations")}
               </Tabs.Tab>
             </Tabs.List>
 
@@ -50,17 +76,24 @@ export default function CompetitionDetailsDrawer({
               <Stack spacing="lg">
                 {/* Basic Information */}
                 <Paper p="md" withBorder>
-                  <Title order={3} mb="md">{t("competitions.basicInfo")}</Title>
+                  <Title order={3} mb="md">
+                    {t("competitions.basicInfo")}
+                  </Title>
                   <Stack spacing="xs">
                     <Group>
                       <Text weight={500}>{t("competitions.type")}:</Text>
-                      <Text>{t(`competitions.equipmentType.${competition.equipmentType}`)}</Text>
+                      <Text>
+                        {t(
+                          `competitions.equipmentType.${competition.equipmentType}`
+                        )}
+                      </Text>
                     </Group>
                     <Group>
                       <Text weight={500}>{t("competitions.dates")}:</Text>
                       <Text>
                         {format(new Date(competition.startDate), "PPP")}
-                        {competition.endDate && ` - ${format(new Date(competition.endDate), "PPP")}`}
+                        {competition.endDate &&
+                          ` - ${format(new Date(competition.endDate), "PPP")}`}
                       </Text>
                     </Group>
                   </Stack>
@@ -68,7 +101,9 @@ export default function CompetitionDetailsDrawer({
 
                 {/* Location Information */}
                 <Paper p="md" withBorder>
-                  <Title order={3} mb="md">{t("competitions.locationInfo")}</Title>
+                  <Title order={3} mb="md">
+                    {t("competitions.locationInfo")}
+                  </Title>
                   <Stack spacing="xs">
                     <Group>
                       <Text weight={500}>{t("competitions.location")}:</Text>
@@ -93,29 +128,47 @@ export default function CompetitionDetailsDrawer({
 
                 {/* Competition Details */}
                 <Paper p="md" withBorder>
-                  <Title order={3} mb="md">{t("competitions.details")}</Title>
+                  <Title order={3} mb="md">
+                    {t("competitions.details")}
+                  </Title>
                   <Stack spacing="xs">
                     <Group>
-                      <Text weight={500}>{t("competitions.hostFederation")}:</Text>
-                      <Text>{typeof competition.hostFederation === 'string' ? competition.hostFederation : competition.hostFederation.name}</Text>
+                      <Text weight={500}>
+                        {t("competitions.hostFederation")}:
+                      </Text>
+                      <Text>
+                        {typeof competition.hostFederation === "string"
+                          ? competition.hostFederation
+                          : competition.hostFederation.name}
+                      </Text>
                     </Group>
                     {competition.hostMember && (
                       <Group>
-                        <Text weight={500}>{t("competitions.hostMember")}:</Text>
-                        <Text>{typeof competition.hostMember === 'string' ? competition.hostMember : competition.hostMember.name}</Text>
+                        <Text weight={500}>
+                          {t("competitions.hostMember")}:
+                        </Text>
+                        <Text>
+                          {typeof competition.hostMember === "string"
+                            ? competition.hostMember
+                            : competition.hostMember.name}
+                        </Text>
                       </Group>
                     )}
                     <Group>
                       <Text weight={500}>{t("competitions.ageCategory")}:</Text>
                       <Group>
                         {competition.ageCategories.map((category) => (
-                          <Badge key={category}>{t(`competitions.ageCategories.${category}`)}</Badge>
+                          <Badge key={category}>
+                            {t(`competitions.ageCategories.${category}`)}
+                          </Badge>
                         ))}
                       </Group>
                     </Group>
                     {competition.description && (
                       <Group>
-                        <Text weight={500}>{t("competitions.description")}:</Text>
+                        <Text weight={500}>
+                          {t("competitions.description")}:
+                        </Text>
                         <Text>{competition.description}</Text>
                       </Group>
                     )}
@@ -128,22 +181,45 @@ export default function CompetitionDetailsDrawer({
               <Stack spacing="lg">
                 {/* Nomination Information */}
                 <Paper p="md" withBorder>
-                  <Title order={3} mb="md">{t("competitions.nominationInfo")}</Title>
+                  <Title order={3} mb="md">
+                    {t("competitions.nominationInfo")}
+                  </Title>
                   <Stack spacing="xs">
                     <Group>
-                      <Text weight={500}>{t("competitions.nominationStart")}:</Text>
-                      <Text>{format(new Date(competition.nominationStart), "PPP")}</Text>
+                      <Text weight={500}>
+                        {t("competitions.nominationStart")}:
+                      </Text>
+                      <Text>
+                        {format(new Date(competition.nominationStart), "PPP")}
+                      </Text>
                     </Group>
                     <Group>
-                      <Text weight={500}>{t("competitions.nominationDeadline")}:</Text>
-                      <Text>{format(new Date(competition.nominationDeadline), "PPP")}</Text>
+                      <Text weight={500}>
+                        {t("competitions.nominationDeadline")}:
+                      </Text>
+                      <Text>
+                        {format(
+                          new Date(competition.nominationDeadline),
+                          "PPP"
+                        )}
+                      </Text>
                     </Group>
                     <Group>
-                      <Text weight={500}>{t("competitions.eligibleFederations")}:</Text>
+                      <Text weight={500}>
+                        {t("competitions.eligibleFederations")}:
+                      </Text>
                       <Group>
                         {competition.eligibleFederations.map((federation) => (
-                          <Badge key={typeof federation === 'string' ? federation : federation._id}>
-                            {typeof federation === 'string' ? federation : federation.name}
+                          <Badge
+                            key={
+                              typeof federation === "string"
+                                ? federation
+                                : federation._id
+                            }
+                          >
+                            {typeof federation === "string"
+                              ? federation
+                              : federation.name}
                           </Badge>
                         ))}
                       </Group>
@@ -153,14 +229,31 @@ export default function CompetitionDetailsDrawer({
 
                 {/* Placeholder for nominations list - to be implemented */}
                 <Paper p="md" withBorder>
-                  <Title order={3} mb="md">{t("competitions.nominationsList")}</Title>
-                  <Text c="dimmed">{t("competitions.nominationsListPlaceholder")}</Text>
+                  <Group position="apart" mb="md">
+                    <Title order={3}>{t("competitions.nominationsList")}</Title>
+                    <Button
+                      leftIcon={<IconPlus size={16} />}
+                      onClick={() => setNominationDrawerOpened(true)}
+                      disabled={competition.status !== "upcoming"}
+                    >
+                      {t("nominations.create")}
+                    </Button>
+                  </Group>
+                  <Text c="dimmed">
+                    {t("competitions.nominationsListPlaceholder")}
+                  </Text>
                 </Paper>
               </Stack>
             </Tabs.Panel>
           </Tabs>
         </Stack>
       )}
+
+      <NominationDrawer
+        opened={nominationDrawerOpened}
+        onClose={() => setNominationDrawerOpened(false)}
+        competition={competition}
+      />
     </Drawer>
   );
 }

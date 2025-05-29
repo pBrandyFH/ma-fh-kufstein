@@ -4,9 +4,8 @@ export type MemberType = "CLUB" | "INDIVIDUAL" | "UNIVERSITY";
 
 export interface IMember extends Document {
   name: string;
-  federationId: mongoose.Types.ObjectId;
+  federation: mongoose.Types.ObjectId;
   athletes: mongoose.Types.ObjectId[];
-  adminId?: mongoose.Types.ObjectId;
   type: MemberType;
   createdAt: Date;
   updatedAt: Date;
@@ -19,14 +18,10 @@ const MemberSchema = new Schema<IMember>(
       required: true,
       trim: true,
     },
-    federationId: {
+    federation: {
       type: Schema.Types.ObjectId,
       ref: "Federation",
       required: true,
-    },
-    adminId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
     },
     type: {
       type: String,

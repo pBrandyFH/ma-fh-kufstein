@@ -1,18 +1,18 @@
-import mongoose, { type Document, Schema } from "mongoose"
+import mongoose, { type Document, Schema } from "mongoose";
 
 export interface IAthlete extends Document {
-  userId: mongoose.Types.ObjectId
-  firstName: string
-  lastName: string
-  dateOfBirth: Date
-  gender: string
-  weightCategory: string
-  clubId: mongoose.Types.ObjectId
-  federationId: mongoose.Types.ObjectId
-  coachIds?: mongoose.Types.ObjectId[]
-  isNationalTeam?: boolean
-  createdAt: Date
-  updatedAt: Date
+  userId?: mongoose.Types.ObjectId;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: Date;
+  gender: string;
+  weightCategory: string;
+  member: mongoose.Types.ObjectId;
+  federation: mongoose.Types.ObjectId;
+  coaches?: mongoose.Types.ObjectId[];
+  isNationalTeam?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const AthleteSchema = new Schema<IAthlete>(
@@ -20,7 +20,6 @@ const AthleteSchema = new Schema<IAthlete>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     firstName: {
       type: String,
@@ -65,17 +64,17 @@ const AthleteSchema = new Schema<IAthlete>(
       ],
       required: true,
     },
-    clubId: {
+    member: {
       type: Schema.Types.ObjectId,
-      ref: "Club",
+      ref: "Member",
       required: true,
     },
-    federationId: {
+    federation: {
       type: Schema.Types.ObjectId,
       ref: "Federation",
       required: true,
     },
-    coachIds: [
+    coaches: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
@@ -88,8 +87,7 @@ const AthleteSchema = new Schema<IAthlete>(
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
-export default mongoose.model<IAthlete>("Athlete", AthleteSchema)
-
+export default mongoose.model<IAthlete>("Athlete", AthleteSchema);

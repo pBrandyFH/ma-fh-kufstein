@@ -85,7 +85,7 @@ export function MyCompetitionsPage() {
       <Tabs
         value={openedTab}
         onTabChange={(value) =>
-          setParam("tab", value?.toString() ?? "overview")
+          setParam("tab", value?.toString() ?? "my")
         }
       >
         <Tabs.List>

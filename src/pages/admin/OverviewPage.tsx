@@ -53,7 +53,7 @@ export default function OverviewPage() {
           </Card>
         </Grid.Col>
         <Grid.Col xs={12} md={6}>
-          <Card withBorder onClick={() => navigate("/athletes")}>
+          <Card withBorder onClick={() => navigate("/fed-athletes")}>
             <Title order={4}>Athletes</Title>
             <Text size="sm" color="dimmed">
               some info

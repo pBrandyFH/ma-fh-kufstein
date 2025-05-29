@@ -15,7 +15,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Plus, MoreVertical, Edit, Trash, User } from "lucide-react";
 import { Link } from "react-router-dom";
-import type { Athlete, Gender, WeightCategory } from "../../types";
+import type { Athlete, Gender, WeightCategory } from "../../../types";
 
 // Mock data for testing
 const mockAthletes: Athlete[] = [

@@ -1,72 +1,94 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "@mantine/form"
-import { TextInput, Button, Box, Select, Grid, Divider, Title, Switch } from "@mantine/core"
-import { DatePicker } from "@mantine/dates";
-import { notifications } from "@mantine/notifications"
-import { useTranslation } from "react-i18next"
-import type { AthleteFormValues, Gender } from "../../types"
+import { useState } from "react";
+import { useForm } from "@mantine/form";
+import {
+  TextInput,
+  Button,
+  Box,
+  Select,
+  Grid,
+  Divider,
+  Title,
+  Switch,
+} from "@mantine/core";
+import { DateInput, DatePicker } from "@mantine/dates";
+import { notifications } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
+import type { Athlete, AthleteFormValues, Gender } from "../../../types";
 
 interface AthleteFormProps {
-  initialValues?: Partial<AthleteFormValues>
-  onSubmit: (values: AthleteFormValues) => Promise<void>
-  clubs: { value: string; label: string }[]
-  federations: { value: string; label: string }[]
+  athleteToEdit?: Athlete;
+  onSubmit: (values: AthleteFormValues) => Promise<void>;
+  clubs: { value: string; label: string }[];
+  federations: { value: string; label: string }[];
 }
 
-export function AthleteForm({ initialValues, onSubmit, clubs, federations }: AthleteFormProps) {
-  const [loading, setLoading] = useState(false)
-  const { t } = useTranslation()
+export function AthleteForm({
+  athleteToEdit,
+  onSubmit,
+  clubs,
+  federations,
+}: AthleteFormProps) {
+  const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
 
   const form = useForm<AthleteFormValues>({
-    initialValues: initialValues || {
-      firstName: "",
-      lastName: "",
-      email: "",
-      dateOfBirth: null,
-      gender: "",
-      weightCategory: "",
-      clubId: "",
-      federationId: "",
-      sendInvite: true,
+    initialValues: {
+      firstName: athleteToEdit?.firstName || "",
+      lastName: athleteToEdit?.lastName || "",
+      email: athleteToEdit?.email || "",
+      dateOfBirth: athleteToEdit?.dateOfBirth || null,
+      gender: athleteToEdit?.gender || null,
+      weightCategory: athleteToEdit?.weightCategory || null,
+      member: athleteToEdit?.member._id || "",
+      federation: athleteToEdit?.federation._id || "",
+      sendInvite: false,
     },
     validate: {
       firstName: (value) => (value ? null : t("auth.required")),
       lastName: (value) => (value ? null : t("auth.required")),
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : t("auth.invalidEmail")),
+      email: (value) =>
+        /^\S+@\S+$/.test(value) ? null : t("auth.invalidEmail"),
       gender: (value) => (value ? null : t("auth.required")),
       weightCategory: (value) => (value ? null : t("auth.required")),
-      clubId: (value) => (value ? null : t("auth.required")),
-      federationId: (value) => (value ? null : t("auth.required")),
+      member: (value) => (value ? null : t("auth.required")),
+      federation: (value) => (value ? null : t("auth.required")),
     },
-  })
+  });
 
   const handleSubmit = async (values: AthleteFormValues) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      await onSubmit(values)
+      await onSubmit(values);
 
       notifications.show({
-        title: initialValues ? t("athletes.updateSuccess") : t("athletes.createSuccess"),
-        message: initialValues ? t("athletes.athleteUpdated") : t("athletes.athleteCreated"),
+        title: athleteToEdit
+          ? t("athletes.updateSuccess")
+          : t("athletes.createSuccess"),
+        message: athleteToEdit
+          ? t("athletes.athleteUpdated")
+          : t("athletes.athleteCreated"),
         color: "green",
-      })
+      });
     } catch (error) {
       notifications.show({
-        title: initialValues ? t("athletes.updateFailed") : t("athletes.createFailed"),
-        message: error instanceof Error ? error.message : t("auth.errorOccurred"),
+        title: athleteToEdit
+          ? t("athletes.updateFailed")
+          : t("athletes.createFailed"),
+        message:
+          error instanceof Error ? error.message : t("auth.errorOccurred"),
         color: "red",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Generate weight category options based on gender
   const getWeightCategoryOptions = () => {
-    const gender = form.values.gender as Gender
-    if (!gender) return []
+    const gender = form.values.gender as Gender;
+    if (!gender) return [];
 
     if (gender === "male") {
       return [
@@ -79,7 +101,7 @@ export function AthleteForm({ initialValues, onSubmit, clubs, federations }: Ath
         { value: "u105", label: t("athletes.weightCategories.men.u105") },
         { value: "u120", label: t("athletes.weightCategories.men.u120") },
         { value: "o120", label: t("athletes.weightCategories.men.o120") },
-      ]
+      ];
     } else {
       return [
         { value: "u43", label: t("athletes.weightCategories.women.u43") },
@@ -91,15 +113,15 @@ export function AthleteForm({ initialValues, onSubmit, clubs, federations }: Ath
         { value: "u76", label: t("athletes.weightCategories.women.u76") },
         { value: "u84", label: t("athletes.weightCategories.women.u84") },
         { value: "o84", label: t("athletes.weightCategories.women.o84") },
-      ]
+      ];
     }
-  }
+  };
 
   return (
     <Box>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Title order={3} mb="md">
-          {initialValues ? t("athletes.edit") : t("athletes.create")}
+          {athleteToEdit ? t("athletes.edit") : t("athletes.create")}
         </Title>
 
         <Grid>
@@ -134,7 +156,7 @@ export function AthleteForm({ initialValues, onSubmit, clubs, federations }: Ath
 
         <Grid>
           <Grid.Col span={6}>
-            <DatePicker
+            <DateInput
               required
               label={t("athletes.dateOfBirth")}
               placeholder={t("athletes.selectDate")}
@@ -149,14 +171,14 @@ export function AthleteForm({ initialValues, onSubmit, clubs, federations }: Ath
               label={t("athletes.gender")}
               placeholder={t("athletes.selectGender")}
               data={[
-                { value: "male", label: t("athletes.male") },
-                { value: "female", label: t("athletes.female") },
+                { value: "male" as Gender, label: t("athletes.male") },
+                { value: "female" as Gender, label: t("athletes.female") },
               ]}
               {...form.getInputProps("gender")}
               mb="md"
               onChange={(value) => {
-                form.setFieldValue("gender", value || "")
-                form.setFieldValue("weightCategory", "")
+                form.setFieldValue("gender", (value as Gender) || "");
+                form.setFieldValue("weightCategory", null);
               }}
             />
           </Grid.Col>
@@ -205,10 +227,9 @@ export function AthleteForm({ initialValues, onSubmit, clubs, federations }: Ath
         />
 
         <Button type="submit" loading={loading}>
-          {initialValues ? t("common.save") : t("common.create")}
+          {athleteToEdit ? t("common.save") : t("common.create")}
         </Button>
       </form>
     </Box>
-  )
+  );
 }
-
