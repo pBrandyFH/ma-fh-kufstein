@@ -15,10 +15,15 @@ import {
   Select,
   Stack,
   Divider,
+  Box,
+  Flex,
 } from "@mantine/core";
 import { IconCalendar, IconTrophy } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { getFedTypeColor } from "../federations/utils";
+import { useState } from "react";
+import CompetitionDetailsDrawer from "./CompetitionDetailsDrawer";
+import CompetitionCard from "./CompetitionCard";
 
 interface NationalCompetitionsProps {
   federation: Federation | null;
@@ -27,6 +32,9 @@ interface NationalCompetitionsProps {
 export default function NationalCompetitions({
   federation,
 }: NationalCompetitionsProps) {
+  const [compToView, setCompToView] = useState<Competition | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   const {
     data: competitions,
     loading: competitionsLoading,
@@ -36,58 +44,30 @@ export default function NationalCompetitions({
   });
 
   return (
-    <div>
-      {competitions?.map((competition) => {
-        const hostFederation = competition.hostFederation;
-        return (
-          <div key={competition._id} className="competition-card">
-            <Card
-              withBorder
-              style={{ cursor: "pointer", marginBottom: "1rem" }}
-            >
-              <Stack spacing="xs">
-                <Group position="apart">
-                  <Text size="lg" weight={500}>
-                    {competition.name}
-                  </Text>
-                  <Badge color={getFedTypeColor(hostFederation?.type)}>
-                    {hostFederation?.type}
-                  </Badge>
-                </Group>
+    <Flex direction="column" gap="sm">
+      <Box>
+        {competitions?.map((competition) => {
+          const hostFederation = competition.hostFederation;
 
-                <Divider />
-
-                <Group spacing="xl">
-                  <Group spacing="xs">
-                    <IconCalendar size={16} />
-                    <Text size="sm">
-                      {format(new Date(competition.startDate), "PPP")}
-                      {competition.endDate &&
-                        ` - ${format(new Date(competition.endDate), "PPP")}`}
-                    </Text>
-                  </Group>
-
-                  <Group spacing="xs">
-                    <IconTrophy size={16} />
-                    <Text size="sm">{competition.location}</Text>
-                  </Group>
-                </Group>
-
-                <Divider />
-
-                <Group spacing="xs">
-                  <Text size="sm" weight={500}>
-                    Host Federation:
-                  </Text>
-                  <Text size="sm">
-                    {hostFederation?.name} ({hostFederation?.abbreviation})
-                  </Text>
-                </Group>
-              </Stack>
-            </Card>
-          </div>
-        );
-      })}
-    </div>
+          const handleClick = () => {
+            setCompToView(competition);
+            setDrawerOpen(true);
+          };
+          return (
+            <CompetitionCard
+              key={competition._id}
+              competition={competition}
+              hostFederation={hostFederation}
+              onClick={handleClick}
+            />
+          );
+        })}
+      </Box>
+      <CompetitionDetailsDrawer
+        opened={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        competition={compToView}
+      />
+    </Flex>
   );
 }

@@ -11,7 +11,7 @@ import {
 import { useForm } from "@mantine/form";
 import { useTranslation } from "react-i18next";
 import { createMember, updateFederation } from "@/services/memberService";
-import type { Member, Federation } from "@/types";
+import type { Member, Federation, MemberFormValues } from "@/types";
 import { notifications } from "@mantine/notifications";
 
 interface MemberFormModalProps {
@@ -22,12 +22,6 @@ interface MemberFormModalProps {
   federation: Federation;
   memberToEdit?: Member;
   isEditMode?: boolean;
-}
-
-interface MemberFormValues {
-  name: string;
-  federationId: string;
-  type: "CLUB" | "INDIVIDUAL" | "UNIVERSITY";
 }
 
 export default function MemberFormModal({
@@ -65,8 +59,7 @@ export default function MemberFormModal({
       } else {
         await createMember({
           ...values,
-          federation: federation,
-          athletes: [],
+          federationId: federation._id,
         });
         notifications.show({
           title: t("notifications.success"),
@@ -124,4 +117,4 @@ export default function MemberFormModal({
       </form>
     </Modal>
   );
-} 
+}

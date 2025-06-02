@@ -45,7 +45,6 @@ import MyCompetitions from "@/components/competitions/MyCompetitions";
 import NationalCompetitions from "@/components/competitions/NationalCompetitions";
 
 export function MyCompetitionsPage() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const { federation } = useAuth();
   const { getParam, setParam } = useUrlParams();
@@ -57,36 +56,26 @@ export function MyCompetitionsPage() {
       label: t("competition.tabs.national"),
       icon: IconBuilding,
     },
-    {
-      value: "international",
-      label: t("competition.tabs.international"),
-      icon: IconUsers,
-    },
   ];
 
-  const {
-    data: competitions,
-    loading: competitionsLoading,
-    error: competitionsError,
-  } = useDataFetching<Competition[]>({
-    fetchFunction: () => getInternationalCompetitions(federation?._id ?? ""),
-  });
-
-  // if (federation?.type === "NATIONAL" ) {
-  //   tabs.push({
-  //     value: "international",
-  //     label: t("federations.tabs.international"),
-  //     icon: IconBuilding,
-  //   });
-  // }
+  if (
+    federation?.type === "INTERNATIONAL" ||
+    federation?.parents?.some(
+      (parent) => parent.type === "REGIONAL" || parent.type === "INTERNATIONAL"
+    )
+  ) {
+    tabs.push({
+      value: "international",
+      label: t("competition.tabs.international"),
+      icon: IconBuilding,
+    });
+  }
 
   return (
     <Page title={t("competition.title")}>
       <Tabs
         value={openedTab}
-        onTabChange={(value) =>
-          setParam("tab", value?.toString() ?? "my")
-        }
+        onTabChange={(value) => setParam("tab", value?.toString() ?? "my")}
       >
         <Tabs.List>
           {tabs.map((tab) => (

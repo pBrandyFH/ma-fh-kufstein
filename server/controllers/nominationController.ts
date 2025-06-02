@@ -6,7 +6,7 @@ import Athlete from "../models/Athlete";
 import Competition, { AgeCategory } from "../models/Competition";
 import { isEligibleForAgeCategory } from "../utils/athleteService";
 
-interface CreateMemberRequestBody {
+interface CreateNominationRequestBody {
   athleteId: mongoose.Types.ObjectId;
   competitionId: mongoose.Types.ObjectId;
   weightCategory: WeightCategory;
@@ -14,18 +14,18 @@ interface CreateMemberRequestBody {
 }
 
 interface BatchCreateNominationsRequestBody {
-  nominations: CreateMemberRequestBody[];
+  nominations: CreateNominationRequestBody[];
 }
 
 interface ValidationResult {
   valid: boolean;
   error?: string;
-  nomination?: CreateMemberRequestBody;
+  nomination?: CreateNominationRequestBody;
 }
 
 // Helper function to validate a single nomination
 async function validateNomination(
-  nomination: CreateMemberRequestBody
+  nomination: CreateNominationRequestBody
 ): Promise<ValidationResult> {
   const { athleteId, competitionId, ageCategory } = nomination;
 
@@ -59,7 +59,7 @@ async function validateNomination(
 
 // Helper function to create a nomination
 async function createNominationDocument(
-  nomination: CreateMemberRequestBody,
+  nomination: CreateNominationRequestBody,
   nominatedBy: string
 ): Promise<INomination> {
   const newNomination = new Nomination({
@@ -115,7 +115,7 @@ export const getNominationsByCompetitionId = async (
 // --------------------------------------------------------------------------------------------------------------
 
 export const createNomination = async (
-  req: AuthenticatedRequest<{}, {}, CreateMemberRequestBody>,
+  req: AuthenticatedRequest<{}, {}, CreateNominationRequestBody>,
   res: Response
 ) => {
   try {
@@ -202,7 +202,7 @@ export const batchCreateNominations = async (
 
     // Create all valid nominations
     const validNominations = validationResults
-      .filter((result): result is { valid: true; nomination: CreateMemberRequestBody } => 
+      .filter((result): result is { valid: true; nomination: CreateNominationRequestBody } => 
         result.valid
       )
       .map((result) => result.nomination);

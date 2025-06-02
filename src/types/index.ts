@@ -65,6 +65,12 @@ export interface Member {
   type: "CLUB" | "INDIVIDUAL" | "UNIVERSITY";
 }
 
+export interface MemberFormValues {
+  name: string;
+  federationId: string;
+  type: "CLUB" | "INDIVIDUAL" | "UNIVERSITY";
+}
+
 // Athlete Types
 export type Gender = "male" | "female";
 
@@ -144,7 +150,7 @@ export interface Competition {
 
 export interface Nomination {
   _id: string;
-  athleteId: string | Athlete;
+  athleteId: Athlete;
   competitionId: string | Competition;
   weightCategory: WeightCategory;
   ageCategory: AgeCategory;
@@ -280,9 +286,16 @@ export interface ClubFormValues {
   sendInvite: boolean;
 }
 
-export interface NominationFormValues {
+export interface LegacyNominationFormValues {
   competitionId: string;
   athleteIds: string[];
+}
+
+export interface CreateNominationFormValues {
+  athleteId: string;
+  competitionId: string;
+  weightCategory: WeightCategory;
+  ageCategory: AgeCategory;
 }
 
 export interface InvitationFormValues {

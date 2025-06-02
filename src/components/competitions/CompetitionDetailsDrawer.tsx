@@ -1,4 +1,4 @@
-import { Competition } from "@/types";
+import { Competition, Nomination } from "@/types";
 import {
   Drawer,
   Stack,
@@ -16,7 +16,10 @@ import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { IconInfoCircle, IconUsers, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
-import NominationDrawer from "./NominationDrawer";
+import NominationDrawer from "../nominations/NominationDrawer";
+import { getNominationsByCompetitionId } from "@/services/nominationService";
+import { useDataFetching } from "@/hooks/useDataFetching";
+import CompetitionNominationsList from "../nominations/CompetitionNominationsList";
 
 interface CompetitionDetailsDrawerProps {
   opened: boolean;
@@ -30,7 +33,6 @@ export default function CompetitionDetailsDrawer({
   competition,
 }: CompetitionDetailsDrawerProps) {
   const { t } = useTranslation();
-  const [nominationDrawerOpened, setNominationDrawerOpened] = useState(false);
 
   return (
     <Drawer
@@ -229,31 +231,13 @@ export default function CompetitionDetailsDrawer({
 
                 {/* Placeholder for nominations list - to be implemented */}
                 <Paper p="md" withBorder>
-                  <Group position="apart" mb="md">
-                    <Title order={3}>{t("competitions.nominationsList")}</Title>
-                    <Button
-                      leftIcon={<IconPlus size={16} />}
-                      onClick={() => setNominationDrawerOpened(true)}
-                      disabled={competition.status !== "upcoming"}
-                    >
-                      {t("nominations.create")}
-                    </Button>
-                  </Group>
-                  <Text c="dimmed">
-                    {t("competitions.nominationsListPlaceholder")}
-                  </Text>
+                  <CompetitionNominationsList competition={competition} />
                 </Paper>
               </Stack>
             </Tabs.Panel>
           </Tabs>
         </Stack>
       )}
-
-      <NominationDrawer
-        opened={nominationDrawerOpened}
-        onClose={() => setNominationDrawerOpened(false)}
-        competition={competition}
-      />
     </Drawer>
   );
 }

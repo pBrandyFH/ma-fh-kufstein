@@ -1,48 +1,36 @@
-import mongoose from "mongoose"
-import dotenv from "dotenv"
-import bcrypt from "bcryptjs"
-import User from "../models/User"
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import bcrypt from "bcryptjs";
+import User from "../models/User";
 
 // Load environment variables
-dotenv.config()
+dotenv.config();
 
 const createTestUser = async () => {
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || "")
-    console.log("Connected to MongoDB")
+    await mongoose.connect(process.env.MONGODB_URI || "");
+    console.log("Connected to MongoDB");
 
     // Create test user
-    const testUser = new User({
-      email: "admin@goodlift.org",
-      password: "test123",
-      firstName: "Admin",
-      lastName: "User",
-      role: "internationalAdmin",
-      federationId: null,
-      clubId: null,
-      athleteId: null,
-    })
+    const psvAdmin = new User({
+      email: "psv.admin@example.com",
+      password: "password123",
+      firstName: "PSV",
+      lastName: "Admin",
+      federationRoles: {
+        federationId: "683d7949aefcdfcc45c2a207",
+        memberId: "683d84616e4a13090230435d",
+        role: "MEMBER_ADMIN",
+      },
+    });
+    await psvAdmin.save();
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: testUser.email })
-    if (existingUser) {
-      console.log("Test user already exists")
-      process.exit(0)
-    }
-
-    // Save user (password will be hashed by the pre-save hook)
-    await testUser.save()
-    console.log("Test user created successfully")
-    console.log("Email:", testUser.email)
-    console.log("Password: test123")
-    console.log("Role:", testUser.role)
-
-    process.exit(0)
+    process.exit(0);
   } catch (error) {
-    console.error("Error creating test user:", error)
-    process.exit(1)
+    console.error("Error creating test user:", error);
+    process.exit(1);
   }
-}
+};
 
-createTestUser() 
+createTestUser();

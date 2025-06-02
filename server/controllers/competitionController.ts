@@ -103,36 +103,55 @@ export const getInternationalCompetitions = async (
       });
     }
 
-    const federationIds = [federationId];
+    // Get direct parents and check their types
+    const directParents = await Federation.find({
+      _id: { $in: federation.parents || [] },
+    });
+
+    // Check if federation has a direct REGIONAL or INTERNATIONAL parent
+    const hasInternationalParent = directParents.some(
+      (parent) => parent.type === "REGIONAL" || parent.type === "INTERNATIONAL"
+    );
+
+    if (!hasInternationalParent && !(federation.type === "INTERNATIONAL")) {
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        data: [],
+        message:
+          "Federation does not have a direct REGIONAL or INTERNATIONAL parent",
+      });
+    }
+
+    const federationIds = federation.type !== "NATIONAL" ? [federationId] : [];
     const visited = new Set<string>();
     let stack = [federation];
 
+    // Collect all parent federations up to INTERNATIONAL level
     while (stack.length > 0) {
       const current = stack.pop();
       if (!current || visited.has(current._id.toString())) continue;
 
       visited.add(current._id.toString());
 
-      if (current.type === "NATIONAL" || current.type === "REGIONAL") {
+      // If we find an INTERNATIONAL federation, add all its competitions
+      if (current.type === "INTERNATIONAL") {
+        const internationalFederations = await Federation.find({
+          type: { $in: ["INTERNATIONAL", "REGIONAL"] },
+        });
+
+        for (const f of internationalFederations) {
+          federationIds.push(f._id.toString());
+        }
+        break;
+      }
+
+      // Add parents to the stack
+      if (current.parents && current.parents.length > 0) {
         const parents = await Federation.find({
           _id: { $in: current.parents },
         });
-
-        for (const parent of parents) {
-          federationIds.push(parent._id.toString());
-          stack.push(parent);
-        }
-      }
-    }
-
-    // For INTERNATIONAL federations, add all INTL and REGIONAL federations
-    if (federation.type === "INTERNATIONAL") {
-      const internationalFederations = await Federation.find({
-        type: { $in: ["INTERNATIONAL", "REGIONAL"] },
-      });
-
-      for (const f of internationalFederations) {
-        federationIds.push(f._id.toString());
+        stack.push(...parents);
       }
     }
 
@@ -174,22 +193,53 @@ export const getNationalCompetitions = async (
     }
 
     const federationIds: string[] = [];
-    if (federation.type !== "INTERNATIONAL" && federation.type !== "REGIONAL") {
+    const visited = new Set<string>();
+    let stack = [federation];
+
+    // First, collect all parent federations if we're a STATE or LOCAL federation
+    if (federation.type === "STATE" || federation.type === "LOCAL") {
+      while (stack.length > 0) {
+        const current = stack.pop();
+        if (!current || visited.has(current._id.toString())) continue;
+
+        visited.add(current._id.toString());
+        federationIds.push(current._id.toString());
+
+        // If we find a NATIONAL federation, we can stop going up
+        if (current.type === "NATIONAL") {
+          break;
+        }
+
+        // Add parents to the stack
+        if (current.parents && current.parents.length > 0) {
+          const parents = await Federation.find({
+            _id: { $in: current.parents },
+          });
+          stack.push(...parents);
+        }
+      }
+    } else if (federation.type === "NATIONAL") {
+      // If we're a NATIONAL federation, just add ourselves
       federationIds.push(federationId);
     }
 
+    // Then, collect all child federations
     const findChildFederations = async (parentId: string) => {
       const children = await Federation.find({ parents: parentId });
 
       for (const child of children) {
-        if (child.type !== "INTERNATIONAL" && child.type !== "REGIONAL") {
+        // Only add STATE and LOCAL federations
+        if (child.type === "STATE" || child.type === "LOCAL") {
           federationIds.push(child._id.toString());
         }
         await findChildFederations(child._id.toString());
       }
     };
 
-    await findChildFederations(federationId);
+    // Start finding children from each collected federation ID
+    for (const fid of federationIds) {
+      await findChildFederations(fid);
+    }
 
     const competitions = await Competition.find({
       hostFederation: { $in: federationIds },

@@ -26,6 +26,7 @@ export type Permission =
 
 export interface UserFederationRole {
   federationId: string;
+  memberId?: string;
   role: RoleType;
   overridePermissions?: Permission[];
 }

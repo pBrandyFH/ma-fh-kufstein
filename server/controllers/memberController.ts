@@ -53,7 +53,7 @@ export const getMembersByFederationId = async (
     }).populate<{
       federation: { name: string; abbreviation: string; type: string };
     }>("federation", "name abbreviation type");
-    
+
     //   .populate("athletes");
 
     if (!members) {
@@ -89,7 +89,7 @@ export const createMember = async (
 
     const member = new Member({
       name,
-      federationId,
+      federation: federationId,
       type,
       adminId,
     });

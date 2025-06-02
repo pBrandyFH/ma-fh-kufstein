@@ -328,7 +328,7 @@ router.get(
  *         description: Forbidden - Insufficient permissions
  */
 router.get(
-  "/club/:clubId",
+  "/member/:memberId",
   auth,
   authorize([
     { role: "MEMBER_ADMIN", federationId: "*" },

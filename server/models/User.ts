@@ -52,6 +52,10 @@ const UserSchema = new Schema<IUser>(
             type: String,
             required: true,
           },
+          memberId: {
+            type: String,
+            required: false,
+          },
           overridePermissions: {
             type: [String],
             required: false,
@@ -65,7 +69,7 @@ const UserSchema = new Schema<IUser>(
     role: String,
     federationId: String,
     clubId: String,
-    athleteId: String
+    athleteId: String,
   },
   {
     timestamps: true,

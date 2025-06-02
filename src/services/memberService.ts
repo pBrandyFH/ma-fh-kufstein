@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { ApiResponse, Member } from "@/types";
+import { ApiResponse, Member, MemberFormValues } from "@/types";
 
 export async function getMemberById(id: string): Promise<ApiResponse<Member>> {
   try {
@@ -32,7 +32,7 @@ export async function getMembersByFederationId(
 }
 
 export async function createMember(
-  member: Omit<Member, "_id" | "createdAt" | "updatedAt">
+  member: MemberFormValues
 ): Promise<ApiResponse<Member>> {
   try {
     const response = await api.post<ApiResponse<Member>>("/members", member);
@@ -48,7 +48,7 @@ export async function createMember(
 
 export async function updateFederation(
   id: string,
-  member: Partial<Member>
+  member: Partial<MemberFormValues>
 ): Promise<ApiResponse<Member>> {
   try {
     const response = await api.put<ApiResponse<Member>>(

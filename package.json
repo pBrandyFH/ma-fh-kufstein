@@ -17,7 +17,8 @@
     "seed:federations": "ts-node server/scripts/seedFederations.ts",
     "migrate:federations": "ts-node server/scripts/migrateFederations.ts",
     "migrate:comps": "ts-node server/scripts/migrateComps.ts",
-    "migrate:permissions": "ts-node server/scripts/migratePermissions.ts"
+    "migrate:permissions": "ts-node server/scripts/migratePermissions.ts",
+    "create:user": "ts-node server/scripts/createTestUser.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

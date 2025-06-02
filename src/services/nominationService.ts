@@ -1,5 +1,10 @@
 import { api } from "./api";
-import { ApiResponse, Member, Nomination } from "@/types";
+import {
+  ApiResponse,
+  CreateNominationFormValues,
+  Member,
+  Nomination,
+} from "@/types";
 
 export async function getNominationsByCompetitionId(
   compId: string
@@ -19,7 +24,7 @@ export async function getNominationsByCompetitionId(
 }
 
 export async function createNomination(
-  nomination: Omit<Nomination, "_id" | "createdAt" | "updatedAt" | "status" | "nominatedBy">
+  nomination: CreateNominationFormValues
 ): Promise<ApiResponse<Nomination>> {
   try {
     const response = await api.post<ApiResponse<Nomination>>(
@@ -37,7 +42,7 @@ export async function createNomination(
 }
 
 export async function batchCreateNominations(
-  nominations: Array<Omit<Nomination, "_id" | "createdAt" | "updatedAt" | "status" | "nominatedBy">>
+  nominations: Array<CreateNominationFormValues>
 ): Promise<ApiResponse<Nomination[]>> {
   try {
     const response = await api.post<ApiResponse<Nomination[]>>(

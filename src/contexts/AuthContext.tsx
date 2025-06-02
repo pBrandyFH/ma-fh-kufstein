@@ -6,19 +6,23 @@ import {
   ReactNode,
 } from "react";
 import * as authService from "../services/authService";
-import type { User, LoginFormValues, Federation } from "../types";
+import type { User, LoginFormValues, Federation, Member } from "../types";
 import {
   getCurrentUser,
   isAuthenticated,
   logout,
 } from "../services/authService";
 import { getFederationById } from "@/services/federationService";
+import { getMemberById } from "@/services/memberService";
 
 interface AuthContextType {
   authenticated: boolean;
   user: User | null;
   federation: Federation | null;
+  member: Member | null;
   isAuthLoading: boolean;
+  isMemberAdmin: boolean;
+  isFedAdmin: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -28,6 +32,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [federation, setFederation] = useState<Federation | null>(null);
+  const [member, setMember] = useState<Member | null>(null);
+  const [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
+  const [isFedAdmin, setIsFedAdmin] = useState<boolean>(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
@@ -37,27 +44,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (isAuth) {
       const currentUser = getCurrentUser();
       if (currentUser) {
-        console.log("CurrentUser: ", currentUser);
-        const { data: federation } = await getFederationById(
-          currentUser?.federationRoles[0].federationId ?? ""
-        );
-        if (federation) {
-          setFederation(federation);
+        const fedRole = currentUser?.federationRoles[0];
+
+        if (fedRole) {
+          const { data: federation } = await getFederationById(
+            fedRole.federationId ?? ""
+          );
+
+          if (federation) {
+            setFederation(federation);
+          }
+
+          if ("memberId" in fedRole) {
+            const { data: member } = await getMemberById(
+              fedRole.memberId ?? ""
+            );
+
+            if (member) {
+              setMember(member);
+              setIsMemberAdmin(true);
+            }
+          } else {
+            setIsFedAdmin(true);
+          }
+          setUser(currentUser);
         }
-        setUser(currentUser);
       }
     }
   };
 
   useEffect(() => {
     const checkAuth = async () => {
-      setIsAuthLoading(true); // Set loading to true when checking
+      setIsAuthLoading(true);
       try {
         await setData();
       } catch (error) {
         console.error("Authentication check failed:", error);
       } finally {
-        setIsAuthLoading(false); // Set loading to false when done
+        setIsAuthLoading(false);
       }
     };
 
@@ -65,13 +89,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const handleLogin = async () => {
-    setIsAuthLoading(true); // Set loading to true when checking
+    setIsAuthLoading(true);
     try {
       await setData();
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
-      setIsAuthLoading(false); // Set loading to false when done
+      setIsAuthLoading(false);
     }
   };
 
@@ -82,6 +106,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setAuthenticated(false);
       setUser(null);
       setFederation(null);
+      setMember(null);
+      setIsFedAdmin(false);
+      setIsMemberAdmin(false);
     }
   };
 
@@ -91,7 +118,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         authenticated,
         user,
         federation,
-        isAuthLoading, // Add this to the context value
+        member,
+        isAuthLoading,
+        isFedAdmin,
+        isMemberAdmin,
         login: handleLogin,
         logout: handleLogout,
       }}

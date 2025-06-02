@@ -61,9 +61,9 @@ export const deleteAthlete = async (id: string): Promise<ApiResponse<null>> => {
   }
 }
 
-export const getAthletesByClub = async (clubId: string): Promise<ApiResponse<Athlete[]>> => {
+export const getAthletesByMember = async (clubId: string): Promise<ApiResponse<Athlete[]>> => {
   try {
-    const response = await api.get<ApiResponse<Athlete[]>>(`/athletes/club/${clubId}`)
+    const response = await api.get<ApiResponse<Athlete[]>>(`/athletes/member/${clubId}`)
     return response.data
   } catch (error) {
     if (error instanceof Error) {

@@ -3,7 +3,10 @@ import AthleteList from "@/components/athletes/AthleteList";
 import { Page } from "@/components/common/Page";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDataFetching } from "@/hooks/useDataFetching";
-import { getAthletesByFederation } from "@/services/athleteService";
+import {
+  getAthletesByFederation,
+  getAthletesByMember,
+} from "@/services/athleteService";
 import { Athlete } from "@/types";
 import { Box, Button, Flex } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
@@ -12,7 +15,7 @@ import { useTranslation } from "react-i18next";
 
 export default function FederationAthletesPage() {
   const { t } = useTranslation();
-  const { federation } = useAuth();
+  const { federation, isMemberAdmin, member } = useAuth();
   const [createModalOpened, setCreateModalOpened] = useState(false);
 
   const {
@@ -21,7 +24,10 @@ export default function FederationAthletesPage() {
     error: athletesError,
     refetch: refetchAthletes,
   } = useDataFetching<Athlete[]>({
-    fetchFunction: () => getAthletesByFederation(federation?._id ?? ""),
+    fetchFunction: () =>
+      isMemberAdmin
+        ? getAthletesByMember(member?._id ?? "")
+        : getAthletesByFederation(federation?._id ?? ""),
   });
 
   const handleCreateSuccess = () => {
@@ -52,6 +58,7 @@ export default function FederationAthletesPage() {
         onClose={() => setCreateModalOpened(false)}
         onSuccess={handleCreateSuccess}
         modalTitle={t("athletes.create")}
+        existingMember={isMemberAdmin ? member : null}
         federation={federation}
       />
     </Page>

@@ -6,7 +6,12 @@ import { useUrlParams } from "@/hooks/useUrlParams";
 import { getMembersByFederationId } from "@/services/memberService";
 import { Member } from "@/types";
 import { Tabs, Button, Box, Flex } from "@mantine/core";
-import { IconBuilding, IconChartBar, IconUsers, IconPlus } from "@tabler/icons-react";
+import {
+  IconBuilding,
+  IconChartBar,
+  IconUsers,
+  IconPlus,
+} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import MembersList from "@/components/members/MembersList";
 import MemberFormModal from "@/components/members/MemberFormModal";
@@ -49,9 +54,7 @@ export default function MyMembersPage() {
     <Page title={t("members.title")}>
       <Tabs
         value={openedTab}
-        onTabChange={(value) =>
-          setParam("tab", value?.toString() ?? "members")
-        }
+        onTabChange={(value) => setParam("tab", value?.toString() ?? "members")}
       >
         <Tabs.List>
           {tabs.map((tab) => (

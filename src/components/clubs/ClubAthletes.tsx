@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 import { Plus, MoreVertical, Edit, Trash, Users } from "lucide-react"
 import type { Club, Athlete } from "../../types"
 import { getClubById } from "../../services/clubService"
-import { getAthletesByClub } from "../../services/athleteService"
+import { getAthletesByMember } from "../../services/athleteService"
 import { notifications } from "@mantine/notifications"
 
 export function ClubAthletes() {
@@ -39,7 +39,7 @@ export function ClubAthletes() {
         }
 
         // Fetch athletes for this club
-        const athletesResponse = await getAthletesByClub(id)
+        const athletesResponse = await getAthletesByMember(id)
         if (athletesResponse.success && athletesResponse.data) {
           setAthletes(athletesResponse.data)
         }

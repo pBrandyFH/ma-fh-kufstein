@@ -212,11 +212,11 @@ export const getAthletesByFederation = async (
 
 // Get athletes by club
 export const getAthletesByMember = async (
-  req: AuthenticatedRequest<{ clubId: string }>,
+  req: AuthenticatedRequest<{ memberId: string }>,
   res: Response
 ) => {
   try {
-    const athletes = await Athlete.find({ clubId: req.params.clubId })
+    const athletes = await Athlete.find({ clubId: req.params.memberId })
       .populate<{ clubId: { name: string } }>("clubId", "name")
       .populate<{ federationId: { name: string } }>("federationId", "name");
 

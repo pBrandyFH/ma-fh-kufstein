@@ -1,69 +1,13 @@
-import { Page } from "@/components/common/Page";
+import OverviewForFedAdmin from "@/components/overview/OverviewForFedAdmin";
+import OverviewForMemberAdmin from "@/components/overview/OverviewForMemberAdmin";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUrlParams } from "@/hooks/useUrlParams";
-import { Card, Grid, Title, Text } from "@mantine/core";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 
 export default function OverviewPage() {
-  const { t } = useTranslation();
-  const { user, federation } = useAuth();
-  const { getParam, setParam } = useUrlParams();
-  const navigate = useNavigate();
+  const { isMemberAdmin } = useAuth();
 
-  console.log(user);
-  console.log("Federation:", federation);
-  return (
-    <Page title={t("dashboard.title")}>
-      <Grid gutter="md">
-        <Grid.Col xs={12} md={6}>
-          <Card
-            withBorder
-            onClick={() => navigate(`/federations/${federation?._id}`)}
-          >
-            <Title order={4}>Federation</Title>
-            <Text size="sm" color="dimmed">
-              some info
-            </Text>
-            <Text size="sm" color="dimmed">
-              some info
-            </Text>
-          </Card>
-        </Grid.Col>
-        <Grid.Col xs={12} md={6}>
-          <Card withBorder onClick={() => navigate("/competitions")}>
-            <Title order={4}>Competitions</Title>
-            <Text size="sm" color="dimmed">
-              some info
-            </Text>
-            <Text size="sm" color="dimmed">
-              some info
-            </Text>
-          </Card>
-        </Grid.Col>
-        <Grid.Col xs={12} md={6}>
-          <Card withBorder onClick={() => navigate("/members")}>
-            <Title order={4}>Members</Title>
-            <Text size="sm" color="dimmed">
-              some info
-            </Text>
-            <Text size="sm" color="dimmed">
-              some info
-            </Text>
-          </Card>
-        </Grid.Col>
-        <Grid.Col xs={12} md={6}>
-          <Card withBorder onClick={() => navigate("/fed-athletes")}>
-            <Title order={4}>Athletes</Title>
-            <Text size="sm" color="dimmed">
-              some info
-            </Text>
-            <Text size="sm" color="dimmed">
-              some info
-            </Text>
-          </Card>
-        </Grid.Col>
-      </Grid>
-    </Page>
-  );
+  if (isMemberAdmin) {
+    return <OverviewForMemberAdmin />;
+  }
+
+  return <OverviewForFedAdmin />;
 }

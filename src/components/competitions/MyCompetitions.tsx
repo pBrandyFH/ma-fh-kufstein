@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import { getFedTypeColor } from "../federations/utils";
 import CompetitionFormModal from "./CompetitionFormModal";
 import CompetitionDetailsDrawer from "./CompetitionDetailsDrawer";
+import CompetitionCard from "./CompetitionCard";
 
 interface MyCompetitionsProps {
   federation: Federation | null;
@@ -79,70 +80,23 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
       </Box>
       {competitions?.map((competition) => {
         const hostFederation = competition.hostFederation;
+        const handleEdit = () => {
+          setCompToUpdate(competition);
+          setEditModalOpened(true);
+        };
+
+        const handleClick = () => {
+          setCompToView(competition);
+          setDrawerOpen(true);
+        };
         return (
-          <Card
+          <CompetitionCard
             key={competition._id}
-            withBorder
-            sx={(theme) => ({
-              marginBottom: "1rem",
-              cursor: "pointer",
-              transition: "background-color 0.2s ease",
-              "&:hover": {
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[5]
-                    : theme.colors.gray[0],
-              },
-            })}
-            onClick={() => {
-              setCompToView(competition);
-              setDrawerOpen(true);
-            }}
-          >
-            <Stack spacing="xs">
-              <Group position="apart">
-                <Group>
-                  <Text size="lg" weight={500}>
-                    {competition.name}
-                  </Text>
-                </Group>
-                <Badge color={getFedTypeColor(hostFederation?.type)}>
-                  {hostFederation?.type}
-                </Badge>
-              </Group>
-
-              <Divider />
-
-              <Group position="apart">
-                <Group spacing="xl">
-                  <Group spacing="xs">
-                    <IconCalendar size={16} />
-                    <Text size="sm">
-                      {format(new Date(competition.startDate), "PPP")}
-                      {competition.endDate &&
-                        ` - ${format(new Date(competition.endDate), "PPP")}`}
-                    </Text>
-                  </Group>
-
-                  <Group spacing="xs">
-                    <IconTrophy size={16} />
-                    <Text size="sm">{competition.location}</Text>
-                  </Group>
-                </Group>
-                <ActionIcon
-                  variant="subtle"
-                  color="blue"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCompToUpdate(competition);
-                    setEditModalOpened(true);
-                  }}
-                >
-                  <IconEdit size={16} />
-                </ActionIcon>
-              </Group>
-            </Stack>
-          </Card>
+            competition={competition}
+            hostFederation={hostFederation}
+            onClick={handleClick}
+            onClickEdit={handleEdit}
+          />
         );
       })}
 

@@ -21,6 +21,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu as MenuIcon } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -34,6 +35,7 @@ export function MainLayout({
   onLogout,
 }: MainLayoutProps) {
   const { t } = useTranslation();
+  const { federation } = useAuth();
   const location = useLocation();
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
@@ -47,10 +49,10 @@ export function MainLayout({
 
   const protectedNavItems = [
     { label: t("dashboard.title"), path: "/dashboard" },
-    { label: t("athletes.title"), path: "/athletes" },
+    { label: t("athletes.title"), path: "/fed-athletes" },
     { label: t("competitions.title"), path: "/competitions" },
-    { label: t("federations.title"), path: "/federations" },
-    { label: t("clubs.title"), path: "/clubs" },
+    { label: t("federations.title"), path: `/federations/${federation?._id}` },
+    { label: t("members.title"), path: "/members" },
     { label: t("invitations.title"), path: "/invitations" },
     { label: t("account.title"), path: "/account" },
   ];
@@ -161,167 +163,39 @@ export function MainLayout({
 
               <MediaQuery smallerThan="md" styles={{ display: "none" }}>
                 <Group spacing="xs">
-                  {authenticated && (
-                    <>
-                      <Menu shadow="md" width={200}>
-                        <Menu.Target>
-                          <Button
-                            variant={
-                              location.pathname.startsWith("/competitions") ||
-                              location.pathname.startsWith("/nominations")
-                                ? "filled"
-                                : "subtle"
-                            }
-                            size="sm"
-                            compact
-                          >
-                            {t("navigation.competitions")}
-                          </Button>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Item
-                            component={Link}
-                            to="/competitions"
-                            onClick={() => setOpened(false)}
-                          >
-                            {t("competitions.title")}
-                          </Menu.Item>
-                          <Menu.Item
-                            component={Link}
-                            to="/nominations"
-                            onClick={() => setOpened(false)}
-                          >
-                            {t("nominations.title")}
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
-
-                      <Menu shadow="md" width={200}>
-                        <Menu.Target>
-                          <Button
-                            variant={
-                              location.pathname.startsWith("/federations") ||
-                              location.pathname.startsWith("/clubs")
-                                ? "filled"
-                                : "subtle"
-                            }
-                            size="sm"
-                            compact
-                          >
-                            {t("navigation.organizations")}
-                          </Button>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Item
-                            component={Link}
-                            to="/federations"
-                            onClick={() => setOpened(false)}
-                          >
-                            {t("federations.title")}
-                          </Menu.Item>
-                          <Menu.Item
-                            component={Link}
-                            to="/clubs"
-                            onClick={() => setOpened(false)}
-                          >
-                            {t("clubs.title")}
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
-
-                      <Menu shadow="md" width={200}>
-                        <Menu.Target>
-                          <Button
-                            variant={
-                              location.pathname.startsWith("/athletes") ||
-                              location.pathname.startsWith("/invitations")
-                                ? "filled"
-                                : "subtle"
-                            }
-                            size="sm"
-                            compact
-                          >
-                            {t("navigation.users")}
-                          </Button>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Item
-                            component={Link}
-                            to="/athletes"
-                            onClick={() => setOpened(false)}
-                          >
-                            {t("athletes.title")}
-                          </Menu.Item>
-                          <Menu.Item
-                            component={Link}
-                            to="/invitations"
-                            onClick={() => setOpened(false)}
-                          >
-                            {t("invitations.title")}
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
-
-                      <Menu shadow="md" width={200}>
-                        <Menu.Target>
-                          <Button
-                            variant={
-                              location.pathname.startsWith("/dashboard") ||
-                              location.pathname.startsWith("/account")
-                                ? "filled"
-                                : "subtle"
-                            }
-                            size="sm"
-                            compact
-                          >
-                            {t("navigation.account")}
-                          </Button>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Item
-                            component={Link}
-                            to="/dashboard"
-                            onClick={() => setOpened(false)}
-                          >
-                            {t("dashboard.title")}
-                          </Menu.Item>
-                          <Menu.Item
-                            component={Link}
-                            to="/account"
-                            onClick={() => setOpened(false)}
-                          >
-                            {t("account.title")}
-                          </Menu.Item>
-                          <Menu.Divider />
-                          <Menu.Item
-                            color="red"
-                            onClick={() => {
-                              handleLogout();
-                              setOpened(false);
-                            }}
-                          >
-                            {t("auth.logout")}
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
-                    </>
-                  )}
-                  {publicNavItems.map((item) => (
-                    <Button
-                      key={item.path}
-                      component={Link}
-                      to={item.path}
-                      variant={
-                        location.pathname.startsWith(item.path)
-                          ? "filled"
-                          : "subtle"
-                      }
-                      size="sm"
-                      compact
-                    >
-                      {item.label}
-                    </Button>
-                  ))}
+                  {authenticated
+                    ? protectedNavItems.map((item) => (
+                        <Button
+                          key={item.path}
+                          component={Link}
+                          to={item.path}
+                          variant={
+                            location.pathname.startsWith(item.path)
+                              ? "filled"
+                              : "subtle"
+                          }
+                          size="sm"
+                          compact
+                        >
+                          {item.label}
+                        </Button>
+                      ))
+                    : publicNavItems.map((item) => (
+                        <Button
+                          key={item.path}
+                          component={Link}
+                          to={item.path}
+                          variant={
+                            location.pathname.startsWith(item.path)
+                              ? "filled"
+                              : "subtle"
+                          }
+                          size="sm"
+                          compact
+                        >
+                          {item.label}
+                        </Button>
+                      ))}
                 </Group>
               </MediaQuery>
 

@@ -848,6 +848,7 @@
       "university": "University"
     },
     "federationInfo": "Member of {{federation}}",
+    "addToMember": "Add to {{member}}",
     "createSuccess": "Member created successfully",
     "updateSuccess": "Member updated successfully",
     "createError": "Failed to create member",

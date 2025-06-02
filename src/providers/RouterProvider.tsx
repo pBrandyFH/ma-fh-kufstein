@@ -15,7 +15,7 @@ import { ClubEditPage } from "../components/clubs/ClubEditPage";
 import { ClubAthletes } from "../components/clubs/ClubAthletes";
 import { InvitationList } from "../components/invitations/InvitationList";
 import { InvitationForm } from "../components/invitations/InvitationForm";
-import { NominationsView } from "../components/nominations/NominationsView";
+import { NominationsView } from "../components/nominations/legacy/NominationsView";
 import { CompetitionDetails } from "../components/competitions/legacy/CompetitionDetails";
 import { EditCompetition } from "../components/competitions/legacy/EditCompetition";
 import { RankingsView } from "../components/rankings/RankingsView";

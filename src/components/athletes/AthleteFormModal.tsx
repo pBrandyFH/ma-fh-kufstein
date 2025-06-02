@@ -31,6 +31,7 @@ interface AthleteFormModalProps {
   onSuccess: () => void;
   modalTitle: string;
   federation: Federation;
+  existingMember?: Member | null;
   athleteToEdit?: Athlete;
   isEditMode?: boolean;
 }
@@ -42,6 +43,7 @@ export default function AthleteFormModal({
   modalTitle,
   federation,
   athleteToEdit,
+  existingMember,
   isEditMode = false,
 }: AthleteFormModalProps) {
   const { t } = useTranslation();
@@ -63,14 +65,19 @@ export default function AthleteFormModal({
       dateOfBirth: athleteToEdit?.dateOfBirth || null,
       gender: athleteToEdit?.gender || null,
       weightCategory: athleteToEdit?.weightCategory || null,
-      member: athleteToEdit?.member._id || "",
+      member: athleteToEdit?.member._id || existingMember?._id || "",
       federation: federation._id,
       sendInvite: true,
     },
     validate: {
       firstName: (value) => (!value ? t("validation.required") : null),
       lastName: (value) => (!value ? t("validation.required") : null),
-      email: (value) => (!value ? t("validation.required") : /^\S+@\S+$/.test(value) ? null : t("validation.invalidEmail")),
+      email: (value) =>
+        !value
+          ? t("validation.required")
+          : /^\S+@\S+$/.test(value)
+          ? null
+          : t("validation.invalidEmail"),
       dateOfBirth: (value) => (!value ? t("validation.required") : null),
       gender: (value) => (!value ? t("validation.required") : null),
       weightCategory: (value) => (!value ? t("validation.required") : null),
@@ -90,11 +97,8 @@ export default function AthleteFormModal({
   const handleSubmit = async (values: AthleteFormValues) => {
     setLoading(true);
     try {
-      // Log the values to help debug
-      console.log("Submitting athlete form with values:", values);
-      
       const response = await createAthlete(values);
-      
+
       if (response.success) {
         notifications.show({
           title: t("notifications.success"),
@@ -194,26 +198,33 @@ export default function AthleteFormModal({
             />
           )}
 
-          <Select
-            label={t("athletes.member")}
-            placeholder={t("athletes.memberPlaceholder")}
-            required
-            data={
-              members?.map((member) => ({
-                value: member._id,
-                label: member.name,
-              })) ?? []
-            }
-            {...form.getInputProps("member")}
-          />
+          {!existingMember && (
+            <Select
+              label={t("athletes.member")}
+              placeholder={t("athletes.memberPlaceholder")}
+              required
+              data={
+                members?.map((member) => ({
+                  value: member._id,
+                  label: member.name,
+                })) ?? []
+              }
+              {...form.getInputProps("member")}
+            />
+          )}
 
           <Checkbox
             label={t("athletes.sendInvite")}
             {...form.getInputProps("sendInvite", { type: "checkbox" })}
           />
+          {existingMember && (
+            <Text size="sm" c="dimmed">
+              {t("members.addToMember", { member: existingMember.name })}
+            </Text>
+          )}
 
           <Text size="sm" c="dimmed">
-            {t("athletes.federationInfo", { federation: federation.name })}
+            {t("members.federationInfo", { federation: federation.name })}
           </Text>
 
           <Group position="right" mt="md">
