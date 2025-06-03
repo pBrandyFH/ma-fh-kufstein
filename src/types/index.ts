@@ -157,6 +157,10 @@ export interface Nomination {
   nominatedBy: string | User;
   nominatedAt: Date;
   updatedAt: Date;
+  flightNumber?: number | null;
+  groupNumber?: number | null;
+  groupName?: string | null ;
+  groupStartTime?: Date | null;
 }
 
 // Result Types
@@ -330,3 +334,4 @@ export interface SelectOption {
   value: string;
   label: string;
 }
+

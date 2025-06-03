@@ -1,4 +1,4 @@
-import { useDataFetching } from "@/hooks/useDataFetching";
+import { useQuery } from "@tanstack/react-query";
 import { getNominationsByCompetitionId } from "@/services/nominationService";
 import {
   Nomination,
@@ -6,6 +6,7 @@ import {
   AgeCategory,
   WeightCategory,
   Competition,
+  ApiResponse,
 } from "@/types";
 import {
   Box,
@@ -18,6 +19,8 @@ import {
   Group,
   Badge,
   Button,
+  Loader,
+  Center,
 } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
@@ -61,31 +64,31 @@ export default function CompetitionNominationsList({
   const [selectedAgeCategory, setSelectedAgeCategory] =
     useState<AgeCategory | null>(null);
 
-  const { 
-    data: nominationsData, 
-    loading: nominationsLoading,
-    refetch: refetchNominations 
-  } = useDataFetching<Nomination[]>({
-    fetchFunction: () =>
-      getNominationsByCompetitionId(competition?._id || ""),
-    skip: !competition?._id,
+  const {
+    data: nominationsData,
+    isLoading: nominationsLoading,
+    refetch: refetchNominations,
+  } = useQuery<ApiResponse<Nomination[]>>({
+    queryKey: ["nominations", competition?._id],
+    queryFn: () => getNominationsByCompetitionId(competition?._id ?? ""),
+    enabled: !!competition?._id,
   });
 
   // Get unique age categories from nominations
   const ageCategories = useMemo(() => {
-    if (!nominationsData) return [];
+    if (!nominationsData?.data) return [];
     const categories = new Set<AgeCategory>();
-    nominationsData.forEach((nomination) => {
+    nominationsData.data.forEach((nomination) => {
       categories.add(nomination.ageCategory);
     });
     return Array.from(categories).sort();
-  }, [nominationsData]);
+  }, [nominationsData?.data]);
 
   // Filter and sort nominations
   const filteredNominations = useMemo(() => {
-    if (!nominationsData) return [];
+    if (!nominationsData?.data) return [];
 
-    return nominationsData
+    return nominationsData.data
       .filter((nomination) => {
         const athleteGender =
           typeof nomination.athleteId === "string"
@@ -105,7 +108,7 @@ export default function CompetitionNominationsList({
           weightCategoryOrder[b.weightCategory]
         );
       });
-  }, [nominationsData, selectedGender, selectedAgeCategory]);
+  }, [nominationsData?.data, selectedGender, selectedAgeCategory]);
 
   // Group nominations by weight category
   const groupedNominations = useMemo(() => {
@@ -123,6 +126,17 @@ export default function CompetitionNominationsList({
 
     return groups;
   }, [filteredNominations]);
+
+  if (nominationsLoading) {
+    return (
+      <Center h={200}>
+        <Stack align="center" spacing="md">
+          <Loader size="lg" />
+          <Text>{t("common.loading")}</Text>
+        </Stack>
+      </Center>
+    );
+  }
 
   return (
     <Stack spacing="md">

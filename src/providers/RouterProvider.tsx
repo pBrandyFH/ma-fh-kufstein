@@ -35,6 +35,8 @@ import FederationDetailsPage from "@/pages/admin/FederationDetailsPage";
 import { MyCompetitionsPage } from "@/pages/admin/MyCompetitionsPage";
 import MyMembersPage from "@/pages/admin/MyMembersPage";
 import FederationAthletesPage from "@/pages/admin/FederationAthletesPage";
+import CompetitionDetailsPage from "@/pages/admin/CompetitionDetailsPage";
+import CompetitionEditGroupPage from "@/pages/admin/CompetitionEditGroupPage";
 
 export function RouterProvider() {
   const { authenticated, isAuthLoading, logout, login } = useAuth();
@@ -133,23 +135,18 @@ export function RouterProvider() {
               }
             />
             <Route
-              path="create"
+              path=":id"
               element={
                 <ProtectedRoute>
-                  <div>Competition Form</div>
-                  {/* <CompetitionForm
-                    federations={federations}
-                    clubs={clubs}
-                    onSubmit={async (values) => console.log(values)}
-                  /> */}
+                  <CompetitionDetailsPage />
                 </ProtectedRoute>
               }
             />
             <Route
-              path=":id"
+              path=":id/flights/:flightNumber/edit"
               element={
                 <ProtectedRoute>
-                  <CompetitionDetails />
+                  <CompetitionEditGroupPage />
                 </ProtectedRoute>
               }
             />

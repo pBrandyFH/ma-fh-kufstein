@@ -29,8 +29,9 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getFedTypeColor } from "../federations/utils";
 import CompetitionFormModal from "./CompetitionFormModal";
-import CompetitionDetailsDrawer from "./CompetitionDetailsDrawer";
+import CompetitionDetailsDrawer from "./details-drawer/CompetitionDetailsDrawer";
 import CompetitionCard from "./CompetitionCard";
+import { useNavigate } from "react-router-dom";
 
 interface MyCompetitionsProps {
   federation: Federation | null;
@@ -43,6 +44,7 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
   const [compToUpdate, setCompToUpdate] = useState<Competition | null>(null);
   const [compToView, setCompToView] = useState<Competition | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const navigate = useNavigate();
 
   const {
     data: competitions,
@@ -94,7 +96,7 @@ export default function MyCompetitions({ federation }: MyCompetitionsProps) {
             key={competition._id}
             competition={competition}
             hostFederation={hostFederation}
-            onClick={handleClick}
+            onClick={() => navigate(`/competitions/${competition._id}`)}
             onClickEdit={handleEdit}
           />
         );

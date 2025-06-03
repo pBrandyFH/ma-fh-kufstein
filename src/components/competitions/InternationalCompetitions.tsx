@@ -23,7 +23,7 @@ import { format } from "date-fns";
 import { getFedTypeColor } from "../federations/utils";
 import { useState } from "react";
 import CompetitionCard from "./CompetitionCard";
-import CompetitionDetailsDrawer from "./CompetitionDetailsDrawer";
+import CompetitionDetailsDrawer from "./details-drawer/CompetitionDetailsDrawer";
 
 interface InternationalCompetitionsProps {
   federation: Federation | null;

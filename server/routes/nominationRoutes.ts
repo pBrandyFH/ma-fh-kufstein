@@ -7,10 +7,13 @@ import {
   batchCreateNominations,
   createNomination,
   getNominationsByCompetitionId,
+  getNominationsByCompetitionIdAndWeightCategories,
   deleteNomination,
+  batchUpdateNominations,
 } from "../controllers/nominationController";
 
 router.get("/competition/:id", getNominationsByCompetitionId);
+router.get("/competition/:id/weight-categories", getNominationsByCompetitionIdAndWeightCategories);
 
 router.post(
   "/",
@@ -43,6 +46,17 @@ router.delete(
     { role: "SUPERADMIN", federationId: "*" },
   ]),
   deleteNomination
+);
+
+router.patch(
+  "/batch",
+  auth,
+  authorize([
+    { role: "MEMBER_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  batchUpdateNominations
 );
 
 export default router;

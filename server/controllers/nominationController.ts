@@ -23,6 +23,19 @@ interface ValidationResult {
   nomination?: CreateNominationRequestBody;
 }
 
+interface BatchUpdateNominationsRequest {
+  nominations: Array<{
+    nominationId: string;
+    updates: {
+      flightNumber?: number;
+      groupNumber?: number;
+      groupName?: string;
+      groupStartTime?: Date;
+      groupStatus?: "pending" | "active" | "completed";
+    };
+  }>;
+}
+
 // Helper function to validate a single nomination
 async function validateNomination(
   nomination: CreateNominationRequestBody
@@ -106,6 +119,46 @@ export const getNominationsByCompetitionId = async (
     res.status(500).json({
       success: false,
       error: "Server error while fetching member",
+    });
+  }
+};
+
+export const getNominationsByCompetitionIdAndWeightCategories = async (
+  req: AuthenticatedRequest<{ id: string }, { weightCategories?: string }>,
+  res: Response
+) => {
+  try {
+    const weightCategories = req.query.weightCategories as string | undefined;
+    const weightCategoryArray = weightCategories?.split(',') || [];
+
+    const query: any = {
+      competitionId: req.params.id,
+    };
+
+    if (weightCategoryArray.length > 0) {
+      query.weightCategory = { $in: weightCategoryArray };
+    }
+
+    const nominations = await Nomination.find(query)
+      .populate("athleteId")
+      .sort({ weightCategory: 1 });
+
+    if (!nominations) {
+      return res.status(404).json({
+        success: false,
+        error: "No nominations found for this competition",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: nominations,
+    });
+  } catch (error) {
+    console.error("Get nominations by weight categories error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error while fetching nominations",
     });
   }
 };
@@ -264,6 +317,69 @@ export const deleteNomination = async (
     res.status(500).json({
       success: false,
       error: "Server error while deleting nomination",
+    });
+  }
+};
+
+export const batchUpdateNominations = async (
+  req: AuthenticatedRequest<{}, {}, BatchUpdateNominationsRequest>,
+  res: Response
+) => {
+  try {
+    const { nominations } = req.body;
+    const userId = req.user?.id;
+
+    const authValidation = validateUserAuthentication(userId);
+    if (!authValidation.valid) {
+      return res.status(401).json({
+        success: false,
+        error: authValidation.error,
+      });
+    }
+
+    if (!Array.isArray(nominations) || nominations.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Request must include a non-empty array of nominations",
+      });
+    }
+
+    // Create an array of update operations
+    const updateOperations = nominations.map(({ nominationId, updates }) => ({
+      updateOne: {
+        filter: { _id: nominationId },
+        update: { $set: updates },
+      },
+    }));
+
+    // Perform bulk write operation
+    const result = await Nomination.bulkWrite(updateOperations);
+
+    if (result.modifiedCount !== nominations.length) {
+      return res.status(400).json({
+        success: false,
+        error: "Some nominations could not be updated",
+        details: {
+          requested: nominations.length,
+          modified: result.modifiedCount,
+        },
+      });
+    }
+
+    // Fetch updated nominations
+    const updatedNominations = await Nomination.find({
+      _id: { $in: nominations.map(n => n.nominationId) },
+    }).populate("athleteId");
+
+    res.status(200).json({
+      success: true,
+      data: updatedNominations,
+    });
+  } catch (error) {
+    console.error("Batch update nominations error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error while updating nominations",
     });
   }
 };

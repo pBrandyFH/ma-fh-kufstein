@@ -22,7 +22,7 @@ import { IconCalendar, IconTrophy } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { getFedTypeColor } from "../federations/utils";
 import { useState } from "react";
-import CompetitionDetailsDrawer from "./CompetitionDetailsDrawer";
+import CompetitionDetailsDrawer from "./details-drawer/CompetitionDetailsDrawer";
 import CompetitionCard from "./CompetitionCard";
 
 interface NationalCompetitionsProps {

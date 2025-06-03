@@ -23,6 +23,7 @@ interface AuthContextType {
   isAuthLoading: boolean;
   isMemberAdmin: boolean;
   isFedAdmin: boolean;
+  setData: () => Promise<void>;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -122,6 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthLoading,
         isFedAdmin,
         isMemberAdmin,
+        setData,
         login: handleLogin,
         logout: handleLogout,
       }}

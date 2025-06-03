@@ -4,14 +4,15 @@ import {
   CreateNominationFormValues,
   Member,
   Nomination,
+  WeightCategory,
 } from "@/types";
 
 export async function getNominationsByCompetitionId(
-  compId: string
+  competitionId: string
 ): Promise<ApiResponse<Nomination[]>> {
   try {
     const response = await api.get<ApiResponse<Nomination[]>>(
-      `/nominations/competition/${compId}`
+      `/nominations/competition/${competitionId}`
     );
     return response.data;
   } catch (error) {
@@ -72,6 +73,80 @@ export async function deleteNomination(
     return {
       success: false,
       error: "Failed to delete nomination",
+    };
+  }
+}
+
+export interface UpdateNominationFormValues {
+  flightNumber?: number;
+  groupNumber?: number;
+  groupName?: string;
+  groupStartTime?: Date;
+  groupStatus?: "pending" | "active" | "completed";
+}
+
+export async function updateGroupForNomination(
+  nominationId: string,
+  values: UpdateNominationFormValues
+): Promise<ApiResponse<Nomination>> {
+  try {
+    const response = await api.patch<ApiResponse<Nomination>>(
+      `/nominations/${nominationId}`,
+      values
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating nomination:", error);
+    return {
+      success: false,
+      error: "Failed to update nomination",
+    };
+  }
+}
+
+export interface BatchUpdateNominationsRequest {
+  nominations: Array<{
+    nominationId: string;
+    updates: UpdateNominationFormValues;
+  }>;
+}
+
+export async function batchUpdateNominations(
+  updates: BatchUpdateNominationsRequest
+): Promise<ApiResponse<Nomination[]>> {
+  try {
+    const response = await api.patch<ApiResponse<Nomination[]>>(
+      "/nominations/batch",
+      updates
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error batch updating nominations:", error);
+    return {
+      success: false,
+      error: "Failed to update nominations",
+    };
+  }
+}
+
+export async function getNominationsByCompetitionIdAndWeightCategories(
+  competitionId: string,
+  weightCategories?: WeightCategory[]
+): Promise<ApiResponse<Nomination[]>> {
+  try {
+    const queryParams = weightCategories?.length 
+      ? `?weightCategories=${weightCategories.join(',')}`
+      : '';
+    
+    const response = await api.get<ApiResponse<Nomination[]>>(
+      `/nominations/competition/${competitionId}/weight-categories${queryParams}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching nominations by weight categories:", error);
+    return {
+      success: false,
+      error: "Failed to fetch nominations",
     };
   }
 }

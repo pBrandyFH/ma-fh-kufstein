@@ -18,16 +18,19 @@
     "migrate:federations": "ts-node server/scripts/migrateFederations.ts",
     "migrate:comps": "ts-node server/scripts/migrateComps.ts",
     "migrate:permissions": "ts-node server/scripts/migratePermissions.ts",
-    "create:user": "ts-node server/scripts/createTestUser.ts"
+    "create:user": "ts-node server/scripts/createTestUser.ts",
+    "create:athletes": "ts-node server/scripts/createAthletes.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
+    "@hello-pangea/dnd": "^18.0.1",
     "@mantine/core": "^6.0.19",
     "@mantine/dates": "^6.0.19",
     "@mantine/form": "^6.0.19",
     "@mantine/hooks": "^6.0.19",
     "@mantine/notifications": "^6.0.19",
     "@tabler/icons-react": "^3.31.0",
+    "@tanstack/react-query": "^5.80.0",
     "axios": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

@@ -216,16 +216,14 @@ export const getAthletesByMember = async (
   res: Response
 ) => {
   try {
-    const athletes = await Athlete.find({ clubId: req.params.memberId })
-      .populate<{ clubId: { name: string } }>("clubId", "name")
-      .populate<{ federationId: { name: string } }>("federationId", "name");
+    const athletes = await Athlete.find({ member: req.params.memberId }).populate("member");
 
     res.status(200).json({
       success: true,
       data: athletes,
     });
   } catch (error) {
-    console.error("Get athletes by club error:", error);
+    console.error("Get athletes by member error:", error);
     res.status(500).json({
       success: false,
       error: "Server error while fetching athletes",

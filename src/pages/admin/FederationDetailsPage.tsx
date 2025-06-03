@@ -126,7 +126,7 @@ export default function FederationDetailsPage() {
       <Tabs
         value={openedTab}
         onTabChange={(value) =>
-          setParam("tab", value?.toString() ?? "overview")
+          setParam("tab", value?.toString() ?? "info")
         }
       >
         <Tabs.List>

@@ -24,6 +24,11 @@ import {
   WeightCategory,
 } from "@/types";
 import { notifications } from "@mantine/notifications";
+import {
+  femaleCategories,
+  maleCategories,
+  WeightCategoryOption,
+} from "@/utils/weightCategories";
 
 interface AthleteFormModalProps {
   opened: boolean;
@@ -86,11 +91,11 @@ export default function AthleteFormModal({
     },
   });
 
-  const getWeightCategories = (gender: Gender): WeightCategory[] => {
+  const getWeightCategories = (gender: Gender): WeightCategoryOption[] => {
     if (gender === "male") {
-      return ["u53", "u59", "u66", "u74", "u83", "u93", "u105", "u120", "o120"];
+      return maleCategories;
     } else {
-      return ["u43", "u47", "u52", "u57", "u63", "u69", "u76", "u84", "o84"];
+      return femaleCategories;
     }
   };
 
@@ -157,6 +162,7 @@ export default function AthleteFormModal({
             placeholder={t("athletes.dateOfBirthPlaceholder")}
             required
             valueFormat="DD/MM/YYYY"
+            popoverProps={{ withinPortal: true }}
             {...form.getInputProps("dateOfBirth")}
             value={
               form.values.dateOfBirth ? new Date(form.values.dateOfBirth) : null
@@ -183,17 +189,11 @@ export default function AthleteFormModal({
 
           {form.values.gender && (
             <Select
+              withinPortal
               label={t("athletes.weightCategory")}
               placeholder={t("athletes.weightCategoryPlaceholder")}
               required
-              data={getWeightCategories(form.values.gender as Gender).map(
-                (category) => ({
-                  value: category,
-                  label: t(
-                    `athletes.weightCategories.${form.values.gender}.${category}`
-                  ),
-                })
-              )}
+              data={getWeightCategories(form.values.gender as Gender)}
               {...form.getInputProps("weightCategory")}
             />
           )}

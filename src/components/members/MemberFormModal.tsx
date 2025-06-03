@@ -88,18 +88,20 @@ export default function MemberFormModal({
             {...form.getInputProps("name")}
           />
 
-          <Select
-            label={t("members.type")}
-            placeholder={t("members.typePlaceholder")}
-            data={[
-              { value: "CLUB", label: t("members.types.club") },
-              { value: "INDIVIDUAL", label: t("members.types.individual") },
-              { value: "UNIVERSITY", label: t("members.types.university") },
-            ]}
-            required
-            withinPortal
-            {...form.getInputProps("type")}
-          />
+          {!memberToEdit && (
+            <Select
+              label={t("members.type")}
+              placeholder={t("members.typePlaceholder")}
+              data={[
+                { value: "CLUB", label: t("members.types.club") },
+                { value: "INDIVIDUAL", label: t("members.types.individual") },
+                { value: "UNIVERSITY", label: t("members.types.university") },
+              ]}
+              required
+              withinPortal
+              {...form.getInputProps("type")}
+            />
+          )}
 
           <Text size="sm" c="dimmed">
             {t("members.federationInfo", { federation: federation.name })}

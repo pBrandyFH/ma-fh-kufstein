@@ -29,6 +29,10 @@ export interface INomination extends Document {
   nominatedBy: mongoose.Types.ObjectId;
   nominatedAt: Date;
   updatedAt: Date;
+  flightNumber?: number;
+  groupNumber?: number;
+  groupName?: string;
+  groupStartTime?: Date;
 }
 
 const NominationSchema = new Schema<INomination>(
@@ -90,6 +94,20 @@ const NominationSchema = new Schema<INomination>(
       default: Date.now,
       required: true,
     },
+    flightNumber: {
+      type: Number,
+      min: 1,
+    },
+    groupNumber: {
+      type: Number,
+      min: 1,
+    },
+    groupName: {
+      type: String,
+    },
+    groupStartTime: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -98,5 +116,11 @@ const NominationSchema = new Schema<INomination>(
 
 // Create a compound index to ensure an athlete can only be nominated once per competition
 NominationSchema.index({ athleteId: 1, competitionId: 1 }, { unique: true });
+
+// Create a compound index for group information
+NominationSchema.index(
+  { competitionId: 1, flightNumber: 1, groupNumber: 1 },
+  { sparse: true }
+);
 
 export default mongoose.model<INomination>("Nomination", NominationSchema);

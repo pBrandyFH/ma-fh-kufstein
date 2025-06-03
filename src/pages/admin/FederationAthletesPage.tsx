@@ -28,6 +28,7 @@ export default function FederationAthletesPage() {
       isMemberAdmin
         ? getAthletesByMember(member?._id ?? "")
         : getAthletesByFederation(federation?._id ?? ""),
+    skip: !federation?._id || !member?._id,
   });
 
   const handleCreateSuccess = () => {
