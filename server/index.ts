@@ -14,6 +14,7 @@ import clubRoutes from "./routes/clubRoutes";
 import nominationRoutes from "./routes/nominationRoutes";
 import resultRoutes from "./routes/resultRoutes";
 import permissionRoutes from "./routes/permissionRoutes";
+import flightRoutes from "./routes/flightRoutes";
 import { initializeAuth } from "./controllers/authController";
 import { initializeAuth as initializeAuthMiddleware } from "./middleware/auth";
 
@@ -63,6 +64,7 @@ app.use("/api/nominations", nominationRoutes);
 app.use("/api/results", resultRoutes);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/members", memberRoutes);
+app.use("/api/flights", flightRoutes);
 
 // Start server
 app.listen(PORT, () => {

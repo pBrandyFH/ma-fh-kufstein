@@ -1,58 +1,87 @@
-import mongoose, { type Document, Schema } from "mongoose"
+import mongoose, { Document, Schema } from "mongoose"
+import { Result as IResult } from "../types"
 
-interface ILift {
-  attempt1: number | null
-  attempt2: number | null
-  attempt3: number | null
-  best: number | null
+interface IAttempt {
+  weight: number | null
+  status: "pending" | "good" | "noGood" | null
+  timestamp: Date | null
 }
 
-export interface IResult extends Document {
-  competitionId: mongoose.Types.ObjectId
-  athleteId: mongoose.Types.ObjectId
-  weightCategory: string
-  ageCategory: string
-  bodyweight: number
-  squat: ILift
-  bench: ILift
-  deadlift: ILift
-  total: number
-  wilks: number
-  ipfPoints: number
-  place: number
-  createdAt: Date
-  updatedAt: Date
+interface IWeighIn {
+  bodyweight: number | null
+  lotNumber: number | null
+  timestamp: Date | null
 }
 
-const LiftSchema = new Schema<ILift>({
-  attempt1: {
-    type: Number,
-    default: null,
-  },
-  attempt2: {
-    type: Number,
-    default: null,
-  },
-  attempt3: {
-    type: Number,
-    default: null,
-  },
+// Define the document methods interface
+export interface IResultDocumentMethods {
+  calculateTotals(): void;
+}
+
+// Update the document interface to include methods
+export interface IResultDocument extends Omit<IResult, 'squat' | 'bench' | 'deadlift'>, Document, IResultDocumentMethods {
+  nominationId: mongoose.Types.ObjectId;
+  flightNumber?: number
+  groupNumber?: number
+  weighIn: IWeighIn
+  attempts: {
+    squat: IAttempt[]
+    bench: IAttempt[]
+    deadlift: IAttempt[]
+  }
   best: {
+    squat: number | null
+    bench: number | null
+    deadlift: number | null
+  }
+}
+
+const AttemptSchema = new Schema<IAttempt>({
+  weight: {
     type: Number,
+    default: null,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "good", "noGood", null],
+    default: null,
+  },
+  timestamp: {
+    type: Date,
     default: null,
   },
 })
 
-const ResultSchema = new Schema<IResult>(
+const WeighInSchema = new Schema<IWeighIn>({
+  bodyweight: {
+    type: Number,
+    default: null,
+  },
+  lotNumber: {
+    type: Number,
+    default: null,
+  },
+  timestamp: {
+    type: Date,
+    default: null,
+  },
+})
+
+const ResultSchema = new Schema<IResultDocument>(
   {
-    competitionId: {
+    nominationId: {
       type: Schema.Types.ObjectId,
-      ref: "Competition",
+      ref: "Nomination",
       required: true,
     },
     athleteId: {
       type: Schema.Types.ObjectId,
       ref: "Athlete",
+      required: true,
+    },
+    competitionId: {
+      type: Schema.Types.ObjectId,
+      ref: "Competition",
       required: true,
     },
     weightCategory: {
@@ -81,42 +110,62 @@ const ResultSchema = new Schema<IResult>(
     },
     ageCategory: {
       type: String,
-      enum: ["subJuniors", "juniors", "open", "masters1", "masters2", "masters3", "masters4", "masters"],
+      enum: ["SUB_JUNIORS", "JUNIORS", "OPEN", "MASTERS_1", "MASTERS_2", "MASTERS_3", "MASTERS_4"],
       required: true,
     },
-    bodyweight: {
+    flightNumber: {
       type: Number,
-      required: true,
     },
-    squat: {
-      type: LiftSchema,
-      required: true,
+    groupNumber: {
+      type: Number,
+    },
+    weighIn: {
+      type: WeighInSchema,
       default: () => ({}),
     },
-    bench: {
-      type: LiftSchema,
-      required: true,
-      default: () => ({}),
+    attempts: {
+      squat: {
+        type: [AttemptSchema],
+        default: () => Array(3).fill({}),
+      },
+      bench: {
+        type: [AttemptSchema],
+        default: () => Array(3).fill({}),
+      },
+      deadlift: {
+        type: [AttemptSchema],
+        default: () => Array(3).fill({}),
+      },
     },
-    deadlift: {
-      type: LiftSchema,
-      required: true,
-      default: () => ({}),
+    best: {
+      squat: {
+        type: Number,
+        default: null,
+      },
+      bench: {
+        type: Number,
+        default: null,
+      },
+      deadlift: {
+        type: Number,
+        default: null,
+      },
     },
     total: {
       type: Number,
-      default: 0,
+      default: null,
     },
     wilks: {
       type: Number,
-      default: 0,
+      default: null,
     },
     ipfPoints: {
       type: Number,
-      default: 0,
+      default: null,
     },
     place: {
       type: Number,
+      default: null,
     },
   },
   {
@@ -124,8 +173,37 @@ const ResultSchema = new Schema<IResult>(
   },
 )
 
-// Create a compound index to ensure an athlete can only have one result per competition
+// Compound index for unique athlete-competition combination
 ResultSchema.index({ athleteId: 1, competitionId: 1 }, { unique: true })
 
-export default mongoose.model<IResult>("Result", ResultSchema)
+// Index for efficient querying by competition, flight, and group
+ResultSchema.index({ competitionId: 1, flightNumber: 1, groupNumber: 1 })
+
+// Helper method to calculate best lifts and total
+ResultSchema.methods.calculateTotals = function() {
+  this.best.squat = this.attempts.squat.reduce((best: number | null, attempt: IAttempt) => 
+    attempt.status === "good" && attempt.weight && (!best || attempt.weight > best) ? attempt.weight : best, 
+    null as number | null
+  );
+  
+  this.best.bench = this.attempts.bench.reduce((best: number | null, attempt: IAttempt) => 
+    attempt.status === "good" && attempt.weight && (!best || attempt.weight > best) ? attempt.weight : best, 
+    null as number | null
+  );
+  
+  this.best.deadlift = this.attempts.deadlift.reduce((best: number | null, attempt: IAttempt) => 
+    attempt.status === "good" && attempt.weight && (!best || attempt.weight > best) ? attempt.weight : best, 
+    null as number | null
+  );
+
+  if (this.best.squat && this.best.bench && this.best.deadlift) {
+    this.total = this.best.squat + this.best.bench + this.best.deadlift;
+    // TODO: Calculate Wilks and IPF points
+  }
+};
+
+// Update the model creation to include methods type
+const Result = mongoose.model<IResultDocument, mongoose.Model<IResultDocument, {}, IResultDocumentMethods>>("Result", ResultSchema)
+
+export default Result
 

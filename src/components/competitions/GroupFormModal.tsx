@@ -21,27 +21,23 @@ import type {
 } from "@hello-pangea/dnd";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { IconUsers } from "@tabler/icons-react";
-import { Nomination } from "@/types";
-import { updateGroupForNomination } from "@/services/nominationService";
+import { Nomination, CreateFlightFormValues } from "@/types";
+import { createFlight } from "@/services/flightService";
 
 interface GroupFormModalProps {
   opened: boolean;
   onClose: () => void;
   flightNumber: number;
+  competitionId: string;
   nominations: Nomination[];
   onSuccess: () => void;
-}
-
-interface GroupFormValues {
-  flightNumber: number;
-  startTime?: Date;
-  numberOfGroups: number;
 }
 
 export function GroupFormModal({
   opened,
   onClose,
   flightNumber,
+  competitionId,
   nominations,
   onSuccess,
 }: GroupFormModalProps) {
@@ -49,77 +45,73 @@ export function GroupFormModal({
   const [loading, setLoading] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
 
-  // Debug logs
-  console.log('Modal Props:', { flightNumber, nominationsCount: nominations?.length });
-  console.log('Nominations:', nominations);
+  // Only nominations that are not assigned to a group
+  const unassignedNominations = useMemo(
+    () => nominations.filter((n) => !n.groupId),
+    [nominations]
+  );
 
-  // Group nominations by their current group number
-  const currentGroups = useMemo(() => {
-    const groups = new Map<number, Nomination[]>();
-    
-    // Get nominations that either belong to this flight or have no flight assignment
-    const relevantNominations = nominations.filter(
-      (nomination) => !nomination.flightNumber || nomination.flightNumber === flightNumber
-    );
+  // Local state to track group assignments
+  const [groupAssignments, setGroupAssignments] = useState<{ [groupNumber: number]: Nomination[] }>(() => ({
+    1: unassignedNominations,
+  }));
 
-    // First, handle nominations that already have a group number
-    relevantNominations.forEach((nomination) => {
-      if (nomination.groupNumber) {
-        if (!groups.has(nomination.groupNumber)) {
-          groups.set(nomination.groupNumber, []);
-        }
-        groups.get(nomination.groupNumber)!.push(nomination);
-      }
-    });
-
-    // Then, handle nominations without a group number
-    const ungroupedNominations = relevantNominations.filter(
-      (nomination) => !nomination.groupNumber
-    );
-    if (ungroupedNominations.length > 0) {
-      groups.set(1, ungroupedNominations);
-    }
-
-    return groups;
-  }, [nominations, flightNumber]);
-
-  const form = useForm<GroupFormValues>({
+  const form = useForm<{ numberOfGroups: number }>({
     initialValues: {
-      flightNumber,
-      numberOfGroups: currentGroups.size || 1,
+      numberOfGroups: 1,
     },
     validate: {
       numberOfGroups: (value) => (value < 1 ? "Must have at least 1 group" : null),
     },
   });
 
-  const handleSubmit = async (values: GroupFormValues) => {
+  // Update groupAssignments when number of groups changes
+  useMemo(() => {
+    setGroupAssignments((prev) => {
+      const newAssignments: { [groupNumber: number]: Nomination[] } = {};
+      const allNoms = Object.values(prev).flat();
+      for (let i = 1; i <= form.values.numberOfGroups; i++) {
+        newAssignments[i] = prev[i] || [];
+      }
+      // If there are more groups, distribute leftover nominations
+      const assignedIds = Object.values(newAssignments).flat().map((n) => n._id);
+      const unassigned = unassignedNominations.filter((n) => !assignedIds.includes(n._id));
+      if (unassigned.length > 0) {
+        newAssignments[1] = [...(newAssignments[1] || []), ...unassigned];
+      }
+      return newAssignments;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.values.numberOfGroups, unassignedNominations.length]);
+
+  const handleSubmit = async (values: { numberOfGroups: number }) => {
     setLoading(true);
     try {
-      // Update all nominations with the new group assignments
-      const updates = nominations.map((nomination) => {
-        const groupNumber = nomination.groupNumber || 1;
-        return updateGroupForNomination(nomination._id, {
-          flightNumber: values.flightNumber,
-          groupNumber,
-          groupName: `${t("competition.group")} ${groupNumber}`,
-          groupStartTime: startTime || undefined,
-        });
-      });
-
-      await Promise.all(updates);
-
+      // Build group structure from groupAssignments
+      const groups = Array.from({ length: values.numberOfGroups }, (_, i) => ({
+        number: i + 1,
+        name: `${t("competition.group")} ${i + 1}`,
+        startTime: startTime || undefined,
+        nominationIds: (groupAssignments[i + 1] || []).map((n) => n._id),
+      }));
+      const flightData: CreateFlightFormValues = {
+        competitionId,
+        number: flightNumber,
+        startTime: startTime || undefined,
+        groups,
+      };
+      await createFlight(flightData);
       notifications.show({
-        title: "Flight updated",
-        message: "The flight has been updated successfully",
+        title: t("competition.flightCreated"),
+        message: t("competition.flightCreatedSuccess"),
         color: "green",
       });
       onSuccess();
       onClose();
     } catch (error) {
       notifications.show({
-        title: "Error",
-        message: "An error occurred while updating the flight",
+        title: t("competition.error"),
+        message: t("competition.flightCreateError"),
         color: "red",
       });
     } finally {
@@ -127,31 +119,23 @@ export function GroupFormModal({
     }
   };
 
-  const handleDragEnd = async (result: DropResult) => {
+  const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-
     const { source, destination } = result;
     const sourceGroup = parseInt(source.droppableId);
     const destGroup = parseInt(destination.droppableId);
-
-    const nomination = currentGroups.get(sourceGroup)?.at(source.index);
-    if (!nomination) return;
-
-    try {
-      await updateGroupForNomination(nomination._id, {
-        flightNumber,
-        groupNumber: destGroup,
-        groupName: `${t("competition.group")} ${destGroup}`,
-      });
-      onSuccess();
-    } catch (error) {
-      console.error("Error updating nomination:", error);
-      notifications.show({
-        title: "Error",
-        message: "Failed to move athlete to new group",
-        color: "red",
-      });
-    }
+    if (sourceGroup === destGroup && source.index === destination.index) return;
+    setGroupAssignments((prev) => {
+      const sourceList = [...(prev[sourceGroup] || [])];
+      const destList = [...(prev[destGroup] || [])];
+      const [moved] = sourceList.splice(source.index, 1);
+      destList.splice(destination.index, 0, moved);
+      return {
+        ...prev,
+        [sourceGroup]: sourceList,
+        [destGroup]: destList,
+      };
+    });
   };
 
   const getAthleteName = (nomination: Nomination) => {
@@ -161,38 +145,15 @@ export function GroupFormModal({
     return `${nomination.athleteId.firstName} ${nomination.athleteId.lastName}`;
   };
 
-  // Create array of groups based on form value
+  // Create array of groups based on form value and groupAssignments
   const groups = useMemo(() => {
     const numGroups = form.values.numberOfGroups;
-    const result = new Map<number, Nomination[]>();
-    
-    // Initialize all groups
+    const result: [number, Nomination[]][] = [];
     for (let i = 1; i <= numGroups; i++) {
-      result.set(i, []);
+      result.push([i, groupAssignments[i] || []]);
     }
-
-    // Get all relevant nominations (either in this flight or unassigned)
-    const relevantNominations = nominations.filter(
-      (nomination) => !nomination.flightNumber || nomination.flightNumber === flightNumber
-    );
-
-    // First, try to maintain existing group assignments
-    relevantNominations.forEach((nomination) => {
-      if (nomination.groupNumber && nomination.groupNumber <= numGroups) {
-        result.get(nomination.groupNumber)?.push(nomination);
-      }
-    });
-
-    // Then, assign any remaining nominations to the first group
-    const unassignedNominations = relevantNominations.filter(
-      (nomination) => !nomination.groupNumber || nomination.groupNumber > numGroups
-    );
-    if (unassignedNominations.length > 0) {
-      result.get(1)?.push(...unassignedNominations);
-    }
-
     return result;
-  }, [nominations, flightNumber, form.values.numberOfGroups]);
+  }, [form.values.numberOfGroups, groupAssignments]);
 
   return (
     <Modal
@@ -220,10 +181,9 @@ export function GroupFormModal({
               {...form.getInputProps("numberOfGroups")}
             />
           </Group>
-
           <DragDropContext onDragEnd={handleDragEnd}>
             <Group grow>
-              {Array.from(groups.entries()).map(([groupNumber, groupNominations]) => (
+              {groups.map(([groupNumber, groupNominations]) => (
                 <Paper key={groupNumber} withBorder p="md">
                   <Group position="apart" mb="xs">
                     <Text weight={500}>
@@ -234,7 +194,6 @@ export function GroupFormModal({
                       <Text size="sm">{groupNominations.length}</Text>
                     </Group>
                   </Group>
-
                   <Droppable droppableId={groupNumber.toString()}>
                     {(provided: DroppableProvided) => (
                       <Box
@@ -308,7 +267,6 @@ export function GroupFormModal({
               ))}
             </Group>
           </DragDropContext>
-
           <Button type="submit" loading={loading}>
             {t("competition.saveFlight")}
           </Button>

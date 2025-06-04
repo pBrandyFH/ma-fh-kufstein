@@ -150,3 +150,38 @@ export async function getNominationsByCompetitionIdAndWeightCategories(
     };
   }
 }
+
+export async function getNominationsByCompetitionAndFlight(
+  competitionId: string,
+  flightNumber: number
+): Promise<ApiResponse<Nomination[]>> {
+  try {
+    const response = await api.get<ApiResponse<Nomination[]>>(
+      `/nominations/competition/${competitionId}/flight?flightNumber=${flightNumber}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching nominations by flight:", error);
+    return {
+      success: false,
+      error: "Failed to fetch nominations",
+    };
+  }
+}
+
+export async function getNominationsByFlight(
+  flightId: string
+): Promise<ApiResponse<Nomination[]>> {
+  try {
+    const response = await api.get<ApiResponse<Nomination[]>>(
+      `/nominations/flight/${flightId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching nominations by flight:", error);
+    return {
+      success: false,
+      error: "Failed to fetch nominations",
+    };
+  }
+}

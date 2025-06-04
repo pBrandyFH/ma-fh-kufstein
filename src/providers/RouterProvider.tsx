@@ -37,6 +37,8 @@ import MyMembersPage from "@/pages/admin/MyMembersPage";
 import FederationAthletesPage from "@/pages/admin/FederationAthletesPage";
 import CompetitionDetailsPage from "@/pages/admin/CompetitionDetailsPage";
 import CompetitionEditGroupPage from "@/pages/admin/CompetitionEditGroupPage";
+import CompetitionScoreSelectFlightPage from "@/pages/admin/CompetitionScoreSelectFlightPage";
+import CompetitionScorePage from "@/pages/admin/CompetitionScorePage";
 
 export function RouterProvider() {
   const { authenticated, isAuthLoading, logout, login } = useAuth();
@@ -143,7 +145,23 @@ export function RouterProvider() {
               }
             />
             <Route
-              path=":id/flights/:flightNumber/edit"
+              path=":id/scores"
+              element={
+                <ProtectedRoute>
+                  <CompetitionScoreSelectFlightPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id/scores/:flightId"
+              element={
+                <ProtectedRoute>
+                  <CompetitionScorePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":id/flights/:flightId/edit"
               element={
                 <ProtectedRoute>
                   <CompetitionEditGroupPage />

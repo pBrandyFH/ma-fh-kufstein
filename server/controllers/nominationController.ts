@@ -5,6 +5,7 @@ import Nomination, { WeightCategory, INomination } from "../models/Nomination";
 import Athlete from "../models/Athlete";
 import Competition, { AgeCategory } from "../models/Competition";
 import { isEligibleForAgeCategory } from "../utils/athleteService";
+import Group from "../models/Group";
 
 interface CreateNominationRequestBody {
   athleteId: mongoose.Types.ObjectId;
@@ -156,6 +157,85 @@ export const getNominationsByCompetitionIdAndWeightCategories = async (
     });
   } catch (error) {
     console.error("Get nominations by weight categories error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error while fetching nominations",
+    });
+  }
+};
+
+export const getNominationsByCompetitionIdAndFlight = async (
+  req: AuthenticatedRequest<{ id: string }, { flightNumber?: string }>,
+  res: Response
+) => {
+  try {
+    const flightNumberParam = req.query.flightNumber;
+    const flightNumber = typeof flightNumberParam === 'string' 
+      ? parseInt(flightNumberParam, 10) 
+      : undefined;
+    
+    const query: any = {
+      competitionId: req.params.id,
+    };
+
+    if (flightNumber && !isNaN(flightNumber)) {
+      query.flightNumber = flightNumber;
+    }
+
+    const nominations = await Nomination.find(query)
+      .populate("athleteId")
+      .sort({ weightCategory: 1 });
+
+    if (!nominations) {
+      return res.status(404).json({
+        success: false,
+        error: "No nominations found for this competition",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: nominations,
+    });
+  } catch (error) {
+    console.error("Get nominations by flight error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error while fetching nominations",
+    });
+  }
+};
+
+export const getNominationsByFlight = async (
+  req: AuthenticatedRequest<{ id: string }>,
+  res: Response
+) => {
+  try {
+    const { id: flightId } = req.params;
+
+    // First find all groups in this flight
+    const groups = await Group.find({ flightId });
+    const groupIds = groups.map(g => g._id);
+
+    // Then find nominations for these groups
+    const nominations = await Nomination.find({ groupId: { $in: groupIds } })
+      .populate("athleteId", "firstName lastName")
+      .populate("groupId")
+      .sort({ "athleteId.lastName": 1 });
+
+    if (!nominations || nominations.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "No nominations found for this flight",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: nominations,
+    });
+  } catch (error) {
+    console.error("Error fetching nominations by flight:", error);
     res.status(500).json({
       success: false,
       error: "Server error while fetching nominations",

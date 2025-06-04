@@ -240,7 +240,7 @@ export function MainLayout({
           },
         })}
       >
-        <Container size="xl">{children}</Container>
+        {children}
       </AppShell>
     </MantineProvider>
   );

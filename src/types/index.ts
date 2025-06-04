@@ -148,45 +148,97 @@ export interface Competition {
   updatedAt: Date;
 }
 
+// Result Types
+export type JudgeDecision = "good" | "noGood";
+export type AttemptStatus = JudgeDecision | "pending";
+
+// Flight Types
+export type FlightStatus = "pending" | "inProgress" | "completed";
+
+export interface Flight {
+  _id: string;
+  competitionId: string | Competition;
+  number: number;
+  status: FlightStatus;
+  startTime?: Date;
+  groups: Group[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Group {
+  _id: string;
+  flightId: string | Flight;
+  number: number;
+  name: string;
+  startTime?: Date;
+  nominations: Nomination[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Update Nomination interface to use groupId instead of flight/group properties
 export interface Nomination {
   _id: string;
   athleteId: Athlete;
   competitionId: string | Competition;
+  groupId?: string | Group;  // Reference to Group instead of flight/group properties
   weightCategory: WeightCategory;
   ageCategory: AgeCategory;
   nominatedBy: string | User;
   nominatedAt: Date;
   updatedAt: Date;
-  flightNumber?: number | null;
-  groupNumber?: number | null;
-  groupName?: string | null ;
-  groupStartTime?: Date | null;
 }
 
-// Result Types
-export interface Lift {
-  attempt1: number | null;
-  attempt2: number | null;
-  attempt3: number | null;
-  best: number | null;
-}
-
+// Update Result interface to use nominationId
 export interface Result {
   _id: string;
-  competitionId: string | Competition;
-  athleteId: string | Athlete;
-  weightCategory: WeightCategory;
-  ageCategory: AgeCategory;
-  bodyweight: number;
-  squat: Lift;
-  bench: Lift;
-  deadlift: Lift;
-  total: number;
-  wilks: number;
-  ipfPoints: number;
-  place: number;
-  createdAt: Date;
-  updatedAt: Date;
+  nominationId: string | Nomination;  // Add nominationId reference
+  athleteId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  } | string;
+  competitionId: string;
+  weighIn?: {
+    bodyweight: number;
+    lotNumber: number;
+    timestamp?: Date;
+  };
+  attempts: {
+    squat: Array<{
+      weight: number | null;
+      status: AttemptStatus | null;
+      timestamp?: Date | null;
+      _id?: string;
+    }>;
+    bench: Array<{
+      weight: number | null;
+      status: AttemptStatus | null;
+      timestamp?: Date | null;
+      _id?: string;
+    }>;
+    deadlift: Array<{
+      weight: number | null;
+      status: AttemptStatus | null;
+      timestamp?: Date | null;
+      _id?: string;
+    }>;
+  };
+  currentAttempt: {
+    squat: number;
+    bench: number;
+    deadlift: number;
+  };
+  athlete?: Athlete;
+  weightCategory: string;
+  ageCategory: string;
+  total?: number | null;
+  wilks?: number | null;
+  ipfPoints?: number | null;
+  place?: number | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Invitation Types
@@ -333,5 +385,22 @@ export interface InviteValidationResponse {
 export interface SelectOption {
   value: string;
   label: string;
+}
+
+// Add new form types for flight operations
+export interface CreateFlightFormValues {
+  competitionId: string;
+  number: number;
+  startTime?: Date;
+  groups: Array<{
+    number: number;
+    name: string;
+    startTime?: Date;
+    nominationIds: string[];
+  }>;
+}
+
+export interface UpdateFlightStatusFormValues {
+  status: FlightStatus;
 }
 

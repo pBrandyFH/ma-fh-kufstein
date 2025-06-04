@@ -1,7 +1,8 @@
 import { Competition } from "@/types";
-import { Stack, Text, Group, Paper, Title, Badge } from "@mantine/core";
+import { Stack, Text, Group, Paper, Title, Badge, Button } from "@mantine/core";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 interface InfoTabProps {
   competition: Competition;
@@ -9,27 +10,40 @@ interface InfoTabProps {
 
 export default function InfoTab({ competition }: InfoTabProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   return (
     <Stack spacing="lg">
       {/* Basic Information */}
       <Paper p="md" withBorder>
-        <Title order={3} mb="md">
-          {t("competitions.basicInfo")}
-        </Title>
+        <Group position="apart">
+          <Title order={3} mb="md">
+            {t("competitions.basicInfo")}
+          </Title>
+          <Badge>{competition.status}</Badge>
+        </Group>
         <Stack spacing="xs">
           <Group>
             <Text weight={500}>{t("competitions.type")}:</Text>
             <Text>
-              {t(`competitions.equipmentType.${competition.equipmentType}`)}
+              {t(`competitions.equipmentTypes.${competition.equipmentType}`)}
             </Text>
           </Group>
-          <Group>
-            <Text weight={500}>{t("competitions.dates")}:</Text>
-            <Text>
-              {format(new Date(competition.startDate), "PPP")}
-              {competition.endDate &&
-                ` - ${format(new Date(competition.endDate), "PPP")}`}
-            </Text>
+          <Group position="apart">
+            <Group>
+              <Text weight={500}>{t("common.date")}:</Text>
+              <Text>
+                {format(new Date(competition.startDate), "PPP")}
+                {competition.endDate &&
+                  ` - ${format(new Date(competition.endDate), "PPP")}`}
+              </Text>
+            </Group>
+            <Button
+              onClick={() =>
+                navigate(`/competitions/${competition._id}/scores`)
+              }
+            >
+              {t("competitions.enterScores")}
+            </Button>
           </Group>
         </Stack>
       </Paper>
@@ -39,6 +53,7 @@ export default function InfoTab({ competition }: InfoTabProps) {
         <Title order={3} mb="md">
           {t("competitions.locationInfo")}
         </Title>
+
         <Stack spacing="xs">
           <Group>
             <Text weight={500}>{t("competitions.location")}:</Text>

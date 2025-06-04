@@ -29,7 +29,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getFedTypeColor } from "../federations/utils";
 import CompetitionFormModal from "./CompetitionFormModal";
-import CompetitionDetailsDrawer from "./details-drawer/CompetitionDetailsDrawer";
+import CompetitionDetailsDrawer from "./details/CompetitionDetailsDrawer";
 import CompetitionCard from "./CompetitionCard";
 import { useNavigate } from "react-router-dom";
 

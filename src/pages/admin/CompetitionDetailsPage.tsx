@@ -23,13 +23,13 @@ import {
   IconBuilding,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import InfoTab from "@/components/competitions/details-drawer/InfoTab";
-import NominationTab from "@/components/competitions/details-drawer/NominationTab";
-import GroupTab from "@/components/competitions/details-drawer/GroupTab";
+import InfoTab from "@/components/competitions/details/InfoTab";
+import NominationTab from "@/components/competitions/details/NominationTab";
+import GroupTab from "@/components/competitions/details/GroupTab";
 import { Page } from "@/components/common/Page";
 import { useAuth } from "@/contexts/AuthContext";
 import { useParams } from "react-router-dom";
-import { useCompetitionDetails } from "@/hooks/useCompetitionDetails";
+import { useCompetitionDetails } from "@/components/competitions/hooks/useCompetitionDetails";
 import { useUrlParams } from "@/hooks/useUrlParams";
 
 export default function CompetitionDetailsPage() {

@@ -1,24 +1,19 @@
 import express from "express";
+import { auth, authorize } from "../middleware/auth";
+import {
+  createFlight,
+  getFlightsByCompetition,
+  updateFlightStatus,
+  recalculateFlightStatus,
+  updateFlight,
+} from "../controllers/flightController";
 
 const router = express.Router();
 
-import { auth, authorize } from "../middleware/auth";
-import {
-  batchCreateNominations,
-  createNomination,
-  getNominationsByCompetitionId,
-  getNominationsByCompetitionIdAndWeightCategories,
-  getNominationsByCompetitionIdAndFlight,
-  getNominationsByFlight,
-  deleteNomination,
-  batchUpdateNominations,
-} from "../controllers/nominationController";
+// Get all flights for a competition
+router.get("/competition/:id", getFlightsByCompetition);
 
-router.get("/competition/:id", getNominationsByCompetitionId);
-router.get("/competition/:id/flight", getNominationsByCompetitionIdAndFlight);
-router.get("/competition/:id/weight-categories", getNominationsByCompetitionIdAndWeightCategories);
-router.get("/flight/:id", getNominationsByFlight);
-
+// Create a new flight
 router.post(
   "/",
   auth,
@@ -27,21 +22,11 @@ router.post(
     { role: "FEDERATION_ADMIN", federationId: "*" },
     { role: "SUPERADMIN", federationId: "*" },
   ]),
-  createNomination
+  createFlight
 );
 
-router.post(
-  "/batch",
-  auth,
-  authorize([
-    { role: "MEMBER_ADMIN", federationId: "*" },
-    { role: "FEDERATION_ADMIN", federationId: "*" },
-    { role: "SUPERADMIN", federationId: "*" },
-  ]),
-  batchCreateNominations
-);
-
-router.delete(
+// Update flight
+router.put(
   "/:id",
   auth,
   authorize([
@@ -49,18 +34,31 @@ router.delete(
     { role: "FEDERATION_ADMIN", federationId: "*" },
     { role: "SUPERADMIN", federationId: "*" },
   ]),
-  deleteNomination
+  updateFlight
 );
 
+// Update flight status
 router.patch(
-  "/batch",
+  "/:id/status",
   auth,
   authorize([
     { role: "MEMBER_ADMIN", federationId: "*" },
     { role: "FEDERATION_ADMIN", federationId: "*" },
     { role: "SUPERADMIN", federationId: "*" },
   ]),
-  batchUpdateNominations
+  updateFlightStatus
+);
+
+// Recalculate flight status
+router.post(
+  "/:id/recalculate-status",
+  auth,
+  authorize([
+    { role: "MEMBER_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" },
+  ]),
+  recalculateFlightStatus
 );
 
 export default router;

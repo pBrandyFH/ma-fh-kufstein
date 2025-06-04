@@ -18,15 +18,16 @@ import {
 import { useTranslation } from "react-i18next";
 import { IconPlus, IconEdit, IconUsers, IconClock } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
-import { Nomination, WeightCategory } from "@/types";
+import { Nomination, WeightCategory, Flight, Group as GroupType } from "@/types";
 import {
   femaleCategories,
   getGenderFromWeightCategory,
   maleCategories,
-  WeightCategoryOption,
 } from "@/utils/weightCategories";
 import { QueryObserverResult } from "@tanstack/react-query";
 import { ApiResponse } from "@/types";
+import { useDataFetching } from "@/hooks/useDataFetching";
+import { getFlightsByCompetition } from "@/services/flightService";
 
 interface GroupTabProps {
   competitionId: string;
@@ -73,7 +74,7 @@ const countUnassignedAthletes = (
   category: WeightCategory
 ) => {
   return nominations.filter(
-    (n) => n.weightCategory === category && !n.flightNumber
+    (n) => n.weightCategory === category && !n.groupId
   ).length;
 };
 
@@ -88,6 +89,17 @@ export default function GroupTab({
     WeightCategory[]
   >([]);
 
+  // Fetch flights for the competition
+  const {
+    data: flights,
+    loading: loadingFlights,
+    error: flightsError,
+  } = useDataFetching<Flight[]>({
+    fetchFunction: () => getFlightsByCompetition(competitionId),
+    dependencies: [competitionId],
+    skip: !competitionId,
+  });
+
   // Filter nominations by selected weight categories - only for statistics
   const filteredNominationsForStats = useMemo(() => {
     if (!nominations || selectedWeightCategories.length === 0)
@@ -96,45 +108,6 @@ export default function GroupTab({
       selectedWeightCategories.includes(n.weightCategory)
     );
   }, [nominations, selectedWeightCategories]);
-
-  // Group nominations by flight and group - using ALL nominations
-  const flights = useMemo(() => {
-    if (!nominations) return [];
-
-    const flightMap = new Map<number, Map<number, Nomination[]>>();
-
-    nominations.forEach((nomination) => {
-      if (!nomination.flightNumber || !nomination.groupNumber) return;
-
-      if (!flightMap.has(nomination.flightNumber)) {
-        flightMap.set(nomination.flightNumber, new Map());
-      }
-
-      const groupMap = flightMap.get(nomination.flightNumber)!;
-      if (!groupMap.has(nomination.groupNumber)) {
-        groupMap.set(nomination.groupNumber, []);
-      }
-
-      groupMap.get(nomination.groupNumber)!.push(nomination);
-    });
-
-    return Array.from(flightMap.entries())
-      .map(([flightNumber, groups]) => ({
-        number: flightNumber,
-        groups: Array.from(groups.entries()).map(
-          ([groupNumber, nominations]) => ({
-            number: groupNumber,
-            name:
-              nominations[0]?.groupName ||
-              `${t("competition.group")} ${groupNumber}`,
-            startTime: nominations[0]?.groupStartTime,
-            status: "pending" as const,
-            nominations,
-          })
-        ),
-      }))
-      .sort((a, b) => a.number - b.number);
-  }, [nominations, t]);
 
   // Calculate statistics for weight categories - using filtered nominations
   const weightCategoryStats = useMemo(() => {
@@ -161,34 +134,26 @@ export default function GroupTab({
   );
 
   const handleCreateFlight = () => {
-    const newFlightNumber = flights.length + 1;
+    const newFlightNumber = (flights?.length || 0) + 1;
     navigate(
-      `/competitions/${competitionId}/flights/${newFlightNumber}/edit?weightCategories=${selectedWeightCategories.join(
+      `/competitions/${competitionId}/flights/new?weightCategories=${selectedWeightCategories.join(
         ","
-      )}`
+      )}&flightNumber=${newFlightNumber}`
     );
   };
 
-  const handleEditFlight = (flightNumber: number) => {
+  const handleEditFlight = (flight: Flight) => {
     // Get weight categories for this flight
-    const flightNominations = nominations.filter(
-      (n) => n.flightNumber === flightNumber
-    );
+    const flightNominations = flight.groups.flatMap(g => g.nominations);
     const flightWeightCategories = Array.from(
       new Set(flightNominations.map((n) => n.weightCategory))
     );
 
-    // Get number of groups for this flight
-    const numberOfGroups = flightNominations.reduce(
-      (max, n) => (n.groupNumber ? Math.max(max, n.groupNumber) : max),
-      0
-    );
-
     // Navigate with weight categories and number of groups as URL parameters
     navigate(
-      `/competitions/${competitionId}/flights/${flightNumber}/edit?weightCategories=${flightWeightCategories.join(
+      `/competitions/${competitionId}/flights/${flight._id}/edit?weightCategories=${flightWeightCategories.join(
         ","
-      )}&numberOfGroups=${numberOfGroups}`
+      )}&numberOfGroups=${flight.groups.length}`
     );
   };
 
@@ -199,10 +164,10 @@ export default function GroupTab({
     return `${nomination.athleteId.firstName} ${nomination.athleteId.lastName}`;
   };
 
-  if (!nominations) {
+  if (flightsError) {
     return (
       <Stack>
-        <Text color="red">{t("competition.errorLoadingNominations")}</Text>
+        <Text color="red">{t("competition.errorLoadingFlights")}</Text>
       </Stack>
     );
   }
@@ -345,18 +310,27 @@ export default function GroupTab({
       </Paper>
 
       {/* Flights and Groups */}
-      {flights.map((flight) => (
-        <Paper key={flight.number} withBorder p="md">
+      {flights?.map((flight) => (
+        <Paper key={flight._id} withBorder p="md">
           <Group position="apart" mb="md">
             <Group>
               <Title order={4}>
                 {t("competition.flight")} {flight.number}
               </Title>
-              {flight.groups[0]?.startTime && (
+              <Badge 
+                color={
+                  flight.status === "completed" ? "green" :
+                  flight.status === "inProgress" ? "blue" :
+                  "gray"
+                }
+              >
+                {t(`competition.flightStatus.${flight.status}`)}
+              </Badge>
+              {flight.startTime && (
                 <Group spacing="xs">
                   <IconClock size={16} />
                   <Text size="sm" color="dimmed">
-                    {new Date(flight.groups[0].startTime).toLocaleTimeString()}
+                    {new Date(flight.startTime).toLocaleTimeString()}
                   </Text>
                 </Group>
               )}
@@ -372,7 +346,7 @@ export default function GroupTab({
               <Tooltip label={t("competition.editFlight")}>
                 <ActionIcon
                   variant="light"
-                  onClick={() => handleEditFlight(flight.number)}
+                  onClick={() => handleEditFlight(flight)}
                 >
                   <IconEdit size={16} />
                 </ActionIcon>
@@ -382,7 +356,7 @@ export default function GroupTab({
 
           <Grid>
             {flight.groups.map((group) => (
-              <Grid.Col key={group.number} span={12 / flight.groups.length}>
+              <Grid.Col key={group._id} span={12 / flight.groups.length}>
                 <Paper withBorder p="md">
                   <Group position="apart" mb="xs">
                     <Group>
@@ -429,7 +403,7 @@ export default function GroupTab({
         </Paper>
       ))}
 
-      {flights.length === 0 && (
+      {(!flights || flights.length === 0) && (
         <Paper withBorder p="xl">
           <Stack align="center" spacing="xs">
             <Text color="dimmed">{t("competition.noFlightsCreated")}</Text>

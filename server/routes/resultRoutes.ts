@@ -1,6 +1,7 @@
 import express from "express"
 import { auth, authorize } from "../middleware/auth"
 import { UserFederationRole } from "../permissions/types"
+import { saveWeighIn, saveAttempt, getResultsByCompetitionAndFlight, getResultsByCompetitionAndAthletes } from "../controllers/resultController"
 
 const router = express.Router()
 
@@ -580,6 +581,184 @@ router.get(
       message: "Get results by club endpoint",
     })
   }
+)
+
+/**
+ * @swagger
+ * /api/results/weigh-in:
+ *   post:
+ *     summary: Save weigh-in data for an athlete
+ *     tags: [Results]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - athleteId
+ *               - competitionId
+ *               - bodyweight
+ *               - lotNumber
+ *               - startWeights
+ *             properties:
+ *               athleteId:
+ *                 type: string
+ *               competitionId:
+ *                 type: string
+ *               bodyweight:
+ *                 type: number
+ *               lotNumber:
+ *                 type: number
+ *               startWeights:
+ *                 type: object
+ *                 properties:
+ *                   squat:
+ *                     type: number
+ *                   bench:
+ *                     type: number
+ *                   deadlift:
+ *                     type: number
+ *               flightNumber:
+ *                 type: number
+ *               groupNumber:
+ *                 type: number
+ */
+router.post(
+  "/weigh-in",
+  auth,
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  saveWeighIn
+)
+
+/**
+ * @swagger
+ * /api/results/attempt:
+ *   post:
+ *     summary: Save attempt data for an athlete
+ *     tags: [Results]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - athleteId
+ *               - competitionId
+ *               - liftType
+ *               - attemptNumber
+ *               - weight
+ *             properties:
+ *               athleteId:
+ *                 type: string
+ *               competitionId:
+ *                 type: string
+ *               liftType:
+ *                 type: string
+ *                 enum: [squat, bench, deadlift]
+ *               attemptNumber:
+ *                 type: number
+ *                 enum: [1, 2, 3]
+ *               weight:
+ *                 type: number
+ *               flightNumber:
+ *                 type: number
+ *               groupNumber:
+ *                 type: number
+ */
+router.post(
+  "/attempt",
+  auth,
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  saveAttempt
+)
+
+/**
+ * @swagger
+ * /api/results/competition/{competitionId}/flight/{flightNumber}/group/{groupNumber}:
+ *   get:
+ *     summary: Get results for a specific competition, flight, and group
+ *     tags: [Results]
+ *     parameters:
+ *       - in: path
+ *         name: competitionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: flightNumber
+ *         required: true
+ *         schema:
+ *           type: number
+ *       - in: path
+ *         name: groupNumber
+ *         required: true
+ *         schema:
+ *           type: number
+ */
+router.get(
+  "/competition/:competitionId/flight/:flightNumber/group/:groupNumber",
+  auth,
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  getResultsByCompetitionAndFlight
+)
+
+/**
+ * @swagger
+ * /api/results/competition/{competitionId}/athletes:
+ *   post:
+ *     summary: Get results for multiple athletes in a competition
+ *     tags: [Results]
+ *     parameters:
+ *       - in: path
+ *         name: competitionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - athleteIds
+ *             properties:
+ *               athleteIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ */
+router.post(
+  "/competition/:competitionId/athletes",
+  auth,
+  authorize([
+    { role: "ATHLETE", federationId: "*" },
+    { role: "MEMBER_ADMIN", federationId: "*" },
+    { role: "FEDERATION_ADMIN", federationId: "*" },
+    { role: "SUPERADMIN", federationId: "*" }
+  ]),
+  getResultsByCompetitionAndAthletes
 )
 
 export default router

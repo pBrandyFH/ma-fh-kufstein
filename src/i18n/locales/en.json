@@ -78,7 +78,8 @@
       "positive": "Please enter a positive number",
       "date": "Please enter a valid date",
       "dateRange": "End date must be after start date"
-    }
+    },
+    "success": "Success"
   },
   "auth": {
     "login": "Login",
@@ -415,7 +416,7 @@
     "male": "Male",
     "female": "Female",
     "selectGender": "Select gender",
-    "weightCategory": "Weight Category",
+    "weightCategory": "Weight Class",
     "selectWeightCategory": "Select weight category",
     "club": "Club",
     "selectClub": "Select club",
@@ -440,6 +441,7 @@
     "individualLifts": "Individual Lifts",
     "competitionHistory": "Competition History",
     "bodyweight": "Bodyweight",
+    "bodyweightDescription": "Enter athlete's bodyweight in kg",
     "performance": "Performance",
     "weightCategories": {
       "male": {
@@ -506,7 +508,9 @@
       "updateSuccess": "Athlete updated successfully",
       "deleteSuccess": "Athlete deleted successfully",
       "deleteConfirm": "Are you sure you want to delete this athlete?"
-    }
+    },
+    "name": "Name",
+    "bodyweight": "Bodyweight (kg)"
   },
   "federations": {
     "title": "Federations",
@@ -732,7 +736,11 @@
       "updateSuccess": "Result updated successfully",
       "deleteSuccess": "Result deleted successfully",
       "deleteConfirm": "Are you sure you want to delete this result?"
-    }
+    },
+    "attempt": "Attempt",
+    "good": "Good",
+    "noGood": "No Good",
+    "judge": "Judge"
   },
   "rankings": {
     "title": "Rankings",
@@ -784,7 +792,6 @@
       "master": "Master"
     }
   },
-
   "welcome": {
     "title": "Welcome to GoodLift",
     "subtitle": "The official platform for powerlifting competitions, results, and rankings",
@@ -836,6 +843,7 @@
     },
     "groupManagement": "Group Management",
     "groupNumber": "Group {{ groupNumber }}",
+    "flightNumber": "Flight {{ flightNumber }}",
     "createFlight": "Create Flight",
     "weightCategories": "Weight Categories",
     "selectWeightCategories": "Select weight categories",
@@ -857,7 +865,89 @@
     "errorLoadingNominations": "Error loading nominations",
     "retry": "Retry",
     "goBack": "Go Back",
-    "notFound": "Not Found"
+    "notFound": "Not Found",
+    "athletesCount_one": "{{count}} Athlete",
+    "athletesCount_other": "{{count}} Athletes",
+    "selectFlight": "Select flight",
+    "scoring": "Competition Scoring",
+    "weighIn": "Weigh-in",
+    "weighInDescription": "Record bodyweight, lot numbers, and starting weights for each athlete.",
+    "weighInSaved": "Weigh-in data saved successfully",
+    "errorSavingWeighIn": "Failed to save weigh-in data",
+    "errorSavingAttempt": "Failed to record attempt",
+    "currentStatus": "Current Status",
+    "phase": {
+      "weighIn": "Weigh-in",
+      "squat": "Squat",
+      "bench": "Bench Press",
+      "deadlift": "Deadlift"
+    },
+    "scoringDescription": "Record attempts and decisions for each athlete.",
+    "lotNumber": "Lot Number",
+    "athlete": "Athlete",
+    "attempt": "Attempt",
+    "weight": "Weight (kg)",
+    "status": "Status",
+    "actions": "Actions",
+    "good": "Good",
+    "noGood": "No Good",
+    "pending": "Pending",
+    "editAttempt": "Edit Attempt",
+    "saveAttempt": "Save Attempt",
+    "cancelEdit": "Cancel Edit",
+    "attemptNumber": "Attempt {{number}}",
+    "attemptWeight": "Attempt Weight",
+    "attemptStatus": "Attempt Status",
+    "attemptSaved": "Attempt saved successfully",
+    "attemptUpdateFailed": "Failed to update attempt",
+    "attemptDeleteFailed": "Failed to delete attempt",
+    "attemptDeleteSuccess": "Attempt deleted successfully",
+    "confirmDeleteAttempt": "Are you sure you want to delete this attempt?",
+    "attemptValidation": {
+      "weightRequired": "Weight is required",
+      "weightPositive": "Weight must be positive",
+      "weightMultiple": "Weight must be a multiple of 2.5",
+      "statusRequired": "Status is required"
+    },
+    "scoringValidation": {
+      "weightRequired": "Please enter a weight",
+      "weightPositive": "Weight must be positive",
+      "weightMultiple": "Weight must be a multiple of 2.5",
+      "statusRequired": "Please select a status"
+    },
+    "scoringStatus": {
+      "pending": "Pending",
+      "good": "Good",
+      "noGood": "No Good",
+      "notAttempted": "Not Attempted"
+    },
+    "scoringActions": {
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "scoringMessages": {
+      "saveSuccess": "Attempt saved successfully",
+      "saveError": "Failed to save attempt",
+      "deleteSuccess": "Attempt deleted successfully",
+      "deleteError": "Failed to delete attempt",
+      "editSuccess": "Attempt updated successfully",
+      "editError": "Failed to update attempt",
+      "confirmDelete": "Are you sure you want to delete this attempt?",
+      "confirmEdit": "Are you sure you want to edit this attempt?",
+      "confirmSave": "Are you sure you want to save this attempt?"
+    },
+    "nominationAssignedToOtherFlight": "This athlete is assigned to another flight and cannot be moved",
+    "assignedToOtherFlight": "Assigned to another flight",
+    "flightStatus": {
+      "pending": "Not Started",
+      "inProgress": "In Progress",
+      "completed": "Completed"
+    },
+    "recalculateStatus": "Recalculate Flight Status",
+    "statusRecalculated": "Flight status recalculated successfully",
+    "errorRecalculatingStatus": "Failed to recalculate flight status"
   },
   "members": {
     "title": "Members",
@@ -884,5 +974,25 @@
       "members": "Members",
       "requests": "Requests"
     }
+  },
+  "weightCategories": {
+    "u43": "Women -43kg",
+    "u47": "Women -47kg",
+    "u52": "Women -52kg",
+    "u57": "Women -57kg",
+    "u63": "Women -63kg",
+    "u69": "Women -69kg",
+    "u76": "Women -76kg",
+    "u84": "Women -84kg",
+    "o84": "Women +84kg",
+    "u53": "Men -53kg",
+    "u59": "Men -59kg",
+    "u66": "Men -66kg",
+    "u74": "Men -74kg",
+    "u83": "Men -83kg",
+    "u93": "Men -93kg",
+    "u105": "Men -105kg",
+    "u120": "Men -120kg",
+    "o120": "Men +120kg"
   }
 }
