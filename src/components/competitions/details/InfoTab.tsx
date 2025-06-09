@@ -13,7 +13,6 @@ export default function InfoTab({ competition }: InfoTabProps) {
   const navigate = useNavigate();
   return (
     <Stack spacing="lg">
-      {/* Basic Information */}
       <Paper p="md" withBorder>
         <Group position="apart">
           <Title order={3} mb="md">
@@ -37,13 +36,15 @@ export default function InfoTab({ competition }: InfoTabProps) {
                   ` - ${format(new Date(competition.endDate), "PPP")}`}
               </Text>
             </Group>
-            <Button
-              onClick={() =>
-                navigate(`/competitions/${competition._id}/scores`)
-              }
-            >
-              {t("competitions.enterScores")}
-            </Button>
+            {competition.status !== "completed" && (
+              <Button
+                onClick={() =>
+                  navigate(`/competitions/${competition._id}/scores`)
+                }
+              >
+                {t("competitions.enterScores")}
+              </Button>
+            )}
           </Group>
         </Stack>
       </Paper>

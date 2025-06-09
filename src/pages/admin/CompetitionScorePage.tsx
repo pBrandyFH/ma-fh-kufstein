@@ -96,6 +96,7 @@ export default function CompetitionScorePage() {
 
   const handleWeighInSubmit = async (data: {
     athleteId: string;
+    nominationId: string;
     bodyweight: number;
     lotNumber: number;
     startWeights: {
@@ -103,25 +104,12 @@ export default function CompetitionScorePage() {
       bench: number;
       deadlift: number;
     };
+    ageCategory: string;
+    weightCategory: string;
   }) => {
     try {
       if (!competitionId || !flightId || !selectedGroup) {
         throw new Error("Missing required competition data");
-      }
-
-      // Find the nomination for this athlete to get ageCategory and weightCategory
-      const nomination = currentGroupNominations.find(n => {
-        console.log("Checking nomination:", {
-          nominationAthleteId: n.athleteId._id,
-          formAthleteId: data.athleteId,
-          ageCategory: n.ageCategory,
-          weightCategory: n.weightCategory
-        });
-        return n.athleteId._id === data.athleteId;
-      });
-
-      if (!nomination) {
-        throw new Error("Nomination not found for athlete");
       }
 
       const requestData = {
@@ -129,8 +117,6 @@ export default function CompetitionScorePage() {
         competitionId,
         flightId,
         groupId: selectedGroup,
-        ageCategory: nomination.ageCategory,
-        weightCategory: nomination.weightCategory,
       };
 
       console.log("Sending request data:", requestData);

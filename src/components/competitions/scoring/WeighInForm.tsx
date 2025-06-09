@@ -25,6 +25,7 @@ interface WeighInFormProps {
   results: Result[];
   onSubmit: (data: {
     athleteId: string;
+    nominationId: string;
     bodyweight: number;
     lotNumber: number;
     startWeights: {
@@ -43,6 +44,7 @@ interface WeighInEntry {
   gender: Gender;
   weightCategory: WeightCategory;
   ageCategory: string;
+  nominationId: string;
   bodyweight: number | "";
   lotNumber: number | "";
   startWeights: {
@@ -83,6 +85,7 @@ export function WeighInForm({ nominations, competitionId, results, onSubmit }: W
           gender: athlete.gender,
           weightCategory: nom.weightCategory,
           ageCategory: nom.ageCategory,
+          nominationId: nom._id,
           bodyweight: "" as number | "",
           lotNumber: "" as number | "",
           startWeights: {
@@ -150,6 +153,7 @@ export function WeighInForm({ nominations, competitionId, results, onSubmit }: W
     ) {
       onSubmit({
         athleteId: entry.athleteId,
+        nominationId: entry.nominationId,
         bodyweight: Number(entry.bodyweight),
         lotNumber: Number(entry.lotNumber),
         startWeights: {
@@ -261,6 +265,7 @@ export function WeighInForm({ nominations, competitionId, results, onSubmit }: W
                     onChange={(value) => handleChange(index, "squat", value)}
                     min={0}
                     max={1000}
+                    precision={1}
                     step={2.5}
                     size="xs"
                     styles={{
@@ -278,6 +283,7 @@ export function WeighInForm({ nominations, competitionId, results, onSubmit }: W
                     onChange={(value) => handleChange(index, "bench", value)}
                     min={0}
                     max={1000}
+                    precision={1}
                     step={2.5}
                     size="xs"
                     styles={{

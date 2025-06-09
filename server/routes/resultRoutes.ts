@@ -1,7 +1,8 @@
 import express from "express"
 import { auth, authorize } from "../middleware/auth"
-import { UserFederationRole } from "../permissions/types"
 import { saveWeighIn, saveAttempt, getResultsByCompetitionAndFlight, getResultsByCompetitionAndAthletes } from "../controllers/resultController"
+import Result from "../models/Result"
+import type { IAthlete } from "../models/Athlete"
 
 const router = express.Router()
 
@@ -345,19 +346,54 @@ router.delete(
  */
 router.get(
   "/competition/:competitionId",
-  auth,
-  authorize([
-    { role: "ATHLETE", federationId: "*" },
-    { role: "MEMBER_ADMIN", federationId: "*" },
-    { role: "FEDERATION_ADMIN", federationId: "*" },
-    
-    { role: "SUPERADMIN", federationId: "*" }
-  ]),
-  (req, res) => {
-    res.status(200).json({
-      success: true,
-      message: "Get results by competition endpoint",
-    })
+  async (req, res) => {
+    try {
+      const { competitionId } = req.params;
+      const results = await Result.find({ competitionId })
+        .populate<{ athleteId: IAthlete }>({
+          path: "athleteId",
+          select: "firstName lastName gender",
+          model: "Athlete"
+        })
+        .sort({ 
+          "athleteId.gender": 1,
+          weightCategory: 1,
+          ageCategory: 1,
+          total: -1
+        });
+
+      // Group results by gender, weight category, and age category
+      const groupedResults = results.reduce((acc, result) => {
+        const athlete = result.athleteId as unknown as IAthlete;
+        const gender = athlete?.gender || 'male';
+        const weightCategory = result.weightCategory;
+        const ageCategory = result.ageCategory;
+        
+        if (!acc[gender]) {
+          acc[gender] = {};
+        }
+        if (!acc[gender][weightCategory]) {
+          acc[gender][weightCategory] = {};
+        }
+        if (!acc[gender][weightCategory][ageCategory]) {
+          acc[gender][weightCategory][ageCategory] = [];
+        }
+        
+        acc[gender][weightCategory][ageCategory].push(result);
+        return acc;
+      }, {} as Record<string, Record<string, Record<string, typeof results>>>);
+
+      res.status(200).json({
+        success: true,
+        data: groupedResults,
+      });
+    } catch (error) {
+      console.error("Error fetching results:", error);
+      res.status(500).json({
+        success: false,
+        error: "Server error while fetching results",
+      });
+    }
   }
 )
 

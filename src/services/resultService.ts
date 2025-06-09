@@ -3,6 +3,7 @@ import { Result } from "@/types";
 
 interface SaveWeighInData {
   athleteId: string;
+  nominationId: string;
   competitionId: string;
   bodyweight: number;
   lotNumber: number;
@@ -27,6 +28,14 @@ interface SaveAttemptData {
   flightId: string;
   groupId: string;
 }
+
+type GroupedResults = {
+  [gender: string]: {
+    [weightCategory: string]: {
+      [ageCategory: string]: Result[];
+    };
+  };
+};
 
 export const resultService = {
   // Save weigh-in data for an athlete
@@ -59,7 +68,7 @@ export const resultService = {
 
   // Get all results for a competition
   getResultsByCompetition: async (competitionId: string) => {
-    const response = await api.get<{ success: boolean; data: Result[] }>(
+    const response = await api.get<{ success: boolean; data: GroupedResults }>(
       `/results/competition/${competitionId}`
     );
     return response.data;

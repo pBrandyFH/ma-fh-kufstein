@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, Title, Text, Group, Select, Table, Badge, Tabs, TextInput, ActionIcon, Box } from "@mantine/core"
+import { Card, Title, Text, Group, Select, Table, Badge, Tabs, TextInput, ActionIcon, Box, Stack } from "@mantine/core"
 import { useTranslation } from "react-i18next"
 import { Search, X } from "lucide-react"
 
@@ -117,19 +117,7 @@ export function ResultsView({ isLive = false }: ResultsViewProps) {
   }
 
   return (
-    <Card withBorder p="xl">
-      <Group position="apart" mb="xl">
-        <div>
-          <Title order={2}>{isLive ? t("results.liveResults") : t("results.title")}</Title>
-          <Text color="dimmed">{isLive ? t("results.liveResultsDescription") : t("results.resultsDescription")}</Text>
-        </div>
-        {isLive && (
-          <Badge color="red" size="lg" variant="filled">
-            {t("results.live")}
-          </Badge>
-        )}
-      </Group>
-
+    <Stack>
       <Group mb="md" position="apart">
         <Select
           placeholder={t("results.selectCompetition")}
@@ -397,7 +385,7 @@ export function ResultsView({ isLive = false }: ResultsViewProps) {
           </Box>
         </Tabs.Panel>
       </Tabs>
-    </Card>
+    </Stack>
   )
 }
 

@@ -39,6 +39,8 @@ import CompetitionDetailsPage from "@/pages/admin/CompetitionDetailsPage";
 import CompetitionEditGroupPage from "@/pages/admin/CompetitionEditGroupPage";
 import CompetitionScoreSelectFlightPage from "@/pages/admin/CompetitionScoreSelectFlightPage";
 import CompetitionScorePage from "@/pages/admin/CompetitionScorePage";
+import ResultsPage from "@/pages/ResultsPage";
+import ResultsDetailPage from "@/pages/ResultsDetailPage";
 
 export function RouterProvider() {
   const { authenticated, isAuthLoading, logout, login } = useAuth();
@@ -168,14 +170,6 @@ export function RouterProvider() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path=":id/edit"
-              element={
-                <ProtectedRoute>
-                  <EditCompetition />
-                </ProtectedRoute>
-              }
-            />
           </Route>
 
           <Route path="/members" element={<Outlet />}>
@@ -191,87 +185,10 @@ export function RouterProvider() {
 
           <Route path="/federations" element={<Outlet />}>
             <Route
-              index
-              element={
-                <ProtectedRoute>
-                  <FederationDetailsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="create"
-              element={
-                <ProtectedRoute>
-                  {/* <FederationForm
-                    onSubmit={async (values) => {
-                      await createFederation(values);
-                    }}
-                    parentFederations={federations}
-                  /> */}
-                  <div>Federation Form</div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path=":id"
               element={
                 <ProtectedRoute>
                   <FederationDetailsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path=":id/edit"
-              element={
-                <ProtectedRoute>
-                  <FederationEditPage />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-
-          <Route path="/clubs">
-            <Route
-              index
-              element={
-                <ProtectedRoute>
-                  <ClubList />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="create"
-              element={
-                <ProtectedRoute>
-                  {/* <ClubForm
-                        federations={federations}
-                        onSubmit={async (values) => console.log(values)}
-                      /> */}
-                  <div>Club Form</div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path=":id"
-              element={
-                <ProtectedRoute>
-                  <ClubDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path=":id/edit"
-              element={
-                <ProtectedRoute>
-                  <ClubEditPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path=":id/athletes"
-              element={
-                <ProtectedRoute>
-                  <ClubAthletes />
                 </ProtectedRoute>
               }
             />
@@ -307,7 +224,11 @@ export function RouterProvider() {
             />
           </Route>
 
-          <Route path="/results/*" element={<ResultsRouter />} />
+          <Route path="/results">
+            <Route index element={<ResultsPage />} />
+            <Route path=":id" element={<ResultsDetailPage />} />
+          </Route>
+
           <Route path="/nominations" element={<NominationsView />} />
           <Route path="/rankings" element={<RankingsView />} />
           <Route path="/records" element={<RecordsView />} />

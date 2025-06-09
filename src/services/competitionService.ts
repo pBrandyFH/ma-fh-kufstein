@@ -270,3 +270,21 @@ export const updateCompetition = async (
     return { success: false, error: "Unknown error occurred" };
   }
 };
+
+export const updateCompetitionStatus = async (
+  id: string,
+  status: "upcoming" | "ongoing" | "completed"
+): Promise<ApiResponse<Competition>> => {
+  try {
+    const response = await api.put<ApiResponse<Competition>>(
+      `/competitions/${id}`,
+      { status }
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Unknown error occurred" };
+  }
+};

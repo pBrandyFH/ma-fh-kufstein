@@ -62,8 +62,8 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const competitions = await Competition.find()
-      .populate("hostFederationId", "name")
-      .populate("hostClubId", "name")
+      .populate("hostFederation", "name")
+      .populate("hostMember", "name")
       .sort({ startDate: -1 });
 
     // Get athlete counts for each competition

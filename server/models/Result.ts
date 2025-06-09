@@ -21,8 +21,8 @@ export interface IResultDocumentMethods {
 // Update the document interface to include methods
 export interface IResultDocument extends Omit<IResult, 'squat' | 'bench' | 'deadlift'>, Document, IResultDocumentMethods {
   nominationId: mongoose.Types.ObjectId;
-  flightNumber?: number
-  groupNumber?: number
+  flightId?: mongoose.Types.ObjectId;
+  groupId?: mongoose.Types.ObjectId;
   weighIn: IWeighIn
   attempts: {
     squat: IAttempt[]
@@ -113,11 +113,13 @@ const ResultSchema = new Schema<IResultDocument>(
       enum: ["SUB_JUNIORS", "JUNIORS", "OPEN", "MASTERS_1", "MASTERS_2", "MASTERS_3", "MASTERS_4"],
       required: true,
     },
-    flightNumber: {
-      type: Number,
+    flightId: {
+      type: Schema.Types.ObjectId,
+      ref: "Flight",
     },
-    groupNumber: {
-      type: Number,
+    groupId: {
+      type: Schema.Types.ObjectId,
+      ref: "Group",
     },
     weighIn: {
       type: WeighInSchema,
@@ -176,8 +178,8 @@ const ResultSchema = new Schema<IResultDocument>(
 // Compound index for unique athlete-competition combination
 ResultSchema.index({ athleteId: 1, competitionId: 1 }, { unique: true })
 
-// Index for efficient querying by competition, flight, and group
-ResultSchema.index({ competitionId: 1, flightNumber: 1, groupNumber: 1 })
+// Update index for efficient querying by competition, flight, and group
+ResultSchema.index({ competitionId: 1, flightId: 1, groupId: 1 })
 
 // Helper method to calculate best lifts and total
 ResultSchema.methods.calculateTotals = function() {

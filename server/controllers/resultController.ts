@@ -1,15 +1,22 @@
 import { Response } from "express";
+import mongoose from "mongoose";
 import { AuthenticatedRequest } from "./authController";
 import Result from "../models/Result";
+import Nomination from "../models/Nomination";
 
 // Helper function to get or create a result document
 async function getOrCreateResult(
   athleteId: string,
   competitionId: string,
+  nominationId: string,
   ageCategory?: string,
   weightCategory?: string
 ) {
-  let result = await Result.findOne({ athleteId, competitionId });
+  let result = await Result.findOne({ 
+    athleteId: new mongoose.Types.ObjectId(athleteId), 
+    competitionId: new mongoose.Types.ObjectId(competitionId) 
+  });
+  
   if (!result) {
     if (!ageCategory || !weightCategory) {
       throw new Error(
@@ -17,8 +24,9 @@ async function getOrCreateResult(
       );
     }
     result = await Result.create({
-      athleteId,
-      competitionId,
+      athleteId: new mongoose.Types.ObjectId(athleteId),
+      competitionId: new mongoose.Types.ObjectId(competitionId),
+      nominationId: new mongoose.Types.ObjectId(nominationId),
       ageCategory,
       weightCategory,
       weighIn: {
@@ -56,6 +64,7 @@ export const saveWeighIn = async (
     {},
     {
       athleteId: string;
+      nominationId: string;
       competitionId: string;
       bodyweight: number;
       lotNumber: number;
@@ -64,8 +73,8 @@ export const saveWeighIn = async (
         bench: number;
         deadlift: number;
       };
-      flightNumber: number;
-      groupNumber: number;
+      flightId: string;
+      groupId: string;
       ageCategory: string;
       weightCategory: string;
     }
@@ -75,12 +84,13 @@ export const saveWeighIn = async (
   try {
     const {
       athleteId,
+      nominationId,
       competitionId,
       bodyweight,
       lotNumber,
       startWeights,
-      flightNumber,
-      groupNumber,
+      flightId,
+      groupId,
       ageCategory,
       weightCategory,
     } = req.body;
@@ -88,6 +98,7 @@ export const saveWeighIn = async (
     const result = await getOrCreateResult(
       athleteId,
       competitionId,
+      nominationId,
       ageCategory,
       weightCategory
     );
@@ -98,8 +109,9 @@ export const saveWeighIn = async (
       lotNumber,
       timestamp: new Date(),
     };
-    result.flightNumber = flightNumber;
-    result.groupNumber = groupNumber;
+    result.nominationId = new mongoose.Types.ObjectId(nominationId);
+    result.flightId = new mongoose.Types.ObjectId(flightId);
+    result.groupId = new mongoose.Types.ObjectId(groupId);
     result.ageCategory = ageCategory;
     result.weightCategory = weightCategory;
 
@@ -149,8 +161,8 @@ export const saveAttempt = async (
       attemptNumber: number;
       weight: number;
       status: "good" | "noGood" | "pending";
-      flightNumber: number;
-      groupNumber: number;
+      flightId: string;
+      groupId: string;
     }
   >,
   res: Response
@@ -163,11 +175,30 @@ export const saveAttempt = async (
       attemptNumber,
       weight,
       status,
-      flightNumber,
-      groupNumber,
+      flightId,
+      groupId,
     } = req.body;
 
-    const result = await getOrCreateResult(athleteId, competitionId);
+    // Find the nomination to get the nominationId
+    const nomination = await Nomination.findOne({
+      athleteId: new mongoose.Types.ObjectId(athleteId),
+      competitionId: new mongoose.Types.ObjectId(competitionId),
+    });
+
+    if (!nomination) {
+      return res.status(404).json({
+        success: false,
+        error: "Nomination not found for athlete",
+      });
+    }
+
+    const result = await getOrCreateResult(
+      athleteId,
+      competitionId,
+      nomination._id.toString(),
+      nomination.ageCategory,
+      nomination.weightCategory
+    );
 
     // Update attempt data
     const attemptIndex = attemptNumber - 1; // Convert to 0-based index

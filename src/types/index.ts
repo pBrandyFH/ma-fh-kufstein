@@ -182,7 +182,7 @@ export interface Nomination {
   _id: string;
   athleteId: Athlete;
   competitionId: string | Competition;
-  groupId?: string | Group;  // Reference to Group instead of flight/group properties
+  groupId?: string | Group; // Reference to Group instead of flight/group properties
   weightCategory: WeightCategory;
   ageCategory: AgeCategory;
   nominatedBy: string | User;
@@ -193,12 +193,14 @@ export interface Nomination {
 // Update Result interface to use nominationId
 export interface Result {
   _id: string;
-  nominationId: string | Nomination;  // Add nominationId reference
-  athleteId: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-  } | string;
+  nominationId: string | Nomination; // Add nominationId reference
+  athleteId:
+    | {
+        _id: string;
+        firstName: string;
+        lastName: string;
+      }
+    | string;
   competitionId: string;
   weighIn?: {
     bodyweight: number;
@@ -224,6 +226,11 @@ export interface Result {
       timestamp?: Date | null;
       _id?: string;
     }>;
+  };
+  best?: {
+    squat: number | null;
+    bench: number | null;
+    deadlift: number | null;
   };
   currentAttempt: {
     squat: number;
@@ -403,4 +410,3 @@ export interface CreateFlightFormValues {
 export interface UpdateFlightStatusFormValues {
   status: FlightStatus;
 }
-

@@ -15,7 +15,13 @@ import {
 } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { IconCheck, IconEdit, IconX } from "@tabler/icons-react";
-import { Nomination, Athlete, Result, JudgeDecision, AttemptStatus } from "@/types";
+import {
+  Nomination,
+  Athlete,
+  Result,
+  JudgeDecision,
+  AttemptStatus,
+} from "@/types";
 
 interface ScoringFormProps {
   nominations: Nomination[];
@@ -54,11 +60,17 @@ interface AthleteEntry {
 }
 
 const getWeightCategoryValue = (category: string): number => {
-  const weight = parseInt(category.replace(/[^0-9]/g, ''));
-  return category.startsWith('o') ? weight + 0.5 : weight;
+  const weight = parseInt(category.replace(/[^0-9]/g, ""));
+  return category.startsWith("o") ? weight + 0.5 : weight;
 };
 
-export function ScoringForm({ nominations, competitionId, results, liftType, onSubmit }: ScoringFormProps) {
+export function ScoringForm({
+  nominations,
+  competitionId,
+  results,
+  liftType,
+  onSubmit,
+}: ScoringFormProps) {
   const { t } = useTranslation();
   const [entries, setEntries] = useState<AthleteEntry[]>([]);
 
@@ -67,8 +79,8 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
     return entriesToSort.sort((a, b) => {
       // Count attempts for each athlete
       const countAttempts = (entry: AthleteEntry) => {
-        return entry.attempts[liftType].filter(attempt => 
-          attempt.weight !== "" && attempt.status !== ""
+        return entry.attempts[liftType].filter(
+          (attempt) => attempt.weight !== "" && attempt.status !== ""
         ).length;
       };
 
@@ -113,9 +125,15 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
         weightCategory: nom.weightCategory,
         lotNumber: 0,
         attempts: {
-          squat: Array(3).fill(null).map(() => ({ ...emptyAttempt })),
-          bench: Array(3).fill(null).map(() => ({ ...emptyAttempt })),
-          deadlift: Array(3).fill(null).map(() => ({ ...emptyAttempt })),
+          squat: Array(3)
+            .fill(null)
+            .map(() => ({ ...emptyAttempt })),
+          bench: Array(3)
+            .fill(null)
+            .map(() => ({ ...emptyAttempt })),
+          deadlift: Array(3)
+            .fill(null)
+            .map(() => ({ ...emptyAttempt })),
         },
         isEditing: false,
       };
@@ -127,22 +145,31 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
   // Update entries when results change
   useEffect(() => {
     if (results) {
-      const resultsMap = new Map(results.map(result => [
-        typeof result.athleteId === 'string' ? result.athleteId : result.athleteId._id,
-        result
-      ]));
-      
-      const updatedEntries: AthleteEntry[] = initialEntries.map(entry => {
+      const resultsMap = new Map(
+        results.map((result) => [
+          typeof result.athleteId === "string"
+            ? result.athleteId
+            : result.athleteId._id,
+          result,
+        ])
+      );
+
+      const updatedEntries: AthleteEntry[] = initialEntries.map((entry) => {
         const result = resultsMap.get(entry.athleteId);
         if (result) {
-          const mapAttempts = (attempts: Result["attempts"][keyof Result["attempts"]] = []) => 
-            attempts.map(attempt => ({
-              weight: attempt.weight || "" as number | "",
-              status: attempt.status || "" as AttemptStatus | "",
-            })) || Array(3).fill(null).map(() => ({
-              weight: "" as number | "",
-              status: "" as AttemptStatus | "",
-            }));
+          const mapAttempts = (
+            attempts: Result["attempts"][keyof Result["attempts"]] = []
+          ) =>
+            attempts.map((attempt) => ({
+              weight: attempt.weight || ("" as number | ""),
+              status: attempt.status || ("" as AttemptStatus | ""),
+            })) ||
+            Array(3)
+              .fill(null)
+              .map(() => ({
+                weight: "" as number | "",
+                status: "" as AttemptStatus | "",
+              }));
 
           return {
             ...entry,
@@ -164,10 +191,12 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
   }, [results, initialEntries, liftType]);
 
   const handleEdit = (index: number) => {
-    setEntries(entries.map((entry, i) => ({
-      ...entry,
-      isEditing: i === index,
-    })));
+    setEntries(
+      entries.map((entry, i) => ({
+        ...entry,
+        isEditing: i === index,
+      }))
+    );
   };
 
   const handleAttemptChange = (
@@ -200,20 +229,28 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
     const updatedEntries = entries.map((entry, i) => {
       if (i === index) {
         // Find the original result for this athlete
-        const originalResult = results.find(r => 
-          (typeof r.athleteId === 'string' ? r.athleteId : r.athleteId._id) === entry.athleteId
+        const originalResult = results.find(
+          (r) =>
+            (typeof r.athleteId === "string"
+              ? r.athleteId
+              : r.athleteId._id) === entry.athleteId
         );
-        
+
         if (originalResult) {
           // Restore the original attempts
-          const mapAttempts = (attempts: Result["attempts"][keyof Result["attempts"]] = []) => 
-            attempts.map(attempt => ({
-              weight: attempt.weight || "" as number | "",
-              status: attempt.status || "" as AttemptStatus | "",
-            })) || Array(3).fill(null).map(() => ({
-              weight: "" as number | "",
-              status: "" as AttemptStatus | "",
-            }));
+          const mapAttempts = (
+            attempts: Result["attempts"][keyof Result["attempts"]] = []
+          ) =>
+            attempts.map((attempt) => ({
+              weight: attempt.weight || ("" as number | ""),
+              status: attempt.status || ("" as AttemptStatus | ""),
+            })) ||
+            Array(3)
+              .fill(null)
+              .map(() => ({
+                weight: "" as number | "",
+                status: "" as AttemptStatus | "",
+              }));
 
           return {
             ...entry,
@@ -235,7 +272,7 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
   const handleSave = (index: number, attemptNumber: number) => {
     const entry = entries[index];
     const attempt = entry.attempts[liftType][attemptNumber];
-    
+
     if (attempt.weight === "") {
       return;
     }
@@ -269,13 +306,15 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
       <Table>
         <thead>
           <tr>
-            <th style={{ width: '80px' }}>{t("competition.lotNumber")}</th>
-            <th style={{ width: '200px' }}>{t("competition.athlete")}</th>
-            <th style={{ width: '120px' }}>{t("competition.weightCategory")}</th>
-            <th style={{ width: '80px' }}>{t("competition.attempt")}</th>
-            <th style={{ width: '120px' }}>{t("competition.weight")}</th>
-            <th style={{ width: '200px' }}>{t("competition.status")}</th>
-            <th style={{ width: '100px' }}>{t("competition.actions")}</th>
+            <th style={{ width: "80px" }}>{t("competition.lotNumber")}</th>
+            <th style={{ width: "200px" }}>{t("competition.athlete")}</th>
+            <th style={{ width: "120px" }}>
+              {t("competition.weightCategory")}
+            </th>
+            <th style={{ width: "80px" }}>{t("competition.attempt")}</th>
+            <th style={{ width: "120px" }}>{t("competition.weight")}</th>
+            <th style={{ width: "200px" }}>{t("competition.status")}</th>
+            <th style={{ width: "100px" }}>{t("competition.actions")}</th>
           </tr>
         </thead>
         <tbody>
@@ -283,21 +322,33 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
             <>
               {[0, 1, 2].map((attemptNumber) => {
                 const attempt = entry.attempts[liftType][attemptNumber];
+                const attemptBefore =
+                  attemptNumber > 0
+                    ? entry.attempts[liftType][attemptNumber - 1].weight
+                    : 0;
                 const isLastAttempt = attemptNumber === 2;
 
                 return (
-                  <tr 
-                    key={`${entry.athleteId}-${attemptNumber}`} 
-                    style={{ 
-                      height: '48px',
-                      borderBottom: isLastAttempt ? '2px solid #adb5bd' : undefined 
+                  <tr
+                    key={`${entry.athleteId}-${attemptNumber}`}
+                    style={{
+                      height: "48px",
+                      borderBottom: isLastAttempt
+                        ? "2px solid #adb5bd"
+                        : undefined,
                     }}
                   >
                     {attemptNumber === 0 && (
                       <>
-                        <td rowSpan={3} style={{ height: '144px' }}>{entry.lotNumber}</td>
-                        <td rowSpan={3} style={{ height: '144px' }}>{entry.firstName} {entry.lastName}</td>
-                        <td rowSpan={3} style={{ height: '144px' }}>{entry.weightCategory}</td>
+                        <td rowSpan={3} style={{ height: "144px" }}>
+                          {entry.lotNumber}
+                        </td>
+                        <td rowSpan={3} style={{ height: "144px" }}>
+                          {entry.firstName} {entry.lastName}
+                        </td>
+                        <td rowSpan={3} style={{ height: "144px" }}>
+                          {entry.weightCategory}
+                        </td>
                       </>
                     )}
                     <td>{attemptNumber + 1}</td>
@@ -305,56 +356,101 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
                       {entry.isEditing ? (
                         <NumberInput
                           value={attempt.weight}
-                          onChange={(value) => handleAttemptChange(index, attemptNumber, "weight", value || "")}
-                          min={0}
+                          onChange={(value) =>
+                            handleAttemptChange(
+                              index,
+                              attemptNumber,
+                              "weight",
+                              value || ""
+                            )
+                          }
+                          min={
+                            typeof attemptBefore === "string"
+                              ? 0
+                              : attemptBefore
+                          }
+                          precision={1}
                           step={2.5}
                           size="xs"
                           styles={{
-                            input: { height: '32px', minHeight: '32px' }
+                            input: { height: "32px", minHeight: "32px" },
                           }}
                         />
                       ) : (
-                        <div style={{ height: '32px', lineHeight: '32px' }}>{attempt.weight || "-"}</div>
+                        <div style={{ height: "32px", lineHeight: "32px" }}>
+                          {attempt.weight || "-"}
+                        </div>
                       )}
                     </td>
                     <td>
                       {entry.isEditing ? (
-                        <Group spacing="xs" style={{ height: '32px' }}>
+                        <Group spacing="xs" style={{ height: "32px" }}>
                           <Button
-                            variant={attempt.status === "good" ? "filled" : "outline"}
+                            variant={
+                              attempt.status === "good" ? "filled" : "outline"
+                            }
                             color="green"
-                            onClick={() => handleAttemptChange(index, attemptNumber, "status", "good")}
+                            onClick={() =>
+                              handleAttemptChange(
+                                index,
+                                attemptNumber,
+                                "status",
+                                "good"
+                              )
+                            }
                             size="xs"
-                            style={{ height: '28px', padding: '0 8px' }}
+                            style={{ height: "28px", padding: "0 8px" }}
                           >
                             {t("competition.good")}
                           </Button>
                           <Button
-                            variant={attempt.status === "noGood" ? "filled" : "outline"}
+                            variant={
+                              attempt.status === "noGood" ? "filled" : "outline"
+                            }
                             color="red"
-                            onClick={() => handleAttemptChange(index, attemptNumber, "status", "noGood")}
+                            onClick={() =>
+                              handleAttemptChange(
+                                index,
+                                attemptNumber,
+                                "status",
+                                "noGood"
+                              )
+                            }
                             size="xs"
-                            style={{ height: '28px', padding: '0 8px' }}
+                            style={{ height: "28px", padding: "0 8px" }}
                           >
                             {t("competition.noGood")}
                           </Button>
                           <Button
-                            variant={attempt.status === "pending" ? "filled" : "outline"}
+                            variant={
+                              attempt.status === "pending"
+                                ? "filled"
+                                : "outline"
+                            }
                             color="gray"
-                            onClick={() => handleAttemptChange(index, attemptNumber, "status", "pending")}
+                            onClick={() =>
+                              handleAttemptChange(
+                                index,
+                                attemptNumber,
+                                "status",
+                                "pending"
+                              )
+                            }
                             size="xs"
-                            style={{ height: '28px', padding: '0 8px' }}
+                            style={{ height: "28px", padding: "0 8px" }}
                           >
                             {t("competition.pending")}
                           </Button>
                         </Group>
                       ) : (
-                        <div style={{ height: '32px', lineHeight: '32px' }}>
-                          <Badge 
+                        <div style={{ height: "32px", lineHeight: "32px" }}>
+                          <Badge
                             color={
-                              attempt.status === "good" ? "green" : 
-                              attempt.status === "noGood" ? "red" : 
-                              "gray"
+                              attempt.status === "good"
+                                ? "green"
+                                : attempt.status === "noGood"
+                                ? "red"
+                                : "gray"
                             }
                           >
                             {attempt.status || t("competition.pending")}
@@ -363,7 +459,13 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
                       )}
                     </td>
                     <td>
-                      <div style={{ height: '32px', display: 'flex', alignItems: 'center' }}>
+                      <div
+                        style={{
+                          height: "32px",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
                         {entry.isEditing ? (
                           <Group spacing="xs">
                             <ActionIcon
@@ -383,7 +485,10 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
                             </ActionIcon>
                           </Group>
                         ) : (
-                          <ActionIcon onClick={() => handleEdit(index)} size="sm">
+                          <ActionIcon
+                            onClick={() => handleEdit(index)}
+                            size="sm"
+                          >
                             <IconEdit size={16} />
                           </ActionIcon>
                         )}
@@ -398,4 +503,4 @@ export function ScoringForm({ nominations, competitionId, results, liftType, onS
       </Table>
     </Stack>
   );
-} 
+}

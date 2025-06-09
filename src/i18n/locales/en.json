@@ -947,7 +947,11 @@
     },
     "recalculateStatus": "Recalculate Flight Status",
     "statusRecalculated": "Flight status recalculated successfully",
-    "errorRecalculatingStatus": "Failed to recalculate flight status"
+    "errorRecalculatingStatus": "Failed to recalculate flight status",
+    "completeCompetition": "Complete Competition",
+    "completeCompetitionConfirm": "Are you sure you want to mark this competition as completed? This action cannot be undone.",
+    "completed": "Competition marked as completed",
+    "errorCompleting": "Failed to complete competition"
   },
   "members": {
     "title": "Members",
