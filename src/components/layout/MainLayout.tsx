@@ -53,7 +53,6 @@ export function MainLayout({
     { label: t("competitions.title"), path: "/competitions" },
     { label: t("federations.title"), path: `/federations/${federation?._id}` },
     { label: t("members.title"), path: "/members" },
-    { label: t("invitations.title"), path: "/invitations" },
     { label: t("account.title"), path: "/account" },
   ];
 

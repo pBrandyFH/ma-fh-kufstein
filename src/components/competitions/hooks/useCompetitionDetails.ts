@@ -1,35 +1,32 @@
 import { useMemo } from 'react';
-import { Competition, Nomination, ApiResponse } from '@/types';
+import { Competition, Nomination } from '@/types';
 import { getCompetitionById } from '@/services/competitionService';
 import { getNominationsByCompetitionId } from '@/services/nominationService';
-import { useQuery } from '@tanstack/react-query';
+import { useDataFetching } from '@/hooks/useDataFetching';
 
 export function useCompetitionDetails(competitionId: string | undefined) {
-  // Query for competition data
+  // Fetch competition data
   const {
     data: competition,
-    isLoading: competitionLoading,
+    loading: competitionLoading,
     error: competitionError,
-  } = useQuery<ApiResponse<Competition>>({
-    queryKey: ['competition', competitionId],
-    queryFn: () => getCompetitionById(competitionId ?? ""),
-    enabled: !!competitionId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    refetch: refetchCompetition,
+  } = useDataFetching<Competition>({
+    fetchFunction: () => getCompetitionById(competitionId ?? ""),
+    dependencies: [competitionId],
+    skip: !competitionId,
   });
 
-  // Query for nominations data
+  // Fetch nominations data
   const {
     data: nominations,
-    isLoading: nominationsLoading,
+    loading: nominationsLoading,
     error: nominationsError,
     refetch: refetchNominations,
-  } = useQuery<ApiResponse<Nomination[]>>({
-    queryKey: ['nominations', competitionId],
-    queryFn: () => getNominationsByCompetitionId(competitionId ?? ""),
-    enabled: !!competitionId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+  } = useDataFetching<Nomination[]>({
+    fetchFunction: () => getNominationsByCompetitionId(competitionId ?? ""),
+    dependencies: [competitionId],
+    skip: !competitionId,
   });
 
   // Memoize derived state
@@ -45,27 +42,29 @@ export function useCompetitionDetails(competitionId: string | undefined) {
 
   const isNotFound = useMemo(() => {
     if (!competitionId) return true;
-    return !competition?.data || !nominations?.data;
-  }, [competitionId, competition?.data, nominations?.data]);
+    return !competition || !nominations;
+  }, [competitionId, competition, nominations]);
 
   // Memoize the return value to prevent unnecessary re-renders
   return useMemo(() => ({
-    competition: competition?.data ?? null,
-    nominations: nominations?.data ?? null,
+    competition: competition ?? null,
+    nominations: nominations ?? null,
     isLoading,
     hasError,
     isNotFound,
     competitionError: competitionError ? String(competitionError) : null,
     nominationsError: nominationsError ? String(nominationsError) : null,
     refetchNominations,
+    refetchCompetition,
   }), [
-    competition?.data,
-    nominations?.data,
+    competition,
+    nominations,
     isLoading,
     hasError,
     isNotFound,
     competitionError,
     nominationsError,
     refetchNominations,
+    refetchCompetition,
   ]);
 } 

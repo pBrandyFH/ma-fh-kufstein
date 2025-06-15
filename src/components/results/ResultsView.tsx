@@ -1,38 +1,47 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Card, Title, Text, Group, Select, Table, Badge, Tabs, TextInput, ActionIcon, Box, Stack } from "@mantine/core"
-import { useTranslation } from "react-i18next"
-import { Search, X } from "lucide-react"
+import { useState, useEffect } from "react";
+import {
+  Group,
+  Select,
+  Table,
+  Tabs,
+  TextInput,
+  ActionIcon,
+  Box,
+  Stack,
+} from "@mantine/core";
+import { useTranslation } from "react-i18next";
+import { Search, X } from "lucide-react";
 
 interface ResultsViewProps {
-  isLive?: boolean
+  isLive?: boolean;
 }
 
 export function ResultsView({ isLive = false }: ResultsViewProps) {
-  const { t } = useTranslation()
-  const [loading, setLoading] = useState(true)
-  const [results, setResults] = useState<any[]>([])
-  const [competitions, setCompetitions] = useState<any[]>([])
-  const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [results, setResults] = useState<any[]>([]);
+  const [competitions, setCompetitions] = useState<any[]>([]);
+  const [selectedCompetition, setSelectedCompetition] = useState<string | null>(
+    null
+  );
+  const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     federation: "",
     weightCategory: "",
     ageCategory: "",
     equipmentType: "",
-  })
+  });
 
   useEffect(() => {
     // Mock data - in a real app, these would be API calls
     const fetchData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setCompetitions([
         { value: "1", label: "2023 National Championships" },
         { value: "2", label: "2023 European Championships" },
         { value: "3", label: "2023 World Championships" },
-      ])
+      ]);
 
       setResults([
         {
@@ -74,37 +83,43 @@ export function ResultsView({ isLive = false }: ResultsViewProps) {
           wilks: 370.1,
           place: 3,
         },
-      ])
+      ]);
 
-      setLoading(false)
-    }
+      setLoading(false);
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const filteredResults = results.filter((result) => {
     // Filter by search query
-    if (searchQuery && !result.athlete.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
+    if (
+      searchQuery &&
+      !result.athlete.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
+      return false;
     }
 
     // Filter by federation
     if (filters.federation && result.federation !== filters.federation) {
-      return false
+      return false;
     }
 
     // Filter by weight category
-    if (filters.weightCategory && result.weightCategory !== filters.weightCategory) {
-      return false
+    if (
+      filters.weightCategory &&
+      result.weightCategory !== filters.weightCategory
+    ) {
+      return false;
     }
 
     // Filter by age category
     if (filters.ageCategory && result.ageCategory !== filters.ageCategory) {
-      return false
+      return false;
     }
 
-    return true
-  })
+    return true;
+  });
 
   const resetFilters = () => {
     setFilters({
@@ -112,9 +127,9 @@ export function ResultsView({ isLive = false }: ResultsViewProps) {
       weightCategory: "",
       ageCategory: "",
       equipmentType: "",
-    })
-    setSearchQuery("")
-  }
+    });
+    setSearchQuery("");
+  };
 
   return (
     <Stack>
@@ -146,7 +161,9 @@ export function ResultsView({ isLive = false }: ResultsViewProps) {
               { value: "France", label: "France" },
             ]}
             value={filters.federation}
-            onChange={(value) => setFilters({ ...filters, federation: value || "" })}
+            onChange={(value) =>
+              setFilters({ ...filters, federation: value || "" })
+            }
             style={{ width: 150 }}
             clearable
           />
@@ -159,7 +176,9 @@ export function ResultsView({ isLive = false }: ResultsViewProps) {
               { value: "-105kg", label: "-105kg" },
             ]}
             value={filters.weightCategory}
-            onChange={(value) => setFilters({ ...filters, weightCategory: value || "" })}
+            onChange={(value) =>
+              setFilters({ ...filters, weightCategory: value || "" })
+            }
             style={{ width: 150 }}
             clearable
           />
@@ -172,13 +191,18 @@ export function ResultsView({ isLive = false }: ResultsViewProps) {
               { value: "Masters", label: "Masters" },
             ]}
             value={filters.ageCategory}
-            onChange={(value) => setFilters({ ...filters, ageCategory: value || "" })}
+            onChange={(value) =>
+              setFilters({ ...filters, ageCategory: value || "" })
+            }
             style={{ width: 150 }}
             clearable
           />
         </Group>
 
-        <ActionIcon onClick={resetFilters} disabled={!searchQuery && !Object.values(filters).some(Boolean)}>
+        <ActionIcon
+          onClick={resetFilters}
+          disabled={!searchQuery && !Object.values(filters).some(Boolean)}
+        >
           <X size={16} />
         </ActionIcon>
       </Group>
@@ -386,6 +410,5 @@ export function ResultsView({ isLive = false }: ResultsViewProps) {
         </Tabs.Panel>
       </Tabs>
     </Stack>
-  )
+  );
 }
-

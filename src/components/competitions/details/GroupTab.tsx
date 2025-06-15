@@ -13,31 +13,25 @@ import {
   Badge,
   Grid,
   Card,
-  Divider,
 } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { IconPlus, IconEdit, IconUsers, IconClock } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
-import { Nomination, WeightCategory, Flight, Group as GroupType } from "@/types";
+import { Nomination, WeightCategory, Flight } from "@/types";
 import {
   femaleCategories,
   getGenderFromWeightCategory,
   maleCategories,
 } from "@/utils/weightCategories";
-import { QueryObserverResult } from "@tanstack/react-query";
-import { ApiResponse } from "@/types";
 import { useDataFetching } from "@/hooks/useDataFetching";
 import { getFlightsByCompetition } from "@/services/flightService";
 
 interface GroupTabProps {
   competitionId: string;
   nominations: Nomination[];
-  onNominationsUpdated: () => Promise<
-    QueryObserverResult<ApiResponse<Nomination[]>, Error>
-  >;
+  onNominationsUpdated: () => Promise<void>;
 }
 
-// Add helper function to sort weight categories
 const sortWeightCategories = (
   categories: [WeightCategory, number][],
   gender: "male" | "female"
@@ -56,7 +50,6 @@ const sortWeightCategories = (
     });
 };
 
-// Add helper function to count athletes by gender
 const countAthletesByGender = (
   nominations: Nomination[],
   gender: "male" | "female"
@@ -68,20 +61,17 @@ const countAthletesByGender = (
   ).length;
 };
 
-// Add helper function to count unassigned athletes in a category
 const countUnassignedAthletes = (
   nominations: Nomination[],
   category: WeightCategory
 ) => {
-  return nominations.filter(
-    (n) => n.weightCategory === category && !n.groupId
-  ).length;
+  return nominations.filter((n) => n.weightCategory === category && !n.groupId)
+    .length;
 };
 
 export default function GroupTab({
   competitionId,
   nominations,
-  onNominationsUpdated,
 }: GroupTabProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -100,7 +90,6 @@ export default function GroupTab({
     skip: !competitionId,
   });
 
-  // Filter nominations by selected weight categories - only for statistics
   const filteredNominationsForStats = useMemo(() => {
     if (!nominations || selectedWeightCategories.length === 0)
       return nominations || [];
@@ -109,7 +98,6 @@ export default function GroupTab({
     );
   }, [nominations, selectedWeightCategories]);
 
-  // Calculate statistics for weight categories - using filtered nominations
   const weightCategoryStats = useMemo(() => {
     if (!filteredNominationsForStats) return new Map<string, number>();
 
@@ -122,7 +110,6 @@ export default function GroupTab({
     return stats;
   }, [filteredNominationsForStats]);
 
-  // Calculate total counts for each gender - using filtered nominations
   const totalFemaleAthletes = useMemo(
     () => countAthletesByGender(filteredNominationsForStats, "female"),
     [filteredNominationsForStats]
@@ -143,15 +130,15 @@ export default function GroupTab({
   };
 
   const handleEditFlight = (flight: Flight) => {
-    // Get weight categories for this flight
-    const flightNominations = flight.groups.flatMap(g => g.nominations);
+    const flightNominations = flight.groups.flatMap((g) => g.nominations);
     const flightWeightCategories = Array.from(
       new Set(flightNominations.map((n) => n.weightCategory))
     );
 
-    // Navigate with weight categories and number of groups as URL parameters
     navigate(
-      `/competitions/${competitionId}/flights/${flight._id}/edit?weightCategories=${flightWeightCategories.join(
+      `/competitions/${competitionId}/flights/${
+        flight._id
+      }/edit?weightCategories=${flightWeightCategories.join(
         ","
       )}&numberOfGroups=${flight.groups.length}`
     );
@@ -236,7 +223,10 @@ export default function GroupTab({
                           {t(`athletes.weightCategories.female.${category}`)}
                         </Text>
                         {unassignedCount > 0 && (
-                          <Tooltip withinPortal label={t("competition.unassignedAthletes")}>
+                          <Tooltip
+                            withinPortal
+                            label={t("competition.unassignedAthletes")}
+                          >
                             <Badge size="sm" color="yellow" variant="filled">
                               {unassignedCount}
                             </Badge>
@@ -251,7 +241,6 @@ export default function GroupTab({
             </Stack>
           </Grid.Col>
 
-          {/* Divider */}
           <Grid.Col span={1}>
             <Box
               sx={{
@@ -292,7 +281,10 @@ export default function GroupTab({
                           {t(`athletes.weightCategories.male.${category}`)}
                         </Text>
                         {unassignedCount > 0 && (
-                          <Tooltip withinPortal label={t("competition.unassignedAthletes")}>
+                          <Tooltip
+                            withinPortal
+                            label={t("competition.unassignedAthletes")}
+                          >
                             <Badge size="sm" color="yellow" variant="filled">
                               {unassignedCount}
                             </Badge>
@@ -317,11 +309,13 @@ export default function GroupTab({
               <Title order={4}>
                 {t("competition.flight")} {flight.number}
               </Title>
-              <Badge 
+              <Badge
                 color={
-                  flight.status === "completed" ? "green" :
-                  flight.status === "inProgress" ? "blue" :
-                  "gray"
+                  flight.status === "completed"
+                    ? "green"
+                    : flight.status === "inProgress"
+                    ? "blue"
+                    : "gray"
                 }
               >
                 {t(`competition.flightStatus.${flight.status}`)}
@@ -361,7 +355,9 @@ export default function GroupTab({
                   <Group position="apart" mb="xs">
                     <Group>
                       <Text weight={500}>
-                        {t("competition.groupNumber", { groupNumber: group.number })}
+                        {t("competition.groupNumber", {
+                          groupNumber: group.number,
+                        })}
                       </Text>
                     </Group>
                     <Group spacing="xs">

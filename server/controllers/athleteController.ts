@@ -1,8 +1,6 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import mongoose from "mongoose";
 import Athlete from "../models/Athlete";
-import User from "../models/User";
-import { sendInviteEmail } from "../utils/emailService";
 import { AuthenticatedRequest } from "./authController";
 import { WeightCategory } from "../models/Nomination";
 

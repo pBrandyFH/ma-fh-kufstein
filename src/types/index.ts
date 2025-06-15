@@ -248,23 +248,6 @@ export interface Result {
   updatedAt?: Date;
 }
 
-// Invitation Types
-export interface Invitation {
-  _id: string;
-  email: string;
-  inviteCode: string;
-  role: UserFederationRole;
-  federationId?: string | Federation;
-  clubId?: string | Club;
-  invitedBy: string | User;
-  firstName?: string;
-  lastName?: string;
-  expiresAt: Date;
-  used: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 // API Response Types
 export interface ApiResponse<T> {
   success: boolean;
@@ -359,23 +342,6 @@ export interface CreateNominationFormValues {
   competitionId: string;
   weightCategory: WeightCategory;
   ageCategory: AgeCategory;
-}
-
-export interface InvitationFormValues {
-  email: string;
-  role: UserFederationRole | null;
-  firstName?: string;
-  lastName?: string;
-  federationId?: string;
-  clubId?: string;
-}
-
-// Populated types for API responses
-export interface PopulatedInvitation
-  extends Omit<Invitation, "invitedBy" | "federationId" | "clubId"> {
-  invitedBy: User;
-  federationId?: Federation;
-  clubId?: Club;
 }
 
 export interface InviteValidationResponse {

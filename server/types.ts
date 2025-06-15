@@ -27,9 +27,6 @@ export interface InviteValidationResponse {
   lastName?: string;
 }
 
-// Deprecated - use RoleType from permissions/types instead
-export type UserRole = RoleType;
-
 export interface Result {
   athleteId: mongoose.Types.ObjectId;
   competitionId: mongoose.Types.ObjectId;

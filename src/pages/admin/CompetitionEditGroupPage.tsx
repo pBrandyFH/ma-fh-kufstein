@@ -28,17 +28,8 @@ import {
   IconAlertCircle,
   IconClock,
 } from "@tabler/icons-react";
-import {
-  Nomination,
-  WeightCategory,
-  Flight,
-  Group as GroupType,
-} from "@/types";
-import {
-  getNominationsByCompetitionIdAndWeightCategories,
-  batchUpdateNominations,
-  type BatchUpdateNominationsRequest,
-} from "@/services/nominationService";
+import { Nomination, WeightCategory, Flight } from "@/types";
+import { getNominationsByCompetitionIdAndWeightCategories } from "@/services/nominationService";
 import { useDataFetching } from "@/hooks/useDataFetching";
 import {
   femaleCategories,
@@ -82,9 +73,14 @@ const getAthleteName = (nomination: Nomination) => {
 };
 
 // Add this helper function near the top with other helpers
-const isNominationDraggable = (nomination: Nomination, currentFlight: Flight | null) => {
+const isNominationDraggable = (
+  nomination: Nomination,
+  currentFlight: Flight | null
+) => {
   if (!nomination.groupId) return true;
-  return currentFlight?.groups.some(g => g._id === nomination.groupId) ?? true;
+  return (
+    currentFlight?.groups.some((g) => g._id === nomination.groupId) ?? true
+  );
 };
 
 // Named export for the content component
@@ -109,7 +105,9 @@ export function CompetitionEditGroupPageContent({
 
   // Get weight categories from URL params
   const urlWeightCategories = useMemo(() => {
-    const categories = searchParams.get("weightCategories")?.split(",") as WeightCategory[] || [];
+    const categories =
+      (searchParams.get("weightCategories")?.split(",") as WeightCategory[]) ||
+      [];
     return categories;
   }, [searchParams]);
 
@@ -196,10 +194,10 @@ export function CompetitionEditGroupPageContent({
       return null;
     }
 
-    console.log('Processing nominations:', {
+    console.log("Processing nominations:", {
       totalNominations: nominationsData.length,
       currentFlightId: currentFlight._id,
-      currentFlightGroups: currentFlight.groups.map(g => g._id)
+      currentFlightGroups: currentFlight.groups.map((g) => g._id),
     });
 
     // Get all nominations that are in other flights or unassigned
@@ -207,15 +205,18 @@ export function CompetitionEditGroupPageContent({
       // A nomination is from another flight if:
       // 1. It has a groupId that doesn't belong to any group in the current flight
       // 2. OR it has no groupId at all
-      const isInOtherFlight = n.groupId 
+      const isInOtherFlight = n.groupId
         ? !currentFlight.groups.some((g) => g._id === n.groupId)
         : true;
 
-      console.log('Checking nomination:', {
+      console.log("Checking nomination:", {
         nominationId: n._id,
         groupId: n.groupId,
         isInOtherFlight,
-        athleteName: typeof n.athleteId === 'string' ? n._id : `${n.athleteId.firstName} ${n.athleteId.lastName}`
+        athleteName:
+          typeof n.athleteId === "string"
+            ? n._id
+            : `${n.athleteId.firstName} ${n.athleteId.lastName}`,
       });
 
       return isInOtherFlight;
@@ -242,12 +243,12 @@ export function CompetitionEditGroupPageContent({
       assignedGroups,
     };
 
-    console.log('Categorized nominations:', {
+    console.log("Categorized nominations:", {
       otherFlightNominations: otherFlightNominations.length,
-      assignedGroups: assignedGroups.map(g => ({
+      assignedGroups: assignedGroups.map((g) => ({
         groupId: g.id,
-        count: g.nominations.length
-      }))
+        count: g.nominations.length,
+      })),
     });
 
     return result;
@@ -266,10 +267,10 @@ export function CompetitionEditGroupPageContent({
 
     const { otherFlightNominations, assignedGroups } = processNominations;
 
-    console.log('Updating groups with:', {
+    console.log("Updating groups with:", {
       otherFlightCount: otherFlightNominations.length,
       assignedGroupsCount: assignedGroups.length,
-      weightCategories: form.values.selectedWeightCategories
+      weightCategories: form.values.selectedWeightCategories,
     });
 
     // If we're creating a new flight, initialize empty groups
@@ -298,15 +299,18 @@ export function CompetitionEditGroupPageContent({
       isOtherFlight: true,
     };
 
-    console.log('Setting new local groups:', {
+    console.log("Setting new local groups:", {
       unassignedGroupCount: unassignedGroup.nominations.length,
-      unassignedNominations: unassignedGroup.nominations.map(n => ({
+      unassignedNominations: unassignedGroup.nominations.map((n) => ({
         id: n._id,
         groupId: n.groupId,
-        athleteName: typeof n.athleteId === 'string' ? n._id : `${n.athleteId.firstName} ${n.athleteId.lastName}`
+        athleteName:
+          typeof n.athleteId === "string"
+            ? n._id
+            : `${n.athleteId.firstName} ${n.athleteId.lastName}`,
       })),
       totalGroups: groups.length + 1,
-      weightCategories: form.values.selectedWeightCategories
+      weightCategories: form.values.selectedWeightCategories,
     });
 
     setLocalGroups([unassignedGroup, ...groups]);
@@ -317,7 +321,12 @@ export function CompetitionEditGroupPageContent({
     }
 
     hasUpdatedGroups.current = true;
-  }, [processNominations, currentFlight, startTime, form.values.selectedWeightCategories]);
+  }, [
+    processNominations,
+    currentFlight,
+    startTime,
+    form.values.selectedWeightCategories,
+  ]);
 
   // Update local groups when number of groups changes - only for new flights
   useEffect(() => {
@@ -525,7 +534,8 @@ export function CompetitionEditGroupPageContent({
               {t("common.back")}
             </Button>
             <Title order={2}>
-              {t("competition.flight")} {currentFlight?.number || form.values.flightNumber}
+              {t("competition.flight")}{" "}
+              {currentFlight?.number || form.values.flightNumber}
             </Title>
           </Group>
         </Group>
@@ -603,7 +613,8 @@ export function CompetitionEditGroupPageContent({
                           <Group>
                             <Text weight={500}>
                               {t("competition.unassigned")} (
-                              {t("competition.flight")} {form.values.flightNumber})
+                              {t("competition.flight")}{" "}
+                              {form.values.flightNumber})
                             </Text>
                             {localGroups
                               .find((g) => g.id === "unassigned")
@@ -651,7 +662,12 @@ export function CompetitionEditGroupPageContent({
                                       key={nomination._id}
                                       draggableId={nomination._id}
                                       index={index}
-                                      isDragDisabled={!isNominationDraggable(nomination, currentFlight)}
+                                      isDragDisabled={
+                                        !isNominationDraggable(
+                                          nomination,
+                                          currentFlight
+                                        )
+                                      }
                                     >
                                       {(provided, snapshot) => (
                                         <div
@@ -663,10 +679,20 @@ export function CompetitionEditGroupPageContent({
                                           }}
                                         >
                                           <Tooltip
-                                            label={!isNominationDraggable(nomination, currentFlight) 
-                                              ? t("competition.nominationAssignedToOtherFlight")
-                                              : undefined}
-                                            disabled={isNominationDraggable(nomination, currentFlight)}
+                                            label={
+                                              !isNominationDraggable(
+                                                nomination,
+                                                currentFlight
+                                              )
+                                                ? t(
+                                                    "competition.nominationAssignedToOtherFlight"
+                                                  )
+                                                : undefined
+                                            }
+                                            disabled={isNominationDraggable(
+                                              nomination,
+                                              currentFlight
+                                            )}
                                             position="top"
                                             withinPortal
                                           >
@@ -674,44 +700,95 @@ export function CompetitionEditGroupPageContent({
                                               p="xs"
                                               withBorder
                                               sx={{
-                                                backgroundColor: snapshot.isDragging
-                                                  ? "var(--mantine-color-blue-0)"
-                                                  : "var(--mantine-color-white)",
+                                                backgroundColor:
+                                                  snapshot.isDragging
+                                                    ? "var(--mantine-color-blue-0)"
+                                                    : "var(--mantine-color-white)",
                                                 transition: "all 0.2s ease",
-                                                cursor: isNominationDraggable(nomination, currentFlight) ? "grab" : "not-allowed",
+                                                cursor: isNominationDraggable(
+                                                  nomination,
+                                                  currentFlight
+                                                )
+                                                  ? "grab"
+                                                  : "not-allowed",
                                                 "&:active": {
-                                                  cursor: isNominationDraggable(nomination, currentFlight) ? "grabbing" : "not-allowed",
+                                                  cursor: isNominationDraggable(
+                                                    nomination,
+                                                    currentFlight
+                                                  )
+                                                    ? "grabbing"
+                                                    : "not-allowed",
                                                 },
-                                                opacity: snapshot.isDragging ? 0.5 : isNominationDraggable(nomination, currentFlight) ? 1 : 0.7,
+                                                opacity: snapshot.isDragging
+                                                  ? 0.5
+                                                  : isNominationDraggable(
+                                                      nomination,
+                                                      currentFlight
+                                                    )
+                                                  ? 1
+                                                  : 0.7,
                                                 position: "relative",
-                                                zIndex: snapshot.isDragging ? 1000 : "auto",
-                                                borderColor: !isNominationDraggable(nomination, currentFlight) 
-                                                  ? "var(--mantine-color-gray-4)" 
-                                                  : undefined,
+                                                zIndex: snapshot.isDragging
+                                                  ? 1000
+                                                  : "auto",
+                                                borderColor:
+                                                  !isNominationDraggable(
+                                                    nomination,
+                                                    currentFlight
+                                                  )
+                                                    ? "var(--mantine-color-gray-4)"
+                                                    : undefined,
                                               }}
                                             >
-                                              <Group position="apart" spacing="xs">
+                                              <Group
+                                                position="apart"
+                                                spacing="xs"
+                                              >
                                                 <Stack spacing={2}>
-                                                  <Text 
+                                                  <Text
                                                     size="sm"
-                                                    color={!isNominationDraggable(nomination, currentFlight) ? "dimmed" : undefined}
+                                                    color={
+                                                      !isNominationDraggable(
+                                                        nomination,
+                                                        currentFlight
+                                                      )
+                                                        ? "dimmed"
+                                                        : undefined
+                                                    }
                                                   >
                                                     {getAthleteName(nomination)}
                                                   </Text>
-                                                  {!isNominationDraggable(nomination, currentFlight) && (
-                                                    <Text size="xs" color="dimmed">
-                                                      {t("competition.assignedToOtherFlight")}
+                                                  {!isNominationDraggable(
+                                                    nomination,
+                                                    currentFlight
+                                                  ) && (
+                                                    <Text
+                                                      size="xs"
+                                                      color="dimmed"
+                                                    >
+                                                      {t(
+                                                        "competition.assignedToOtherFlight"
+                                                      )}
                                                     </Text>
                                                   )}
                                                 </Stack>
-                                                <Badge 
-                                                  size="sm" 
-                                                  variant={!isNominationDraggable(nomination, currentFlight) ? "outline" : "light"}
+                                                <Badge
+                                                  size="sm"
+                                                  variant={
+                                                    !isNominationDraggable(
+                                                      nomination,
+                                                      currentFlight
+                                                    )
+                                                      ? "outline"
+                                                      : "light"
+                                                  }
                                                 >
                                                   {t(
                                                     `athletes.weightCategories.${getGenderFromWeightCategory(
                                                       nomination.weightCategory
-                                                    )}.${nomination.weightCategory}`
+                                                    )}.${
+                                                      nomination.weightCategory
+                                                    }`
                                                   )}
                                                 </Badge>
                                               </Group>
@@ -799,7 +876,12 @@ export function CompetitionEditGroupPageContent({
                                               key={nomination._id}
                                               draggableId={nomination._id}
                                               index={index}
-                                              isDragDisabled={!isNominationDraggable(nomination, currentFlight)}
+                                              isDragDisabled={
+                                                !isNominationDraggable(
+                                                  nomination,
+                                                  currentFlight
+                                                )
+                                              }
                                             >
                                               {(provided, snapshot) => (
                                                 <div
@@ -812,10 +894,20 @@ export function CompetitionEditGroupPageContent({
                                                   }}
                                                 >
                                                   <Tooltip
-                                                    label={!isNominationDraggable(nomination, currentFlight) 
-                                                      ? t("competition.nominationAssignedToOtherFlight")
-                                                      : undefined}
-                                                    disabled={isNominationDraggable(nomination, currentFlight)}
+                                                    label={
+                                                      !isNominationDraggable(
+                                                        nomination,
+                                                        currentFlight
+                                                      )
+                                                        ? t(
+                                                            "competition.nominationAssignedToOtherFlight"
+                                                          )
+                                                        : undefined
+                                                    }
+                                                    disabled={isNominationDraggable(
+                                                      nomination,
+                                                      currentFlight
+                                                    )}
                                                     position="top"
                                                     withinPortal
                                                   >
@@ -829,31 +921,59 @@ export function CompetitionEditGroupPageContent({
                                                             : "var(--mantine-color-white)",
                                                         transition:
                                                           "all 0.2s ease",
-                                                        cursor: isNominationDraggable(nomination, currentFlight) ? "grab" : "not-allowed",
+                                                        cursor:
+                                                          isNominationDraggable(
+                                                            nomination,
+                                                            currentFlight
+                                                          )
+                                                            ? "grab"
+                                                            : "not-allowed",
                                                         "&:active": {
-                                                          cursor: isNominationDraggable(nomination, currentFlight) ? "grabbing" : "not-allowed",
+                                                          cursor:
+                                                            isNominationDraggable(
+                                                              nomination,
+                                                              currentFlight
+                                                            )
+                                                              ? "grabbing"
+                                                              : "not-allowed",
                                                         },
                                                         opacity:
                                                           snapshot.isDragging
                                                             ? 0.5
-                                                            : isNominationDraggable(nomination, currentFlight) ? 1 : 0.7,
+                                                            : isNominationDraggable(
+                                                                nomination,
+                                                                currentFlight
+                                                              )
+                                                            ? 1
+                                                            : 0.7,
                                                         position: "relative",
                                                         zIndex:
                                                           snapshot.isDragging
                                                             ? 1000
                                                             : "auto",
-                                                        borderColor: !isNominationDraggable(nomination, currentFlight) 
-                                                          ? "var(--mantine-color-gray-4)" 
-                                                          : undefined,
+                                                        borderColor:
+                                                          !isNominationDraggable(
+                                                            nomination,
+                                                            currentFlight
+                                                          )
+                                                            ? "var(--mantine-color-gray-4)"
+                                                            : undefined,
                                                       }}
                                                     >
                                                       <Group
                                                         position="apart"
                                                         spacing="xs"
                                                       >
-                                                        <Text 
+                                                        <Text
                                                           size="sm"
-                                                          color={!isNominationDraggable(nomination, currentFlight) ? "dimmed" : undefined}
+                                                          color={
+                                                            !isNominationDraggable(
+                                                              nomination,
+                                                              currentFlight
+                                                            )
+                                                              ? "dimmed"
+                                                              : undefined
+                                                          }
                                                         >
                                                           {getAthleteName(
                                                             nomination
@@ -861,7 +981,14 @@ export function CompetitionEditGroupPageContent({
                                                         </Text>
                                                         <Badge
                                                           size="sm"
-                                                          variant={!isNominationDraggable(nomination, currentFlight) ? "outline" : "light"}
+                                                          variant={
+                                                            !isNominationDraggable(
+                                                              nomination,
+                                                              currentFlight
+                                                            )
+                                                              ? "outline"
+                                                              : "light"
+                                                          }
                                                         >
                                                           {t(
                                                             `athletes.weightCategories.${getGenderFromWeightCategory(
@@ -921,7 +1048,6 @@ export function CompetitionEditGroupPageContent({
   );
 }
 
-// Default export component
 export default function CompetitionEditGroupPage() {
   const { id: competitionId } = useParams();
   const { refetchNominations } = useCompetitionDetails(competitionId);

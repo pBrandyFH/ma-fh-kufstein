@@ -42,9 +42,7 @@ api.interceptors.response.use(
         "/api/dashboard",
         "/api/nominations",
         "/api/competitions",
-        "/api/invitations",
         "/api/athletes",
-        "/api/clubs",
         "/api/federations",
         "/api/users",
         "/api/members"
