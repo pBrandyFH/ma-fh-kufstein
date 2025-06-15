@@ -1,0 +1,165 @@
+<mxfile host="app.diagrams.net" modified="2024-03-19T12:00:00.000Z" agent="Mozilla/5.0" version="21.7.5" etag="your-etag" type="device">
+  <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-0"/>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0"/>
+        
+        <!-- User -->
+        <mxCell id="user" value="User" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="40" y="40" width="160" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="user-email" value="email: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="user">
+          <mxGeometry y="26" width="160" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="user-name" value="firstName: string&#xa;lastName: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="user">
+          <mxGeometry y="52" width="160" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="user-roles" value="federationRoles: UserFederationRole[]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="user">
+          <mxGeometry y="104" width="160" height="26" as="geometry"/>
+        </mxCell>
+
+        <!-- Federation -->
+        <mxCell id="federation" value="Federation" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="280" y="40" width="200" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="federation-name" value="name: string&#xa;abbreviation: string&#xa;type: FederationLevel" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="federation">
+          <mxGeometry y="26" width="200" height="78" as="geometry"/>
+        </mxCell>
+        <mxCell id="federation-contact" value="contactName?: string&#xa;contactEmail?: string&#xa;website?: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="federation">
+          <mxGeometry y="104" width="200" height="78" as="geometry"/>
+        </mxCell>
+
+        <!-- Competition -->
+        <mxCell id="competition" value="Competition" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="560" y="40" width="200" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="competition-basic" value="name: string&#xa;startDate: Date&#xa;endDate?: Date&#xa;location: string&#xa;status: CompetitionStatus" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="competition">
+          <mxGeometry y="26" width="200" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- Athlete -->
+        <mxCell id="athlete" value="Athlete" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="40" y="240" width="160" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="athlete-basic" value="firstName: string&#xa;lastName: string&#xa;dateOfBirth: Date&#xa;gender: string&#xa;weightCategory: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="athlete">
+          <mxGeometry y="26" width="160" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- Nomination -->
+        <mxCell id="nomination" value="Nomination" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="280" y="240" width="200" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="nomination-fields" value="athleteId: ObjectId&#xa;competitionId: ObjectId&#xa;groupId?: ObjectId&#xa;weightCategory: WeightCategory&#xa;ageCategory: AgeCategory&#xa;nominatedAt: Date" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="nomination">
+          <mxGeometry y="26" width="200" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- Result -->
+        <mxCell id="result" value="Result" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="560" y="240" width="200" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="result-fields" value="athleteId: ObjectId&#xa;competitionId: ObjectId&#xa;bodyweight: number&#xa;squat/bench/deadlift: Attempt[]&#xa;total: number&#xa;wilks: number&#xa;place: number" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="result">
+          <mxGeometry y="26" width="200" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- Flight -->
+        <mxCell id="flight" value="Flight" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="40" y="440" width="160" height="104" as="geometry"/>
+        </mxCell>
+        <mxCell id="flight-fields" value="competitionId: ObjectId&#xa;number: number&#xa;status: FlightStatus&#xa;startTime?: Date&#xa;groups: Group[]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="flight">
+          <mxGeometry y="26" width="160" height="104" as="geometry"/>
+        </mxCell>
+
+        <!-- Group -->
+        <mxCell id="group" value="Group" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="280" y="440" width="160" height="104" as="geometry"/>
+        </mxCell>
+        <mxCell id="group-fields" value="flightId: ObjectId&#xa;number: number&#xa;name: string&#xa;startTime?: Date&#xa;nominations: Nomination[]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="group">
+          <mxGeometry y="26" width="160" height="104" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationships -->
+        <!-- User to Athlete -->
+        <mxCell id="user-athlete" value="1:1" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="user" target="athlete">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="120" y="200" as="sourcePoint"/>
+            <mxPoint x="120" y="240" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Federation to Competition -->
+        <mxCell id="federation-competition" value="1:N" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="federation" target="competition">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="380" y="200" as="sourcePoint"/>
+            <mxPoint x="660" y="200" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="380" y="200"/>
+              <mxPoint x="660" y="200"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Competition to Flight -->
+        <mxCell id="competition-flight" value="1:N" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="competition" target="flight">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="660" y="200" as="sourcePoint"/>
+            <mxPoint x="120" y="440" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="660" y="400"/>
+              <mxPoint x="120" y="400"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Flight to Group -->
+        <mxCell id="flight-group" value="1:N" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="flight" target="group">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="120" y="560" as="sourcePoint"/>
+            <mxPoint x="360" y="560" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="120" y="560"/>
+              <mxPoint x="360" y="560"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Group to Nomination -->
+        <mxCell id="group-nomination" value="1:N" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="group" target="nomination">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="360" y="560" as="sourcePoint"/>
+            <mxPoint x="380" y="240" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="360" y="400"/>
+              <mxPoint x="380" y="400"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Nomination to Result -->
+        <mxCell id="nomination-result" value="1:1" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="nomination" target="result">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="380" y="400" as="sourcePoint"/>
+            <mxPoint x="660" y="400" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="380" y="400"/>
+              <mxPoint x="660" y="400"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Athlete to Nomination -->
+        <mxCell id="athlete-nomination" value="1:N" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="athlete" target="nomination">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="120" y="400" as="sourcePoint"/>
+            <mxPoint x="380" y="400" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="120" y="400"/>
+              <mxPoint x="380" y="400"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
