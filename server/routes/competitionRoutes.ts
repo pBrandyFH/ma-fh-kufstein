@@ -96,63 +96,6 @@ router.get("/", async (req, res) => {
 
 /**
  * @swagger
- * /api/competitions/eligible:
- *   get:
- *     summary: Get competitions that the current user's federation is eligible to participate in
- *     tags: [Competitions]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of eligible competitions
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Competition'
- */
-router.get("/eligible", auth, async (req, res) => {
-  try {
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: "Unauthorized",
-      });
-    }
-
-    // Get the user's federation ID from their federation roles
-    const userFederationId = user.federationRoles?.[0]?.federationId;
-
-    // Find competitions where the user's federation is eligible
-    const competitions = await Competition.find({
-      eligibleFederationIds: { $in: [userFederationId] },
-    })
-      .populate("hostFederationId", "name type")
-      .populate("hostClubId", "name")
-      .sort({ startDate: -1 });
-
-    res.status(200).json({
-      success: true,
-      data: competitions,
-    });
-  } catch (error) {
-    console.error("Error fetching eligible competitions:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch eligible competitions",
-    });
-  }
-});
-
-/**
- * @swagger
  * /api/competitions/{id}:
  *   get:
  *     summary: Get competition by ID

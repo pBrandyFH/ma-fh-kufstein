@@ -167,22 +167,6 @@ export async function getFilteredCompetitions(): Promise<
   }
 }
 
-export const getEligibleCompetitions = async (): Promise<
-  ApiResponse<Competition[]>
-> => {
-  try {
-    const response = await api.get<ApiResponse<Competition[]>>(
-      "/competitions/eligible"
-    );
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      return { success: false, error: error.message };
-    }
-    return { success: false, error: "Unknown error occurred" };
-  }
-};
-
 //------------------------------------------------------------------------------------------------
 // --------------NEW--------------------------------
 //------------------------------------------------------------------------------------------------

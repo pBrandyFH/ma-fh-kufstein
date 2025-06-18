@@ -74,7 +74,7 @@ const CompetitionSchema = new Schema<ICompetition>(
     },
     hostMember: {
       type: Schema.Types.ObjectId,
-      ref: "Club",
+      ref: "Member",
     },
     eligibleFederations: [
       {
