@@ -1,4 +1,4 @@
-# MA Brandecker: Powerlifting Federation Management System
+# Master Thesis: Powerlifting Federation Management System
 
 > **Note:** This project is the concept and result of my master thesis. It is currently a prototype and requires further development before it can be used in production environments.
 
