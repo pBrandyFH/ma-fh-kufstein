@@ -1,6 +1,6 @@
 # Master Thesis: Powerlifting Federation Management System
 
-> **Note:** This project is the concept and result of my master thesis. It is currently a prototype and requires further development before it can be used in production environments.
+> **Note:** This project is the concept and result of my master thesis, developed with the assistance of AI (claude, chatgpt). It is currently a prototype and requires further development before it can be used in production environments. 
 
 This project is a comprehensive digital platform designed to streamline and automate the management of powerlifting federations at all levels—from international governing bodies down to local clubs. The system provides a unified interface for managing federations, members, competitions, and athletes, while maintaining strict hierarchical relationships and role-based access control.
 
