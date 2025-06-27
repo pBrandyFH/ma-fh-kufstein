@@ -22,7 +22,7 @@ export function TopNav() {
       <Group position="apart" px="md">
         <Group>
           <Text size="xl" weight={700}>
-            GoodLift
+            PowerliftTool
           </Text>
         </Group>
 

@@ -7,7 +7,7 @@ import { FederationLevel, RoleType } from "../permissions/types";
 dotenv.config();
 
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/goodlift";
+  process.env.MONGODB_URI || "mongodb://localhost:27017/powerlift-tool";
 
 // Mapping from old federation types to new levels
 const federationLevelMap: Record<string, FederationLevel> = {

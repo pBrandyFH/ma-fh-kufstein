@@ -5,7 +5,7 @@ import Member from "../models/Member";
 dotenv.config();
 
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/goodlift";
+  process.env.MONGODB_URI || "mongodb://localhost:27017/powerlift-tool";
 
 const members = [
   {

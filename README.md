@@ -45,7 +45,7 @@ NODE_ENV=development
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd ma-goodlift-v2
+   cd ma-powerlift-tool-v2
    npm install
    ```
 2. **Start MongoDB**

@@ -122,7 +122,7 @@
     "federation": "Verband",
     "club": "Verein",
     "inviteExpires": "Einladung läuft ab am",
-    "welcomeMessage": "Willkommen bei GoodLift",
+    "welcomeMessage": "Willkommen bei PowerliftTool",
     "loginMessage": "Dies ist eine Einladungsplattform. Bitte kontaktieren Sie Ihren Verbands- oder Vereinsadministrator, um eine Einladung zu erhalten.",
     "rememberMe": "Angemeldet bleiben",
     "loginButton": "Anmelden",
@@ -470,7 +470,7 @@
     }
   },
   "welcome": {
-    "title": "Willkommen bei GoodLift",
+    "title": "Willkommen bei PowerliftTool",
     "subtitle": "Die offizielle Plattform für Powerlifting-Wettkämpfe, Ergebnisse und Ranglisten",
     "viewResults": "Ergebnisse anzeigen",
     "signIn": "Anmelden",

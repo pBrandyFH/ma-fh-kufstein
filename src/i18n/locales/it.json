@@ -78,7 +78,7 @@
     "federation": "Federazione",
     "club": "Club",
     "inviteExpires": "L'invito scade il",
-    "welcomeMessage": "Benvenuto su GoodLift",
+    "welcomeMessage": "Benvenuto su PowerliftTool",
     "loginMessage": "Questa è una piattaforma solo su invito. Contatta il tuo amministratore di federazione o club per ricevere un invito."
   },
   "navigation": {
@@ -274,7 +274,7 @@
     "club": "Club"
   },
   "welcome": {
-    "title": "Benvenuto su GoodLift",
+    "title": "Benvenuto su PowerliftTool",
     "subtitle": "La piattaforma ufficiale per gare, risultati e classifiche di powerlifting",
     "viewResults": "Vedi risultati",
     "signIn": "Accedi",

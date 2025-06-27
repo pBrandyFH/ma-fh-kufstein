@@ -5,9 +5,9 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "GoodLift API Documentation",
+      title: "PowerliftTool API Documentation",
       version,
-      description: "API documentation for the GoodLift weightlifting management system",
+      description: "API documentation for the PowerliftTool weightlifting management system",
     },
     servers: [
       {

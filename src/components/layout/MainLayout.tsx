@@ -154,7 +154,7 @@ export function MainLayout({
                   <Group spacing="xs">
                     {/* <img src="/logo.png" alt="Logo" style={{ height: 32 }} /> */}
                     <Text size="xl" weight={700} color="blue">
-                      GoodLift
+                      PowerliftTool
                     </Text>
                   </Group>
                 </Link>

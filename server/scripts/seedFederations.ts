@@ -5,7 +5,7 @@ import User from "../models/User"
 
 dotenv.config()
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/goodlift"
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/powerlift-tool"
 
 const seedFederations = async () => {
   try {

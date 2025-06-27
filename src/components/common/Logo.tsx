@@ -27,7 +27,7 @@ export function Logo({ size = "md" }: LogoProps) {
         weight={800}
         color={theme.colorScheme === "dark" ? theme.white : theme.colors.gray[9]}
       >
-       Goodlift
+       PowerliftTool
       </Text>
     </div>
   )

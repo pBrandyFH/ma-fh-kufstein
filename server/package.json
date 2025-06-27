@@ -1,7 +1,7 @@
 {
-  "name": "goodlift-backend",
+  "name": "powerlift-tool-backend",
   "version": "1.0.0",
-  "description": "Backend for GoodLift powerlifting federation management system",
+  "description": "Backend for PowerliftTool powerlifting federation management system",
   "main": "index.ts",
   "scripts": {
     "start": "node dist/index.js",

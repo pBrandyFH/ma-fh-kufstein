@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/goodlift";
+  process.env.MONGODB_URI || "mongodb://localhost:27017/powerlift-tool";
 
 const federationParentMap: Record<string, string> = {
   IPF: "67e589b739273d48c69f36e9",

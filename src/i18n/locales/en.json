@@ -126,7 +126,7 @@
     "federation": "Federation",
     "club": "Club",
     "inviteExpires": "Invitation expires on",
-    "welcomeMessage": "Welcome to GoodLift",
+    "welcomeMessage": "Welcome to PowerliftTool",
     "loginMessage": "This is an invite-only platform. Please contact your federation or club administrator to receive an invitation.",
     "rememberMe": "Remember me",
     "loginButton": "Login",
@@ -793,7 +793,7 @@
     }
   },
   "welcome": {
-    "title": "Welcome to GoodLift",
+    "title": "Welcome to PowerliftTool",
     "subtitle": "The official platform for powerlifting competitions, results, and rankings",
     "viewResults": "View Results",
     "signIn": "Sign In",
