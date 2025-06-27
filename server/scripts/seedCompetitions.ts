@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Competition from "../models/Competition";
 import Federation from "../models/Federation";
-import Club from "../models/Club";
 import Member from "../models/Member";
 
 dotenv.config();

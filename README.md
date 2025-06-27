@@ -1,54 +1,100 @@
-# React + TypeScript + Vite
+# MA Brandecker: Powerlifting Federation Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **Note:** This project is the concept and result of my master thesis. It is currently a prototype and requires further development before it can be used in production environments.
 
-Currently, two official plugins are available:
+This project is a comprehensive digital platform designed to streamline and automate the management of powerlifting federations at all levels—from international governing bodies down to local clubs. The system provides a unified interface for managing federations, members, competitions, and athletes, while maintaining strict hierarchical relationships and role-based access control.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+- **Federation Management**: Hierarchical structure from international to local federations, parent-child relationships, federation profiles.
+- **Member Management**: Clubs, individuals, and universities as members; association with federations; athlete linkage.
+- **Competition Management**: Create and manage competitions, assign hosts, set categories, manage nominations, and track results.
+- **Athlete Management**: Athlete registration, profiles, performance tracking, competition history, and achievements.
+- **Role-Based Access Control (RBAC)**: Basic roles for athletes, member admins, federation admins, and superadmins.
+- **Public API**: Public endpoints for federations, competitions, athletes, and results.
+- **Internationalization**: Multi-language support (EN, DE, FR, IT).
 
-## Expanding the ESLint configuration
+## Technology Stack
+- **Frontend**: React 18+, TypeScript, Vite, Mantine UI, React Router, i18n
+- **Backend**: Node.js, Express, TypeScript, MongoDB (Mongoose), JWT Auth
+- **API Documentation**: Swagger/OpenAPI (available at `/api-docs` when server is running)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Project Structure
+```
+/server/           # Backend (Express, MongoDB, API)
+/src/              # Frontend (React, TypeScript)
+```
+See `docs.md` for detailed architecture and module breakdown.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Setup Instructions
+
+### Prerequisites
+- Node.js (v16 or higher)
+- MongoDB (v4.4 or higher)
+- npm or yarn
+
+### Environment Variables
+Create a `.env` file in the root and set the following variables:
+```
+JWT_SECRET=your_jwt_secret_key
+MONGODB_URI=mongodb://localhost:27017/mabrandecker
+PORT=5000
+NODE_ENV=development
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd ma-goodlift-v2
+   npm install
+   ```
+2. **Start MongoDB**
+   ```bash
+   mongod
+   ```
+3. **Run the app (dev mode, both frontend and backend)**
+   ```bash
+   npm run dev
+   ```
+   Or run separately:
+   ```bash
+   npm run server   # Backend (default: http://localhost:5000)
+   npm run client   # Frontend (default: http://localhost:5173)
+   ```
+4. **Build for production**
+   ```bash
+   npm run build
+   npm start
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Database Seeding (optional)
+Seed federations, clubs, members, and competitions for testing:
+```bash
+npm run seed:federations
+npm run seed:clubs
+npm run seed:members
+npm run seed:competitions
 ```
+
+## Usage
+- Access the frontend at [http://localhost:5173](http://localhost:5173)
+- API server runs at [http://localhost:5000](http://localhost:5000)
+- API docs available at [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+
+## Development
+- TypeScript for both frontend and backend
+- ESLint for code quality
+- Hot module replacement for frontend
+- See `docs.md` for detailed API, architecture, and workflow documentation
+
+## Roadmap & Future Development
+- Enhanced RBAC and permission system
+- Official assignment and scheduling
+- Athlete self-nomination and approval workflows
+- Invitation and notification systems
+- Advanced analytics and reporting
+- Mobile app and offline support
+- Full internationalization and localization
+
+---
+For detailed documentation, see [docs.md](./docs.md).

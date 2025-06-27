@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Federation, { IFederation } from "../models/Federation";
 import dotenv from "dotenv";
 import Competition from "../models/Competition";
 
