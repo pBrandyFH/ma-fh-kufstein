@@ -36,7 +36,7 @@ See `docs.md` for detailed architecture and module breakdown.
 Create a `.env` file in the root and set the following variables:
 ```
 JWT_SECRET=your_jwt_secret_key
-MONGODB_URI=mongodb://localhost:27017/mabrandecker
+MONGODB_URI=mongodb://localhost:27017/powerrlift-tool
 PORT=5000
 NODE_ENV=development
 ```
