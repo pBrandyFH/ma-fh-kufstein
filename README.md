@@ -90,7 +90,6 @@ npm run seed:competitions
 ## Roadmap & Future Development
 - Enhanced RBAC and permission system
 - Official assignment and scheduling
-- Athlete self-nomination and approval workflows
 - Invitation and notification systems
 - Advanced analytics and reporting
 - Mobile app and offline support
